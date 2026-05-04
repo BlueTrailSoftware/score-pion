@@ -1,0 +1,37 @@
+# Environment (NEVER commit these)
+.env
+.config/env/.env.local
+.env.production
+.config/env/.env.local
+.frontend.env
+.frontend.env.*
+
+# Except examples (these document the config structure)
+!.env.example
+!.env.local.example
+!.env.production.example
+!.frontend.env.example
+
+# OS / IDEs
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+
+# Build outputs
+backend/.gradle/
+backend/build/
+backend/data/
+frontend/dist/
+frontend/node_modules/
+frontend/.angular/
+
+# Angular environment files (only .example is committed)
+frontend/src/environments/environment.ts
+frontend/src/environments/environment.prod.ts
+
+# Claude Code / internal
+.claude/
+agents/
+CLAUDE.md
