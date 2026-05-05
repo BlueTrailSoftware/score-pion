@@ -485,6 +485,65 @@ npm run e2e
 
 ---
 
+## Permissions and Governance
+
+### Who can do what
+
+- **Anyone** with a GitHub account can report bugs, propose features, and open pull requests from forks.
+- **Core team members only** can:
+  - Label and manage issues (prioritization, scope classification)
+  - Assign contributors to tasks
+  - Merge code to `main` (after PR approval)
+  - Close issues that are out of scope, duplicates, or not bugs
+  - Push directly to `main` (generally avoided; PRs preferred)
+  - Review and approve pull requests
+
+- **Repository owner only** can:
+  - Manage access levels and permissions
+  - Configure branch protection rules
+  - Create releases and tags
+  - Delete branches or force-push (emergency use only)
+
+### Branch protection rules
+
+The `main` branch is protected and enforces:
+
+- **Require pull request reviews before merging** — at least one approval from a core team member
+- **Require status checks to pass before merging** — all CI/CD checks must pass:
+  - Backend linting (Detekt)
+  - Backend tests
+  - Backend build
+  - Frontend linting
+  - Frontend tests
+  - Frontend build
+- **Require branches to be up to date before merging** — prevent stale PRs from bypassing new checks
+- **No direct pushes to `main`** — all changes must go through a PR
+- **No force-pushes** — preserve history and PR review threads
+
+### Expectations for external contributors
+
+- **Read the CONTRIBUTING guide first** — before opening an issue or PR, review this guide to understand the workflow.
+- **Search existing issues** before creating a new one to avoid duplicates.
+- **Open an issue before large PRs** — especially for features or refactors; discuss the approach first.
+- **Be respectful and constructive** — follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+- **Respond to feedback** — if a PR is asked for changes, provide updates or explain your rationale within 2 weeks.
+- **PRs without recent activity may be closed** — to keep the backlog manageable, stale PRs may be closed after 30 days without updates.
+
+### How the core team triages issues
+
+1. **New issue arrives** — labeled `triage` by GitHub Actions (or assigned manually).
+2. **Initial assessment** — core team determines category:
+   - `bug` — confirmed reproducible issue
+   - `feature` — new capability request
+   - `documentation` — doc improvements
+   - `question` — support or clarification request
+3. **Prioritization** — labeled with priority (`priority: critical`, `priority: high`, etc.) based on impact and scope.
+4. **Scope decision** — labeled `accepted`, `needs discussion`, or `out of scope`.
+5. **Good first issue** — if suitable for new contributors, labeled `good first issue` or `help wanted`.
+6. **Assignment** — if work is approved, a core team member may assign themselves or ask for volunteers.
+
+---
+
 ## Architecture Overview
 
 Before contributing, familiarize yourself with the project structure and design:
