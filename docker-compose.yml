@@ -3,10 +3,10 @@ version: "3.9"
 # Score Pion — Full Stack Docker Compose
 #
 # Environment Variables:
-#   Backend & Infrastructure: .env (root)
-#   Frontend (build-time):    .frontend.env (frontend/)
+#   Backend & Infrastructure: backend/.env (copied from backend/.env.example)
+#   Frontend (build-time):    frontend/src/environments/environment.ts (copied from environment.example.ts)
 #
-# See ENVIRONMENT_VARIABLES.md for details
+# See backend/.env.example and frontend/README.md for setup instructions
 #
 
 services:
@@ -14,7 +14,7 @@ services:
     build: ./backend
     ports:
       - "7070:7070"
-    env_file: .env
+    env_file: backend/.env
     environment:
       - AWS_DYNAMODB_ENDPOINT=http://dynamodb-local:8000
       - AWS_REGION=${AWS_REGION:-us-east-1}

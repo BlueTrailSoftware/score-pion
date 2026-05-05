@@ -94,30 +94,83 @@ The team will label the issue `accepted`, `needs discussion`, or `out of scope`.
 
 ### Prerequisites
 
-- JDK 17
-- Docker and Docker Compose
-- A GitHub account
+- **JDK 17** (for backend)
+- **Node.js 18+** (for frontend)
+- **Docker and Docker Compose**
+- **Git** and a GitHub account
 
 ### Local setup
+
+**Option 1: Full Stack with Docker Compose (recommended)**
+
+Best for working on both backend and frontend simultaneously.
 
 ```bash
 # 1. Clone the repository
 git clone <repository-url>
-cd score-pion-webhook
+cd score-pion
 
-# 2. Start DynamoDB Local
-docker-compose -f docker-compose.dynamodb.yml up -d
+# 2. Set up backend environment
+cp backend/.env.example backend/.env
+# Edit backend/.env with your credentials (see backend/CLAUDE.md for details)
 
-# 3. Initialize the table and indexes
-./scripts/init-dynamodb-local.sh
+# 3. Set up frontend environment
+cp frontend/src/environments/environment.example.ts frontend/src/environments/environment.ts
+cp frontend/src/environments/environment.example.ts frontend/src/environments/environment.prod.ts
+# Edit both files with your API keys (Google OAuth, reCAPTCHA, etc.)
 
-# 4. Run the application (port 7070)
-./gradlew bootRun
+# 4. Start the full stack
+docker-compose up
+# Backend available at http://localhost:7070
+# Frontend available at http://localhost:4200
 ```
 
-### Environment variables
+**Option 2: Backend only (without Docker)**
 
-See [README.md](README.md#environment-configuration) for environment setup and credential requirements. Never commit `.env` files or real credentials — all secrets must be managed outside version control.
+For backend-focused work with local services.
+
+```bash
+# 1. Clone and navigate to backend
+git clone <repository-url>
+cd score-pion/backend
+
+# 2. Set up environment
+cp .env.example .env
+# Edit .env with values (use local services: DynamoDB Local, MinIO, Mailpit)
+
+# 3. Start local services (from project root)
+docker-compose up dynamodb-local init-dynamodb minio create-buckets mailpit
+
+# 4. Run the backend application (from backend/ directory)
+./gradlew bootRun
+# Backend available at http://localhost:7070
+```
+
+**Option 3: Frontend only**
+
+For frontend-focused work, assuming backend is already running (either locally or remote).
+
+```bash
+# 1. Navigate to frontend directory
+cd score-pion/frontend
+
+# 2. Install dependencies
+npm install
+
+# 3. Set up environment
+cp src/environments/environment.example.ts src/environments/environment.ts
+# Edit environment.ts with your API base URL and keys
+
+# 4. Start the development server
+npm start
+# Frontend available at http://localhost:4200
+```
+
+### Environment variables and credentials
+
+See [README.md](README.md#environment-configuration) for detailed environment setup and credential requirements. 
+
+**Important:** Never commit `.env` files, `environment.ts` files with real credentials, or any other secrets to version control. All credentials must be managed outside the repository.
 
 ---
 
@@ -149,11 +202,19 @@ main
 
 ## Coding Standards
 
-This project uses **Kotlin** with **Spring Boot WebFlux** and **Coroutines**. All code must follow these conventions.
+All code must follow the standards specific to its stack. See the detailed guides below, then refer to `backend/CLAUDE.md` and `frontend/CLAUDE.md` for stack-specific conventions.
 
-### Architecture
+### General principles (all stacks)
 
-Follow the [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) layer boundaries strictly:
+- **Layer separation** — do not leak implementation details across architectural boundaries.
+- **Naming clarity** — function and variable names must be self-documenting.
+- **Single responsibility** — one function/component should have one reason to change.
+- **DRY principle** — avoid duplication; extract reusable logic appropriately.
+- **Comments only for the non-obvious** — document *why*, not *what*. Routine code should be self-explanatory.
+
+### Backend (Kotlin / Spring Boot WebFlux)
+
+The backend uses **Kotlin** with **Spring Boot WebFlux** and **Coroutines**. Follow [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) layer boundaries strictly:
 
 | Layer | Package | Rule |
 |---|---|---|
@@ -161,11 +222,11 @@ Follow the [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13
 | Application | `application/` | Use cases and services. No HTTP or persistence types. |
 | Infrastructure | `infrastructure/` | Controllers, persistence, external integrations. |
 
-Do not leak infrastructure types (HTTP DTOs, DynamoDB items) into the application or domain layers.
+**Do not leak infrastructure types** (HTTP DTOs, DynamoDB items) into the application or domain layers.
 
-### Mappers
+#### Mappers
 
-Use explicit **Mapper classes** — never map inline inside controllers or use cases. Mappers are organized by their translation boundary:
+Use explicit **Mapper classes** — never map inline inside controllers or use cases. Organize by translation boundary:
 
 | Location | Purpose |
 |---|---|
@@ -174,11 +235,11 @@ Use explicit **Mapper classes** — never map inline inside controllers or use c
 | `infrastructure/client/mapper/` | External API response → domain types |
 | `infrastructure/adapter/*/mapper/` | Adapter-specific translations (e.g., Coderbyte) |
 
-### Reactive model
+#### Reactive model
 
 All service and repository functions must be `suspend`. Blocking calls are not acceptable in the reactive pipeline.
 
-### Logging
+#### Logging
 
 Inject `LoggerPort` via constructor — do **not** use `LoggerFactory` or SLF4J annotations directly.
 
@@ -196,7 +257,7 @@ class MyService {
 }
 ```
 
-### Style limits
+#### Style limits
 
 | Rule | Limit |
 |---|---|
@@ -205,17 +266,44 @@ class MyService {
 | Cyclomatic complexity | 15 per function |
 | Nested block depth | 4 levels |
 
-Add comments **only** on complex or non-obvious logic. Routine code should be self-explanatory.
+#### Static analysis
 
-### Static analysis
-
-All code must pass Detekt with zero issues before a PR will be reviewed:
+All backend code must pass Detekt with zero issues before a PR will be reviewed:
 
 ```bash
 ./gradlew detekt
 ```
 
-The CI pipeline will reject PRs that fail linting. Fix all issues before requesting review.
+The CI pipeline will reject PRs that fail linting.
+
+### Frontend (Angular / TypeScript)
+
+The frontend uses **Angular** with **TypeScript**. Follow these conventions:
+
+- **Component organization** — one component per file; keep templates, styles, and logic together in the component folder.
+- **Smart/dumb components** — separate container components (handle state/logic) from presentational components (UI-focused).
+- **Service injection** — use constructor injection for all dependencies; services should be singletons.
+- **Reactive patterns** — leverage RxJS Observables; avoid mutable state when possible.
+- **Strong typing** — always use TypeScript interfaces; avoid `any` type.
+
+#### Style limits
+
+| Rule | Limit |
+|---|---|
+| Line length | 120 characters |
+| Function/method length | 40 lines |
+| Component template lines | 50 lines (extract to separate components if longer) |
+
+#### Linting and formatting
+
+All frontend code must pass linting before a PR will be reviewed:
+
+```bash
+cd frontend
+npm run lint
+```
+
+The CI pipeline will reject PRs that fail linting or have unformatted code.
 
 ---
 
@@ -270,6 +358,7 @@ test(useCases): add missing edge cases for position deactivation
 - Each PR should address a **single concern**. Avoid bundling unrelated changes.
 - If a fix requires a refactor, split them into separate PRs unless the refactor is trivially small.
 - PRs must not include commented-out code, debug logs, or temporary workarounds unless explicitly marked with a `TODO` and a linked issue.
+- PRs affecting both backend and frontend are acceptable **only if tightly coupled** (e.g., API contract change + frontend integration). Otherwise, split into separate PRs.
 
 ### Description template
 
@@ -286,13 +375,24 @@ The problem or requirement being addressed. Link to the issue.
 Key implementation decisions, especially if non-obvious.
 
 ## Testing
-How the change was tested (unit tests, manual verification steps).
+How the change was tested (unit tests, manual verification steps, screenshots for UI changes).
 
-## Checklist
+## Checklist (Backend)
 - [ ] Detekt passes (`./gradlew detekt`)
 - [ ] Tests pass (`./gradlew test`)
 - [ ] No credentials or environment-specific values committed
 - [ ] Docs updated if behavior changed
+
+## Checklist (Frontend)
+- [ ] Linting passes (`npm run lint`)
+- [ ] Tests pass (`npm run test`)
+- [ ] No credentials or environment-specific values committed
+- [ ] Responsive design verified (if UI changes)
+- [ ] Docs updated if behavior changed
+
+## Checklist (Both stacks)
+- [ ] No secrets or environment files committed
+- [ ] Branch is up to date with `main`
 ```
 
 ### Size guidance
@@ -303,15 +403,20 @@ How the change was tested (unit tests, manual verification steps).
 | 200–500 | Provide clear context in the description |
 | > 500 | Split if possible; expect a longer review cycle |
 
+**Note:** Frontend changes tend to be larger due to template code. A 400-line UI feature is acceptable; a 400-line backend refactor should be split.
+
 ---
 
 ## Testing Requirements
 
-- All new use cases and services must have corresponding unit tests.
+All new code — backend and frontend — must have corresponding unit tests. Tests must be deterministic and must not depend on external services or network calls.
+
+### Backend (Kotlin)
+
 - Tests live in `src/test/kotlin/` mirroring the main source structure.
 - Use **JUnit 5** and **Mockito-Kotlin** for mocking.
-- Do not write tests that only verify mocks were called — test behavior and outcomes.
-- Tests must be deterministic and must not depend on external services or network calls.
+- Test behavior and outcomes, not mock interactions.
+- All new use cases and services must have unit test coverage.
 
 ```bash
 # Run all tests
@@ -319,9 +424,38 @@ How the change was tested (unit tests, manual verification steps).
 
 # Run a specific test
 ./gradlew test --tests "org.example.notifier.application.useCases.MyUseCaseTest.shouldReturnErrorWhenNotFound"
+
+# Run with coverage report
+./gradlew test jacocoTestReport
 ```
 
-The CI pipeline runs all tests on every PR. PRs with failing tests will not be merged.
+### Frontend (Angular / TypeScript)
+
+- Tests live in `src/app/` alongside the components/services they test (`.spec.ts` files).
+- Use **Jasmine** and **Karma** for unit testing; **Protractor** or **Cypress** for E2E tests (if applicable).
+- Test component interaction, service logic, and user workflows.
+- Mock HTTP requests using `HttpClientTestingModule` and `HttpTestingController`.
+
+```bash
+cd frontend
+
+# Run all unit tests
+npm run test
+
+# Run unit tests with coverage
+npm run test:coverage
+
+# Run E2E tests (if configured)
+npm run e2e
+```
+
+### General testing rules
+
+- Do not write tests that only verify mocks were called — test behavior and outcomes.
+- Tests must pass deterministically; avoid flaky tests that depend on timing or external state.
+- Aim for meaningful coverage of business logic and edge cases, not 100% line coverage.
+
+**The CI pipeline runs all tests on every PR. PRs with failing tests will not be merged.**
 
 ---
 
@@ -353,16 +487,30 @@ The CI pipeline runs all tests on every PR. PRs with failing tests will not be m
 
 ## Architecture Overview
 
-Before contributing, familiarize yourself with the project:
+Before contributing, familiarize yourself with the project structure and design:
 
 | Resource | Description |
 |---|---|
-| `README.md` | Quick start, local setup, and available Gradle commands |
+| `README.md` | Quick start, local setup, and available commands |
+| `backend/CLAUDE.md` | Backend architecture, Gradle commands, and Kotlin conventions |
+| `frontend/CLAUDE.md` | Frontend architecture, npm commands, and Angular conventions |
 | `docs/roles/` | Per-role capabilities (admin, recruiter, applicant) |
 | `docs/flows/` | Cross-role business flows (invitation, assessment, application, authentication, GDPR) |
 
-The project uses a **single DynamoDB table** (`scorepion-data`) with composite PK/SK patterns. Any change that introduces new data access patterns must be evaluated against the existing GSI design before implementation.
+### Key architectural constraints
+
+**Backend:** The project uses a **single DynamoDB table** (`scorepion-data`) with composite PK/SK patterns. Any change that introduces new data access patterns must be evaluated against the existing GSI design before implementation.
+
+**Frontend:** The SPA follows standard Angular conventions with smart/dumb component separation. State management uses reactive patterns with RxJS. All HTTP calls must go through typed services.
 
 ---
 
-*For questions not covered here, open an issue with the `question` label.*
+## Getting help
+
+- **Documentation questions:** Open an issue with the `question` label or check the relevant `CLAUDE.md` file for your stack.
+- **Setup issues:** See [Setting Up the Development Environment](#setting-up-the-development-environment) or the stack-specific guides in `backend/CLAUDE.md` and `frontend/CLAUDE.md`.
+- **General questions:** Open an issue with the `question` label or start a discussion on GitHub.
+
+---
+
+*Last updated: 2026-05-05*

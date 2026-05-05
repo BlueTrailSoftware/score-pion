@@ -1,4 +1,4 @@
-te consulto# Score Pion
+# Score Pion
 
 Score Pion is an open-source candidate assessment management platform. It allows organizations to manage job positions, invite applicants, run technical assessments via Coderbyte, and track the full hiring pipeline — from invitation to decision.
 
@@ -6,15 +6,15 @@ Score Pion is an open-source candidate assessment management platform. It allows
 
 ```
 /score-pion
-├── /backend      Kotlin + Spring Boot WebFlux API (port 7070)
-├── /frontend     Angular web application (port 4200)
-├── /docker       Development infrastructure overrides
-├── .config/      Configuration examples (env files)
+├── /backend          Kotlin + Spring Boot WebFlux API (port 7070)
+├── /frontend         Angular web application (port 4200)
+├── /docker           Development infrastructure overrides
+├── /docs             Internal documentation
 ├── docker-compose.yml
 └── LICENSE
 ```
 
-For detailed documentation see [`backend/README.md`](backend/README.md) and [`frontend/README.md`](frontend/README.md).
+For detailed documentation see [`backend/AGENTS.md`](backend/AGENTS.md) and [`frontend/README.md`](frontend/README.md).
 
 ## Quick Start
 
@@ -29,12 +29,17 @@ For detailed documentation see [`backend/README.md`](backend/README.md) and [`fr
 git clone <repository-url>
 cd score-pion
 
-# Set up local development environment
-cp .config/env/.env.local.example .env.local
-cp .config/env/.frontend.env.example frontend/.frontend.env
+# Set up backend environment
+cp backend/.env.example backend/.env
+# Edit backend/.env and fill in your values
+
+# Set up frontend environment
+cp frontend/src/environments/environment.example.ts frontend/src/environments/environment.ts
+cp frontend/src/environments/environment.example.ts frontend/src/environments/environment.prod.ts
+# Edit both environment files and fill in Google OAuth and reCAPTCHA keys
 
 # Start the full stack
-docker-compose --env-file .env.local up
+docker-compose up
 ```
 
 **Access services at:**
@@ -51,10 +56,10 @@ docker-compose --env-file .env.local up
 
 ```bash
 # Set up production environment with real AWS credentials
-cp .config/env/.env.production.example .env.production
-# Edit .env.production with real AWS/service credentials
+cp backend/.env.production.example backend/.env.production
+# Edit backend/.env.production with real AWS/service credentials
 
-docker-compose --env-file .env.production up -d
+docker-compose up -d
 ```
 
 ## Environment Configuration
