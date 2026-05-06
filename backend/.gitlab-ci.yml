@@ -1,0 +1,111 @@
+# Use the official Docker image to run the build job
+# This image contains the Docker CLI
+image: docker:latest
+
+# Define the stages of the pipeline
+stages:
+  - ci
+  - build_and_push
+
+# Define variables that can be used throughout the pipeline
+variables:
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  DOCKER_TLS_CERTDIR: ""  # Disable TLS between docker client and dind
+  DOCKER_HOST: tcp://docker:2375  # Use non-TLS port
+
+
+# ─── MR Pipeline Jobs ────────────────────────────────────────────────────────
+# These three jobs run whenever a Merge Request is created or updated.
+
+.gradle_job:
+  stage: ci
+  image: gradle:8.4-jdk17
+  services: []
+  before_script:
+    - mkdir -p ~/.gradle
+    - echo "org.gradle.daemon=false" > ~/.gradle/gradle.properties
+    - echo "org.gradle.caching=true" >> ~/.gradle/gradle.properties
+    - echo "kotlin.compiler.execution.strategy=in-process" >> ~/.gradle/gradle.properties
+    - echo "org.gradle.jvmargs=-Xmx1536m -XX:MaxMetaspaceSize=512m -Dfile.encoding=UTF-8" >> ~/.gradle/gradle.properties
+  cache:
+    key: "$CI_PROJECT_PATH_SLUG-gradle"
+    paths:
+      - .gradle/
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+build:
+  extends: .gradle_job
+  variables:
+    GRADLE_OPTS: "-Xmx1536m -XX:MaxMetaspaceSize=512m"
+  script:
+    - echo "Running build (skipping tests and fat JAR)..."
+    - ./gradlew build -x test -x bootJar
+
+lint:
+  extends: .gradle_job
+  variables:
+    GRADLE_OPTS: "-Xmx1536m -XX:MaxMetaspaceSize=512m"
+  script:
+    - echo "Running Detekt linter..."
+    - ./gradlew detekt
+
+unit_tests:
+  extends: .gradle_job
+  needs: [build]
+  before_script:
+    - mkdir -p ~/.gradle
+    - echo "org.gradle.daemon=false" > ~/.gradle/gradle.properties
+    - echo "org.gradle.caching=true" >> ~/.gradle/gradle.properties
+    - echo "kotlin.compiler.execution.strategy=out-of-process" >> ~/.gradle/gradle.properties
+    - echo "org.gradle.jvmargs=-Xmx768m -XX:MaxMetaspaceSize=256m -Dfile.encoding=UTF-8" >> ~/.gradle/gradle.properties
+  variables:
+    GRADLE_OPTS: "-Xmx768m -XX:MaxMetaspaceSize=256m"
+  script:
+    - echo "Running unit tests..."
+    - ./gradlew test --no-daemon
+  artifacts:
+    when: always
+    reports:
+      junit: build/test-results/test/TEST-*.xml
+    paths:
+      - build/reports/tests/test/
+    expire_in: 7 days
+
+
+# ─── Deployment Pipeline ──────────────────────────────────────────────────────
+# This job builds the Docker image and pushes it to the registry
+build_and_push_image:
+  services:
+    - name: docker:dind
+  stage: build_and_push
+
+  # This section runs before the main script
+  before_script:
+    # --- NEW CONDITIONAL TAGGING LOGIC ---
+    - echo "Checking for commit tag..."
+    - |
+      if [ -n "$CI_COMMIT_TAG" ]; then
+        export IMAGE_TAG="$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
+        echo "Pipeline triggered by tag. Setting IMAGE_TAG to: $IMAGE_TAG"
+      else
+        echo "Pipeline triggered by branch. Using default IMAGE_TAG: $IMAGE_TAG"
+      fi
+    # --- END NEW CONDITIONAL TAGGING LOGIC ---
+    # Log in to the GitLab Container Registry
+    - echo "Logging into GitLab Container Registry..."
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+  # The main script for the job
+  script:
+    # Build the Docker image
+    - echo "Building Docker image..."
+    - docker build -t $IMAGE_TAG .
+
+    # Push the newly built image
+    - echo "Pushing Docker image to registry..."
+    - docker push $IMAGE_TAG
+
+  # This rule ensures the job only runs on the 'main' or 'master' branch
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_TAG'

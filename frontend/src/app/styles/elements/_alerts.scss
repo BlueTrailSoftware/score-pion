@@ -1,0 +1,25 @@
+@use '../theme-variables' as tv;
+
+.alert {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 33px;
+  border-color: tv.$sp-pending-orange;
+  padding: 8px;
+  font-size: 12px;
+  border-radius: 6px;
+  color: tv.$sp-pending-orange;
+  background-color: tv.$sp-white;
+
+  span {
+    padding-right: 15px;
+  }
+
+  .alert-icon {
+    position: relative;
+    right: 16px;
+    height: 15px;
+    width: 15px;
+  }
+}

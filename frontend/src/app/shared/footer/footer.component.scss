@@ -1,0 +1,139 @@
+@use '../../styles/theme-variables' as sp;
+
+// ── Footer Container ──
+.app-footer {
+  background-color: sp.$sp-white;
+  border-top: 1px solid sp.$sp-pastel-lavender-gray;
+  padding: 0;
+  margin-top: auto;
+  width: 100%;
+  font-family: inherit;
+}
+
+// ── Main Section (Brand + Columns) ──
+.footer-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 2rem;
+  gap: 3rem;
+}
+
+// ── Brand (Logo + Name) ──
+.footer-brand {
+  flex-shrink: 0;
+
+  .brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .scorpion-logo {
+    width: 36px;
+    height: 36px;
+
+    // keep the logo in its original colors (dark) for the white footer
+  }
+
+  .brand-name {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: sp.$sp-blue-dark;
+    letter-spacing: -0.25px;
+  }
+}
+
+// ── Link Columns ──
+.footer-columns {
+  display: flex;
+  gap: 4rem;
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .column-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: sp.$sp-blue-dark;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 0.25rem;
+  }
+
+  a {
+    color: sp.$sp-text-muted;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: sp.$sp-transition-fast;
+
+    &:hover {
+      color: sp.$sp-gradient-start;
+    }
+  }
+}
+
+// ── Divider ──
+.footer-divider {
+  border: none;
+  border-top: 1px solid sp.$sp-pastel-lavender-gray;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+// ── Bottom Bar ──
+.footer-bottom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+}
+
+.footer-copyright {
+  color: sp.$sp-text-muted;
+  font-size: 0.8rem;
+
+  .company-link {
+    color: sp.$sp-blue-dark;
+    text-decoration: none;
+    font-weight: 600;
+    transition: sp.$sp-transition-fast;
+
+    &:hover {
+      color: sp.$sp-gradient-start;
+    }
+  }
+}
+
+// ── Responsive ──
+@media (width <= 768px) {
+  .footer-main {
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem 1.25rem 1.5rem;
+  }
+
+  .footer-columns {
+    gap: 2.5rem;
+  }
+}
+
+@media (width <= 576px) {
+  .footer-columns {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+}

@@ -1,0 +1,149 @@
+@use '../../styles/core' as *;
+@use '../../styles/theme-variables' as tv;
+
+label {
+  color: tv.$sp-text-muted;
+}
+
+input[type='password'] {
+  padding: 8px 28px 8px 8px;
+  font-weight: 700;
+  letter-spacing: 8px;
+}
+
+.floating-label-wrap {
+  position: relative;
+
+  .form-text {
+    font-size: 11px;
+    color: tv.$sp-pending-orange;
+  }
+
+  .floating-label-field.capitalize {
+    text-transform: capitalize;
+  }
+
+  .floating-label-field.padding-left {
+    padding: 8px 8px 8px 32px;
+  }
+
+  .floating-label-field.show-icon {
+    padding: 8px 28px 8px 8px;
+  }
+
+  .floating-label-field.text-center {
+    text-align: center;
+  }
+
+  .floating-label-field {
+    width: 100%;
+    height: 40px;
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 6px;
+
+    @include small {
+      height: 32px;
+      font-size: 12px;
+    }
+
+    &:focus {
+      border-color: tv.$sp-pastel-lavender-gray;
+      outline: 0;
+      box-shadow: none;
+    }
+
+    &:focus,
+    &:not(:placeholder-shown) {
+      color: tv.$sp-text-dark;
+
+      & + .floating-label {
+        transform: translateY(-112%);
+
+        @include small {
+          transform: translateY(-110%);
+        }
+      }
+    }
+  }
+
+  .floating-label {
+    position: absolute;
+    margin: -30px 8px -25px 2px;
+    padding: 0 6px;
+    font-size: 14px;
+    background-color: tv.$sp-white;
+    transition:
+      transform 0.25s,
+      opacity 0.25s ease-in;
+    cursor: text;
+
+    @include small {
+      margin: -25px 8px -25px 2px;
+      font-size: 12px;
+    }
+  }
+
+  .border-orange,
+  .border-orange:focus {
+    border-color: tv.$sp-pending-orange;
+  }
+
+  .capitalize-text {
+    text-transform: capitalize;
+  }
+
+  .read-only {
+    background-color: transparent;
+  }
+
+  .with-delete {
+    top: 12px;
+    left: 0;
+  }
+
+  .delete-icon {
+    position: absolute;
+    bottom: 8px;
+    left: calc(100% - 24px);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+}
+
+.errors.relative {
+  position: relative;
+}
+
+.errors.relative-mobile {
+  position: relative;
+
+  @include small {
+    position: absolute;
+  }
+}
+
+.errors {
+  position: absolute;
+  width: 100%;
+
+  .hint {
+    width: 100%;
+    padding-left: 8px;
+    margin: 0;
+    color: tv.$sp-pending-orange;
+    font-size: 13px;
+
+    @include small {
+      font-size: 11px;
+    }
+  }
+
+  .overlap {
+    position: absolute;
+    width: 100%;
+    padding-left: 8px;
+    background: tv.$sp-white;
+  }
+}

@@ -1,0 +1,271 @@
+@use '../../styles/theme-variables' as tv;
+@use 'sass:color';
+
+.badge-status-active {
+  background-color: tv.$sp-status-active-bg;
+  color: tv.$sp-status-active-text;
+  padding: 0.35rem 0.75rem;
+  border-radius: tv.$sp-border-radius-sm;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.badge-status-pending {
+  background-color: tv.$sp-status-pending-bg;
+  color: tv.$sp-status-pending-text;
+  padding: 0.35rem 0.75rem;
+  border-radius: tv.$sp-border-radius-sm;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.badge-status-inactive {
+  background-color: tv.$sp-status-inactive-bg;
+  color: tv.$sp-status-inactive-text;
+  padding: 0.35rem 0.75rem;
+  border-radius: tv.$sp-border-radius-sm;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.badge-positions-count {
+  background-color: tv.$sp-badge-assessments-bg;
+  color: tv.$sp-badge-assessments-text;
+  padding: 0.35rem 0.75rem;
+  border-radius: tv.$sp-border-radius-sm;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.btn-activate {
+  background-color: tv.$sp-btn-activate-bg;
+  color: tv.$sp-btn-activate-text;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: tv.$sp-btn-activate-hover;
+    color: tv.$sp-btn-activate-text;
+    transform: translateY(-1px);
+    box-shadow: 0 0.25rem 0.5rem rgba(tv.$sp-btn-activate-bg, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.btn-deactivate {
+  background-color: tv.$sp-btn-deactivate-bg;
+  color: tv.$sp-btn-deactivate-text;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: tv.$sp-btn-deactivate-hover;
+    color: tv.$sp-btn-deactivate-text;
+    transform: translateY(-1px);
+    box-shadow: 0 0.25rem 0.5rem rgba(tv.$sp-btn-deactivate-bg, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.btn-outline-manage {
+  background-color: transparent;
+  color: tv.$sp-btn-outline-text;
+  border: 1.5px solid tv.$sp-btn-outline-border;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: tv.$sp-btn-outline-hover-bg;
+    border-color: color.adjust(tv.$sp-btn-outline-border, $lightness: -10%);
+    color: color.adjust(tv.$sp-btn-outline-text, $lightness: -10%);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.manage-recruiters-wrapper {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 4.5rem;
+}
+
+.card {
+  @include tv.sp-card-base;
+}
+
+.table {
+  margin-bottom: 0;
+
+  thead th {
+    background-color: tv.$sp-bg-light;
+    font-weight: 600;
+    border-bottom: 2px solid color.adjust(tv.$sp-text-muted, $lightness: 30%);
+  }
+
+  tbody tr:hover {
+    background-color: rgba(tv.$sp-accent-green, 0.05);
+  }
+}
+
+.modal {
+  display: block;
+}
+
+.modal-content {
+  border-radius: tv.$sp-border-radius;
+  box-shadow: tv.$sp-shadow-modal;
+}
+
+.modal-overlay {
+  background-color: rgb(0 0 0 / 0.5);
+}
+
+.card.role-card {
+  cursor: pointer;
+  transition: tv.$sp-transition-fast;
+  border: 2px solid transparent;
+  box-shadow: 0 0 0 1px var(--bs-border-color);
+
+  &:hover {
+    box-shadow: 0 0 0 1px tv.$sp-green-active;
+  }
+
+  &.selected-role {
+    border: 2px solid tv.$sp-green-active;
+    box-shadow: none;
+  }
+
+  .role-icon--recruiter {
+    color: tv.$sp-accent-blue;
+  }
+
+  .role-icon--admin {
+    color: tv.$sp-accent-purple;
+  }
+}
+
+// Position items in invite / assign modals
+.position-check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: tv.$sp-border-radius-sm;
+  border: 1px solid rgba(tv.$sp-text-muted, 0.2);
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+
+  &:hover {
+    background: rgba(tv.$sp-accent-green, 0.04);
+    border-color: rgba(tv.$sp-accent-green, 0.25);
+  }
+
+  &.selected {
+    background: rgba(tv.$sp-accent-green, 0.07);
+    border-color: rgba(tv.$sp-accent-green, 0.4);
+  }
+
+  .position-check-input {
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+  }
+
+  .position-check-label {
+    flex: 1;
+    cursor: pointer;
+    margin-bottom: 0;
+    min-width: 0;
+  }
+
+  .position-title-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+
+  .position-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .position-description {
+    font-size: 0.75rem;
+    color: tv.$sp-text-muted;
+    margin-top: 0.25rem;
+    margin-bottom: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.badge-pos-external {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: tv.$sp-border-radius-sm;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background-color: rgba(tv.$sp-accent-blue, 0.15);
+  color: tv.$sp-accent-blue;
+  white-space: nowrap;
+}
+
+.badge-pos-internal {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: tv.$sp-border-radius-sm;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background-color: rgba(tv.$sp-accent-purple, 0.15);
+  color: tv.$sp-accent-purple;
+  white-space: nowrap;
+}
+
+.badge-pos-assessments {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: tv.$sp-border-radius-sm;
+  font-weight: 600;
+  background-color: tv.$sp-badge-assessments-bg;
+  color: tv.$sp-badge-assessments-text;
+  white-space: nowrap;
+}
+
+@media (width <= 991.98px) {
+  .manage-recruiters-wrapper {
+    padding-top: 2.5rem;
+    width: 95%;
+  }
+
+  .table {
+    font-size: 0.875rem;
+  }
+
+  .btn-sm {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}

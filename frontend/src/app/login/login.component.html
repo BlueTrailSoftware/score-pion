@@ -1,0 +1,38 @@
+<div class="login-container">
+  <app-waves-background></app-waves-background>
+
+  <section class="bts-logo">
+    <div class="logo-wrapper">
+      @if (showCompanyLogo && companyLogoPath) {
+        <img
+          [src]="companyLogoPath"
+          alt="Company Logo"
+          class="logo-full"
+        />
+      }
+      <img
+        src="assets/images/logos/scorpion-logo-v2.png"
+        alt="Scorpion Logo"
+        [class]="showCompanyLogo ? 'logo-scorpion' : 'logo-scorpion logo-scorpion-immediate'"
+      />
+    </div>
+  </section>
+
+  <main>
+    <app-login-form class="container"></app-login-form>
+  </main>
+
+  <div class="versions-container">
+    @if (gitHashFE) {
+      <span class="git-hash">FE git hash: {{ gitHashFE }}</span>
+    } @else {
+      <span class="git-hash">FE hash is not available</span>
+    }
+    @if (gitHashBE) {
+      <span class="git-hash">BE git hash: {{ gitHashBE }}</span>
+    } @else {
+      <span class="git-hash">BE hash is not available</span>
+    }
+    <div class="version">{{ version }}</div>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+@if (visibleTabs.length > 0) {
+  <nav class="secondary-nav">
+    <div class="container-fluid">
+      <ul class="nav-tabs">
+        @for (tab of visibleTabs; track tab.route) {
+          <li class="nav-tab">
+            <a
+              class="nav-tab-link"
+              [routerLink]="tab.route"
+              routerLinkActive="active"
+              [attr.aria-label]="tab.label"
+            >
+              <i
+                class="bi"
+                [class]="tab.icon"
+              ></i>
+              <span>{{ tab.label }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </div>
+  </nav>
+}

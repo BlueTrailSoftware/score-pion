@@ -1,0 +1,123 @@
+<div
+  class="modal fade show d-block modal-overlay"
+  tabindex="-1"
+  role="dialog"
+  (keydown.escape)="onClose()"
+  (click)="onBackdropClick()"
+>
+  <div
+    class="modal-dialog modal-dialog-centered"
+    role="document"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Request Assessment</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="onClose()"
+          [disabled]="loading"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <form
+        [formGroup]="examForm"
+        (ngSubmit)="onSubmit()"
+        novalidate
+      >
+        <div class="modal-body">
+          <div class="card-body">
+            <p class="text-muted mb-3"
+              >Specify the details of the exam to be created by the Candidates Evaluation team</p
+            >
+
+            <!-- Date Field -->
+            <div class="mb-4">
+              <label class="form-label">
+                Date for the exam to be ready
+                <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-white">
+                  <i class="bi bi-calendar3"></i>
+                </span>
+                <input
+                  type="date"
+                  class="form-control"
+                  [class.is-invalid]="isFieldInvalid('examDate')"
+                  [min]="minDate"
+                  placeholder="Enter a date"
+                  formControlName="examDate"
+                />
+              </div>
+              @if (isFieldInvalid('examDate')) {
+                <div class="invalid-feedback d-block">
+                  {{ getErrorMessage('examDate') }}
+                </div>
+              }
+            </div>
+
+            <!-- Description Field -->
+            <div class="mb-3">
+              <label class="form-label">
+                Description
+                <span class="text-danger">*</span>
+              </label>
+              <p class="text-muted small mb-2">Please describe the type of exam to be created.</p>
+              <p class="text-muted small mb-2">For example:</p>
+              <p class="text-muted small fst-italic mb-3">
+                Generative AI specialist semi-senior or senior. With any language, but I would assume Python
+              </p>
+              <div class="description">
+                <textarea
+                  class="form-control"
+                  [class.is-invalid]="isFieldInvalid('description')"
+                  rows="4"
+                  placeholder="Enter your answer"
+                  formControlName="description"
+                ></textarea>
+                @if (isFieldInvalid('description')) {
+                  <div class="invalid-feedback d-block">
+                    {{ getErrorMessage('description') }}
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="onClose()"
+            [disabled]="loading"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-gradient-primary"
+            [disabled]="loading"
+          >
+            @if (!loading) {
+              <span>Submit</span>
+            }
+            @if (loading) {
+              <span class="d-flex align-items-center justify-content-center">
+                <span
+                  class="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                Submitting...
+              </span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

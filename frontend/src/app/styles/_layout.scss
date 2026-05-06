@@ -1,0 +1,40 @@
+@mixin extra-small {
+  @media screen and (width >= 320px) {
+    @content;
+  }
+}
+
+// small devices
+@mixin small {
+  @media screen and (width >= 576px) {
+    @content;
+  }
+}
+
+// medium devices
+@mixin medium {
+  @media screen and (width >= 768px) {
+    @content;
+  }
+}
+
+// large devices
+@mixin large {
+  @media screen and (width >= 992px) {
+    @content;
+  }
+}
+
+// extra large devices
+@mixin xlarge {
+  @media screen and (width >= 1200px) {
+    @content;
+  }
+}
+
+// meduim devices with a large height
+@mixin large-height {
+  @media screen and (height >= 600px) and (width >= 768px) {
+    @content;
+  }
+}

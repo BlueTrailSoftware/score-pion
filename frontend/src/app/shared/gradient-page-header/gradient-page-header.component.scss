@@ -1,0 +1,39 @@
+@use '../../styles/theme-variables.scss' as tv;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.card {
+  border-radius: 1rem;
+  box-shadow:
+    0 0.5rem 1.5rem rgb(0 0 0 / 0.1),
+    0 0.25rem 0.5rem rgba(tv.$sp-accent-green, 0.08);
+}
+
+.gradient-header-container {
+  z-index: 1;
+  margin-bottom: 1.5rem;
+  min-height: 160px;
+  padding-top: 50px;
+}
+
+.gradient-bg-card {
+  z-index: 0;
+  top: 0;
+  height: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  right: auto;
+  width: 110%;
+  border-radius: 2rem;
+  box-shadow: 0 0.5rem 2rem rgba(tv.$sp-gradient-start, 0.18);
+  background: linear-gradient(90deg, tv.$sp-gradient-start 0%, tv.$sp-gradient-end 100%) !important;
+}
+
+.header-card {
+  box-shadow:
+    0 0.5rem 1.5rem rgb(0 0 0 / 0.1),
+    0 0.25rem 0.5rem rgba(tv.$sp-accent-green, 0.08);
+}

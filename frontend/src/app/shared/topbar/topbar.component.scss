@@ -1,0 +1,191 @@
+@use '../../styles/theme-variables' as sp;
+
+.navbar {
+  background: linear-gradient(180deg, #232b6b 0%, sp.$sp-blue-dark 100%);
+  border-bottom: 1px solid rgba(sp.$sp-accent-green, 0.3);
+  box-shadow:
+    0 2px 8px rgba(sp.$sp-text-dark, 0.15),
+    0 1px 0 rgba(sp.$sp-accent-green, 0.1) inset;
+  padding: 0.75rem 1.5rem;
+
+  .container-fluid {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: sp.$sp-white;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: sp.$sp-transition-fast;
+
+  .scorpion-logo {
+    width: 36px;
+    height: 36px;
+    filter: brightness(0) invert(1);
+    transition: sp.$sp-transition-fast;
+  }
+
+  &:hover {
+    color: sp.$sp-accent-green;
+
+    .scorpion-logo {
+      filter: brightness(0) invert(1) drop-shadow(0 0 8px rgba(sp.$sp-accent-green, 0.6));
+      transform: scale(1.1);
+    }
+  }
+}
+
+.user-info-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1.25rem;
+  background: rgba(sp.$sp-white, 0.08);
+  border-radius: sp.$sp-border-radius-full;
+  border: 1px solid rgba(sp.$sp-white, 0.1);
+  transition: sp.$sp-transition-fast;
+
+  &:hover {
+    background: rgba(sp.$sp-white, 0.12);
+    border-color: rgba(sp.$sp-accent-green, 0.3);
+  }
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border: 2px solid sp.$sp-accent-green;
+  box-shadow: 0 0 8px rgba(sp.$sp-accent-green, 0.4);
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .avatar-initials {
+    width: 100%;
+    height: 100%;
+
+    @include sp.sp-gradient-diagonal;
+
+    color: sp.$sp-white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+}
+
+.user-details {
+  .user-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: sp.$sp-white;
+  }
+
+  .user-email {
+    font-size: 0.75rem;
+    line-height: 1.2;
+    color: rgba(sp.$sp-white, 0.6);
+  }
+}
+
+.btn-logout {
+  border: 2px solid sp.$sp-accent-green;
+  color: sp.$sp-white;
+  background: rgba(sp.$sp-accent-green, 0.1);
+  font-weight: 600;
+  padding: 0.5rem 1.5rem;
+  border-radius: sp.$sp-border-radius-full;
+  transition: sp.$sp-transition-fast;
+
+  &:hover {
+    background: sp.$sp-accent-green;
+    color: sp.$sp-blue-dark;
+    border-color: sp.$sp-accent-green;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(sp.$sp-accent-green, 0.5);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@media (width <= 768px) {
+  .navbar-brand {
+    font-size: 1.1rem;
+    gap: 0.5rem;
+
+    .scorpion-logo {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .user-info-container {
+    padding: 0.375rem;
+    background: transparent;
+    border: none;
+
+    &:hover {
+      background: rgba(sp.$sp-white, 0.1);
+    }
+  }
+
+  .user-details {
+    display: none;
+  }
+
+  .btn-logout {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (width <= 576px) {
+  .navbar {
+    padding: 0.5rem 1rem;
+  }
+
+  .navbar-brand {
+    font-size: 1rem;
+
+    span {
+      display: none;
+    }
+
+    .scorpion-logo {
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  .user-info-container {
+    padding: 0.25rem;
+  }
+
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .btn-logout {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    min-width: auto;
+  }
+}

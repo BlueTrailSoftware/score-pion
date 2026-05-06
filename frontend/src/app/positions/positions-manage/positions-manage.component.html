@@ -1,0 +1,168 @@
+<div class="card squared-form-wrapper">
+  <form
+    class="invite-candidate-wrapper py-4 d-flex flex-column align-items-center"
+    (submit)="$event.preventDefault()"
+    novalidate
+  >
+    <app-gradient-page-header
+      title="Candidates Evaluation - Positions Manage"
+      subtitle="Browse and manage positions"
+    ></app-gradient-page-header>
+
+    <div class="card mb-3 invite-candidate-card">
+      <div class="card-body">
+        @if (positionsError) {
+          <div class="text-danger mb-2">{{ positionsError }}</div>
+        }
+
+        <div class="invite-header-row">
+          <div class="invite-header-copy">
+            <h5 class="invite-header-title mb-3">Invite a candidate</h5>
+            <p class="invite-header-subtitle mb-0"> Select one position that the candidate should be invited to </p>
+          </div>
+
+          @if (userAdmin) {
+            <app-action-dropdown
+              type="gradient"
+              [actions]="actionItems"
+              [disabled]="loading"
+            ></app-action-dropdown>
+          }
+        </div>
+
+        <app-position-list-card
+          mode="invite"
+          [showInactive]="userAdmin"
+          [autoLoad]="true"
+          [showStatus]="userAdmin"
+          [showHeader]="false"
+          (positionView)="onViewPositionDetails($event)"
+          (positionInvite)="onInviteToPosition($event)"
+          (positionsLoaded)="onPositionsLoaded($event)"
+        >
+        </app-position-list-card>
+      </div>
+    </div>
+
+    @if (loading) {
+      <div class="w-100 d-flex justify-content-center mb-3">
+        <div
+          class="spinner-border text-success"
+          style="width: 2.5rem; height: 2.5rem"
+          role="status"
+        >
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    }
+  </form>
+</div>
+
+@if (showModal) {
+  <div
+    class="modal fade show d-block modal-overlay"
+    tabindex="-1"
+    role="dialog"
+    (click)="closeModal()"
+  >
+    <div
+      class="modal-dialog modal-dialog-centered"
+      role="document"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Invite Candidate to {{ selectedPositionTitle }}</h5>
+          <button
+            type="button"
+            class="btn-close"
+            (click)="closeModal()"
+            [disabled]="modalLoading"
+          ></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="card invite-candidate-card">
+            <div class="card-body">
+              <h6 class="card-subtitle text-muted mb-3"> Enter candidate information </h6>
+
+              <div class="mb-3">
+                <label
+                  for="candidateName"
+                  class="form-label"
+                  >Full Name <span class="text-danger">*</span></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="candidateName"
+                  placeholder="Enter candidate's full name"
+                  required
+                  [(ngModel)]="candidateName"
+                  name="candidateName"
+                  [disabled]="modalLoading"
+                />
+                @if (nameError) {
+                  <div class="text-danger mt-2">{{ nameError }}</div>
+                }
+              </div>
+
+              <div class="mb-3">
+                <label
+                  for="candidateEmail"
+                  class="form-label"
+                  >Email Address <span class="text-danger">*</span></label
+                >
+                <input
+                  type="email"
+                  class="form-control"
+                  id="candidateEmail"
+                  placeholder="Enter candidate's email"
+                  required
+                  [(ngModel)]="candidateEmail"
+                  name="candidateEmail"
+                  [disabled]="modalLoading"
+                />
+                @if (emailError) {
+                  <div class="text-danger mt-2">{{ emailError }}</div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="closeModal()"
+            [disabled]="modalLoading"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn btn-gradient-primary"
+            (click)="onSubmitModal()"
+            [disabled]="modalLoading"
+          >
+            @if (modalLoading) {
+              <span
+                class="spinner-border spinner-border-sm me-2"
+                role="status"
+                aria-hidden="true"
+              ></span>
+              Sending...
+            } @else {
+              Send Invitation
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showRequestAssessmentModal) {
+  <app-request-assessment-modal (closeModal)="closeRequestAssessmentModal()"></app-request-assessment-modal>
+}

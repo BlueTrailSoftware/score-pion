@@ -1,0 +1,272 @@
+@use './theme-variables.scss' as tv;
+
+$sp-success: #28a745;
+$sp-success-light: #d4edda;
+$sp-danger: #dc3545;
+$sp-danger-light: #f8d7da;
+$sp-danger-dark: #721c24;
+$sp-info-light: #cce5ff;
+$sp-info-dark: #004085;
+
+@mixin privacy-container {
+  min-height: 100vh;
+  padding: 2rem;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin privacy-card($padding: 2rem) {
+  @include tv.sp-card-base;
+
+  max-width: 500px;
+  width: 100%;
+  background-color: tv.$sp-white;
+  border: 1px solid tv.$sp-pastel-lavender-gray;
+  padding: $padding;
+}
+
+@mixin privacy-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+@mixin header-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 2.5rem;
+}
+
+@mixin privacy-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  line-height: 1.3;
+}
+
+@mixin privacy-subtitle {
+  font-size: 1rem;
+  color: tv.$sp-text-muted;
+  margin: 0;
+}
+
+@mixin alert-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: tv.$sp-border-radius-sm;
+  margin-bottom: 1.5rem;
+}
+
+@mixin alert-card-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+@mixin alert-card-content {
+  font-size: 0.95rem;
+}
+
+@mixin privacy-form {
+  margin-top: 1.5rem;
+}
+
+@mixin form-label {
+  font-weight: 600;
+  color: tv.$sp-blue-dark;
+  margin-bottom: 0.5rem;
+}
+
+@mixin form-control($focus-color: tv.$sp-gradient-start, $focus-shadow: tv.$sp-shadow-focus) {
+  border: 1px solid tv.$sp-pastel-lavender-gray;
+  border-radius: tv.$sp-border-radius-sm;
+  padding: 0.75rem 1rem;
+  transition: tv.$sp-transition-fast;
+
+  &:focus {
+    border-color: $focus-color;
+    box-shadow: $focus-shadow;
+  }
+
+  &::placeholder {
+    color: tv.$sp-text-muted;
+    opacity: 0.7;
+  }
+}
+
+@mixin form-text {
+  color: tv.$sp-text-muted;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+@mixin success-card {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: $sp-success-light;
+  border-radius: tv.$sp-border-radius-sm;
+  border: 1px solid $sp-success;
+  color: #155724;
+  font-weight: 500;
+  margin-bottom: 1rem;
+
+  i {
+    color: $sp-success;
+  }
+}
+
+@mixin privacy-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+@mixin btn-gradient-primary($as-link: false) {
+  @include tv.sp-gradient-diagonal;
+
+  border: none;
+  color: tv.$sp-white;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  box-shadow: tv.$sp-shadow-gradient;
+  transition: tv.$sp-transition-fast;
+  border-radius: tv.$sp-border-radius-sm;
+
+  @if $as-link {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: tv.$sp-shadow-hover;
+    color: tv.$sp-white;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@mixin spinner-border {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15em;
+}
+
+@mixin confirm-state {
+  text-align: center;
+}
+
+@mixin state-icon {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-size: 3.5rem;
+
+  &.loading {
+    background-color: rgba(tv.$sp-gradient-start, 0.15);
+
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
+      border-width: 0.3em;
+      color: tv.$sp-gradient-start;
+    }
+  }
+
+  &.success {
+    background-color: $sp-success-light;
+    color: $sp-success;
+  }
+
+  &.error {
+    background-color: $sp-danger-light;
+    color: $sp-danger;
+  }
+}
+
+@mixin state-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+  color: tv.$sp-blue-dark;
+
+  &.success {
+    color: $sp-success;
+  }
+
+  &.error {
+    color: $sp-danger;
+  }
+}
+
+@mixin state-message {
+  font-size: 1rem;
+  color: tv.$sp-text-dark;
+  margin: 0 0 0.5rem;
+}
+
+@mixin state-subtitle {
+  font-size: 0.95rem;
+  color: tv.$sp-text-muted;
+  margin: 0;
+}
+
+@mixin privacy-responsive {
+  @media (width <= 768px) {
+    .privacy-container {
+      padding: 1rem;
+    }
+
+    .privacy-card {
+      padding: 1.5rem;
+    }
+
+    .header-icon {
+      width: 60px;
+      height: 60px;
+      font-size: 2rem;
+    }
+
+    .privacy-title {
+      font-size: 1.5rem;
+    }
+
+    .state-icon {
+      width: 80px;
+      height: 80px;
+      font-size: 2.5rem;
+
+      &.loading .spinner-border {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+    }
+
+    .state-title {
+      font-size: 1.25rem;
+    }
+
+    .btn-gradient-primary {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

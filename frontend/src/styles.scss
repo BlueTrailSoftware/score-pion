@@ -1,0 +1,179 @@
+@use './app/styles/theme-variables' as tv;
+
+// Design system shared styles
+@use './app/styles/badges';
+@use './app/styles/tables';
+@use './app/styles/modals';
+@use './app/styles/page-layout';
+@use './app/styles/forms';
+@use './app/styles/action-dropdown';
+
+@font-face {
+  font-family: Raleway;
+  src:
+    url('/assets/fonts/Raleway/Raleway-Bold.woff2') format('woff2'),
+    url('/assets/fonts/Raleway/Raleway-Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Raleway;
+  src:
+    url('/assets/fonts/Raleway/Raleway-Heavy.woff2') format('woff2'),
+    url('/assets/fonts/Raleway/Raleway-Heavy.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Raleway;
+  src:
+    url('/assets/fonts/Raleway/Raleway-ExtraBold.woff2') format('woff2'),
+    url('/assets/fonts/Raleway/Raleway-ExtraBold.woff') format('woff');
+  font-weight: bolder;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Raleway;
+  src:
+    url('/assets/fonts/Raleway/Raleway-SemiBold.woff2') format('woff2'),
+    url('/assets/fonts/Raleway/Raleway-SemiBold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Raleway;
+  src:
+    url('/assets/fonts/Raleway/Raleway-Medium.woff2') format('woff2'),
+    url('/assets/fonts/Raleway/Raleway-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Raleway;
+  src:
+    url('/assets/fonts/Raleway/Raleway.woff2') format('woff2'),
+    url('/assets/fonts/Raleway/Raleway.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Raleway;
+  src:
+    url('/assets/fonts/Raleway/Raleway-Light.woff2') format('woff2'),
+    url('/assets/fonts/Raleway/Raleway-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Raleway;
+  src:
+    url('/assets/fonts/Raleway/Raleway-ExtraLight.woff2') format('woff2'),
+    url('/assets/fonts/Raleway/Raleway-ExtraLight.woff') format('woff');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Raleway;
+  src:
+    url('/assets/fonts/Raleway/Raleway-Thin.woff2') format('woff2'),
+    url('/assets/fonts/Raleway/Raleway-Thin.woff') format('woff');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+  font-family: Raleway, sans-serif;
+  font-weight: 400;
+  color: #333;
+  background-color: #f8f9fa;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.squared-form-wrapper {
+  border-radius: 0 !important;
+  padding: 2rem 1.5rem !important;
+  background: tv.$sp-white;
+  box-shadow: 0 0.5rem 2rem rgb(0 0 0 / 0.08);
+  margin-bottom: 2rem;
+  isolation: isolate;
+  background-image: url('/assets/images/backgrounds/invite-candidate-bg.avif');
+  background-size: cover;
+  background-position-y: center;
+  min-height: 100vh;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: tv.$sp-bg-overlay-dark;
+    z-index: -1;
+
+    .invite-candidate-card.first-card-animated {
+      margin-top: 2.5rem;
+      transition: margin-top tv.$sp-transition-medium;
+    }
+  }
+}
+
+.btn-gradient-primary {
+  background: linear-gradient(90deg, tv.$sp-gradient-start 0%, tv.$sp-gradient-end 100%);
+  color: tv.$sp-white;
+  border: none;
+  border-radius: tv.$sp-border-radius-sm;
+  font-weight: 500;
+  transition: tv.$sp-transition-fast;
+  box-shadow: 0 0.25rem 0.5rem rgba(tv.$sp-gradient-start, 0.3);
+  white-space: nowrap;
+  overflow: visible;
+
+  &:hover:not(:disabled) {
+    color: tv.$sp-white;
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(tv.$sp-gradient-start, 0.4);
+  }
+
+  &:active {
+    color: tv.$sp-white;
+  }
+
+  &:disabled {
+    color: tv.$sp-white;
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15em;
+}
+
+// Badge styles are now in _badges.scss (imported above)

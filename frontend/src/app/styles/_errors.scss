@@ -1,0 +1,10 @@
+@use './theme-variables' as tv;
+
+.error {
+  border: 1px solid rgba(tv.$sp-pending-orange, 0.3);
+  box-shadow: none;
+}
+
+.error-label {
+  color: tv.$sp-pending-orange;
+}

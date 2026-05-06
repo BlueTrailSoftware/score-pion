@@ -1,0 +1,78 @@
+<div class="privacy-container">
+  <div class="privacy-card">
+    <div class="privacy-header">
+      <div class="header-icon danger">
+        <i class="bi bi-trash3"></i>
+      </div>
+      <h1 class="privacy-title danger">Delete My Data</h1>
+      <p class="privacy-subtitle">Request the deletion of your personal information</p>
+    </div>
+
+    <div class="warning-card">
+      <div class="warning-card-icon">
+        <i class="bi bi-exclamation-triangle"></i>
+      </div>
+      <div class="warning-card-content">
+        <strong>Warning:</strong> This action will anonymize all your personal data. This cannot be undone.
+      </div>
+    </div>
+
+    <form
+      [formGroup]="requestForm"
+      (ngSubmit)="onSubmit()"
+      class="privacy-form"
+    >
+      <div class="mb-4">
+        <label
+          for="email"
+          class="form-label"
+          >Email Address</label
+        >
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          formControlName="email"
+          placeholder="Enter your email"
+        />
+        <div class="form-text"> We'll send a verification link to this email address. </div>
+      </div>
+
+      @if (success) {
+        <div class="success-card">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          Verification email sent! Please check your inbox.
+        </div>
+      }
+
+      @if (error) {
+        <div
+          class="alert alert-danger"
+          role="alert"
+        >
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          {{ error }}
+        </div>
+      }
+
+      <div class="privacy-actions">
+        <button
+          type="submit"
+          class="btn btn-danger-gradient btn-lg"
+          [disabled]="requestForm.invalid || loading"
+        >
+          @if (loading) {
+            <span
+              class="spinner-border spinner-border-sm me-2"
+              role="status"
+            ></span>
+            Sending...
+          } @else {
+            <i class="bi bi-send me-2"></i>
+            Request Data Deletion
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

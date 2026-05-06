@@ -1,0 +1,92 @@
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 0.075);
+}
+
+.privacy-content {
+  ::ng-deep {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    h1 {
+      font-size: 2rem;
+      border-bottom: 2px solid #dee2e6;
+      padding-bottom: 0.5rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      border-bottom: 1px solid #dee2e6;
+      padding-bottom: 0.3rem;
+    }
+
+    p {
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    ul,
+    ol {
+      margin-bottom: 1rem;
+      padding-left: 2rem;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    code {
+      background-color: #f8f9fa;
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+
+    pre {
+      background-color: #f8f9fa;
+      padding: 1rem;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    blockquote {
+      border-left: 4px solid #dee2e6;
+      padding-left: 1rem;
+      margin-left: 0;
+      color: #6c757d;
+    }
+
+    table {
+      width: 100%;
+      margin-bottom: 1rem;
+      border-collapse: collapse;
+
+      th,
+      td {
+        padding: 0.75rem;
+        border: 1px solid #dee2e6;
+      }
+
+      th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+      }
+    }
+  }
+}

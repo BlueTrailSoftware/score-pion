@@ -1,0 +1,436 @@
+<div class="card squared-form-wrapper">
+  <div class="manage-recruiters-wrapper py-4">
+    <app-gradient-page-header
+      title="Manage Team"
+      subtitle="Invite and manage recruiters or other administrators."
+    ></app-gradient-page-header>
+
+    @if (loading) {
+      <div class="text-center py-5">
+        <div
+          class="spinner-border text-success"
+          style="width: 3rem; height: 3rem"
+          role="status"
+        >
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    }
+
+    @if (!loading) {
+      <div class="card border-0 shadow-sm mt-3">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <app-tabs
+              [options]="tabOptions"
+              [activeId]="activeTab"
+              (tabChange)="setTab($event)"
+              class="flex-grow-1"
+            ></app-tabs>
+
+            <button
+              type="button"
+              class="btn btn-gradient-primary ms-3"
+              (click)="openInviteModal()"
+            >
+              <i class="bi bi-person-plus me-1"></i> Invite Member
+            </button>
+          </div>
+
+          @if (activeTab === 'recruiters') {
+            @if (recruiters.length === 0) {
+              <p class="text-muted text-center py-4"> No recruiters found. Invite recruiters to get started. </p>
+            } @else {
+              <div class="table-responsive">
+                <table class="table table-hover sp-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Status</th>
+                      <th>Positions</th>
+                      <th>Created</th>
+                      <th class="text-end">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (recruiter of recruiters; track recruiter.id) {
+                      <tr>
+                        <td>
+                          <div class="d-flex align-items-center">
+                            @if (recruiter.pictureUrl) {
+                              <img
+                                [src]="recruiter.pictureUrl"
+                                alt="{{ recruiter.name }}"
+                                class="rounded-circle me-2"
+                                style="width: 32px; height: 32px"
+                              />
+                            }
+                            <span class="fw-medium">{{ recruiter.name || 'N/A' }}</span>
+                          </div>
+                        </td>
+                        <td>{{ recruiter.email }}</td>
+                        <td>
+                          <span [class]="'badge ' + (recruiter.status | statusBadge)">
+                            {{ recruiter.status }}
+                          </span>
+                        </td>
+                        <td>
+                          <span class="badge badge-status-completed">
+                            {{ recruiter.positionsCount || 0 }} assigned
+                          </span>
+                        </td>
+                        <td>
+                          {{ recruiter.createdAt ? (recruiter.createdAt | date: 'short') : 'N/A' }}
+                        </td>
+                        <td class="text-end">
+                          @if (recruiter.status !== 'Pending') {
+                            <app-action-dropdown
+                              [actions]="getRecruiterActions(recruiter)"
+                              [disabled]="actionLoading"
+                            ></app-action-dropdown>
+                          }
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          }
+
+          @if (activeTab === 'admins') {
+            @if (admins.length === 0) {
+              <p class="text-muted text-center py-4"> No admins found. Invite admins to get started. </p>
+            } @else {
+              <div class="table-responsive">
+                <table class="table table-hover sp-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Status</th>
+                      <th>Created</th>
+                      <th class="text-end">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (admin of admins; track admin.id) {
+                      <tr>
+                        <td>
+                          <div class="d-flex align-items-center">
+                            @if (admin.pictureUrl) {
+                              <img
+                                [src]="admin.pictureUrl"
+                                alt="{{ admin.name }}"
+                                class="rounded-circle me-2"
+                                style="width: 32px; height: 32px"
+                              />
+                            }
+                            <span class="fw-medium">{{ admin.name || 'N/A' }}</span>
+                          </div>
+                        </td>
+                        <td>{{ admin.email }}</td>
+                        <td>
+                          <span [class]="'badge ' + (admin.status | statusBadge)">
+                            {{ admin.status }}
+                          </span>
+                        </td>
+                        <td>
+                          {{ admin.createdAt ? (admin.createdAt | date: 'short') : 'N/A' }}
+                        </td>
+                        <td class="text-end">
+                          @if (admin.status !== 'Pending') {
+                            <app-action-dropdown
+                              [actions]="getAdminActions(admin)"
+                              [disabled]="actionLoading"
+                            ></app-action-dropdown>
+                          }
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+@if (showInviteModal) {
+  <div
+    class="modal fade show d-block modal-overlay"
+    tabindex="-1"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Invite Member</h5>
+          <button
+            type="button"
+            class="btn-close"
+            (click)="closeInviteModal()"
+            [disabled]="inviteLoading"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form
+            [formGroup]="inviteForm"
+            (ngSubmit)="onSubmitInvite()"
+            novalidate
+          >
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Role <span class="text-danger">*</span></label>
+              <div class="row g-2">
+                <div class="col-6">
+                  <div
+                    class="card role-card h-100"
+                    [class.selected-role]="inviteRoleControl?.value === 'RECRUITER'"
+                    (click)="selectInviteRole('RECRUITER')"
+                  >
+                    <div class="card-body position-relative py-3">
+                      <div class="d-flex align-items-center mb-1">
+                        <i class="bi bi-search me-2 role-icon--recruiter"></i>
+                        <span class="fw-semibold small">Recruiter</span>
+                      </div>
+                      <p class="text-muted mb-0 small">Can manage positions and review candidates</p>
+                      @if (inviteRoleControl?.value === 'RECRUITER') {
+                        <i class="bi bi-check-circle-fill text-success position-absolute top-0 end-0 mt-2 me-2"></i>
+                      }
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div
+                    class="card role-card h-100"
+                    [class.selected-role]="inviteRoleControl?.value === 'ADMIN'"
+                    (click)="selectInviteRole('ADMIN')"
+                  >
+                    <div class="card-body position-relative py-3">
+                      <div class="d-flex align-items-center mb-1">
+                        <i class="bi bi-gear-fill me-2 role-icon--admin"></i>
+                        <span class="fw-semibold small">Admin</span>
+                      </div>
+                      <p class="text-muted mb-0 small">Full system access and team management</p>
+                      @if (inviteRoleControl?.value === 'ADMIN') {
+                        <i class="bi bi-check-circle-fill text-success position-absolute top-0 end-0 mt-2 me-2"></i>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label
+                for="inviteEmail"
+                class="form-label fw-semibold"
+              >
+                {{ inviteRoleName }} Email <span class="text-danger">*</span>
+              </label>
+              <input
+                id="inviteEmail"
+                type="email"
+                class="form-control"
+                [placeholder]="'Enter ' + (inviteRoleName | lowercase) + '\'s email'"
+                formControlName="email"
+                [class.is-invalid]="inviteEmailControl?.invalid && inviteEmailControl?.touched"
+              />
+              @if (inviteEmailControl?.invalid && inviteEmailControl?.touched) {
+                <div class="invalid-feedback d-block">
+                  @if (inviteEmailControl?.hasError('required')) {
+                    <span>Email is required.</span>
+                  }
+                  @if (inviteEmailControl?.hasError('email')) {
+                    <span>Please enter a valid email address.</span>
+                  }
+                </div>
+              }
+            </div>
+
+            @if (inviteRoleControl?.value === 'RECRUITER') {
+              <div class="mb-2">
+                <label class="form-label fw-semibold"
+                  >Assign Positions <span class="text-muted fw-normal">(Optional)</span></label
+                >
+                @if (positions.length === 0) {
+                  <p class="text-muted mb-0 small">No positions available.</p>
+                }
+                <div style="max-height: 260px; overflow-y: auto">
+                  @for (position of positions; track position.id) {
+                    <div
+                      class="position-check-item"
+                      [class.selected]="inviteSelectedPositions.has(position.id)"
+                    >
+                      <input
+                        #cb
+                        class="form-check-input position-check-input"
+                        type="checkbox"
+                        id="invite-pos-{{ position.id }}"
+                        [checked]="inviteSelectedPositions.has(position.id)"
+                        (change)="onInvitePositionChange(position.id, cb.checked)"
+                      />
+                      <label
+                        class="position-check-label"
+                        for="invite-pos-{{ position.id }}"
+                      >
+                        <div class="position-title-row">
+                          <span class="position-title">{{ position.title }}</span>
+                          @if ($any(position).external) {
+                            <span class="badge badge-status-active outline-sm">External</span>
+                          } @else {
+                            <span class="badge badge-status-completed outline-sm">Internal</span>
+                          }
+                          @if ($any(position).assessmentsCount > 0) {
+                            <span class="badge-pos-assessments">
+                              <i class="bi bi-clipboard-check"></i>
+                              {{ $any(position).assessmentsCount }}
+                            </span>
+                          }
+                        </div>
+                        @if (position.description) {
+                          <p class="position-description">{{ position.description }}</p>
+                        }
+                      </label>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="closeInviteModal()"
+            [disabled]="inviteLoading"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn btn-gradient-primary"
+            (click)="onSubmitInvite()"
+            [disabled]="inviteLoading || inviteForm.invalid"
+          >
+            @if (inviteLoading) {
+              <span
+                class="spinner-border spinner-border-sm me-2"
+                role="status"
+                aria-hidden="true"
+              ></span>
+              Sending...
+            } @else {
+              Send Invitation
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Assign Positions Modal -->
+@if (showAssignModal) {
+  <div
+    class="modal fade show d-block modal-overlay"
+    tabindex="-1"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"> Assign Positions - {{ selectedRecruiter?.name }} </h5>
+          <button
+            type="button"
+            class="btn-close"
+            (click)="closeAssignModal()"
+          ></button>
+        </div>
+        <div class="modal-body">
+          @if (positions.length === 0) {
+            <p class="text-muted mb-3">
+              No positions available. Create a position first to assign it to this recruiter.
+            </p>
+          } @else {
+            <p class="text-muted mb-3"> Select which positions this recruiter can manage </p>
+          }
+          @for (position of positions; track position.id) {
+            <div
+              class="position-check-item"
+              [class.selected]="isPositionSelected(position.id)"
+            >
+              <input
+                #cbModal
+                class="form-check-input position-check-input"
+                type="checkbox"
+                id="modal-{{ position.id }}"
+                [checked]="isPositionSelected(position.id)"
+                (change)="togglePositionSelection(position.id)"
+              />
+              <label
+                class="position-check-label"
+                for="modal-{{ position.id }}"
+              >
+                <div class="position-title-row">
+                  <span class="position-title">{{ position.title }}</span>
+                  @if ($any(position).external) {
+                    <span class="badge badge-status-active outline-sm">External</span>
+                  } @else {
+                    <span class="badge badge-status-completed outline-sm">Internal</span>
+                  }
+                  @if ($any(position).assessmentsCount > 0) {
+                    <span class="badge-pos-assessments">
+                      <i class="bi bi-clipboard-check"></i>
+                      {{ $any(position).assessmentsCount }}
+                    </span>
+                  }
+                </div>
+                @if (position.description) {
+                  <p class="position-description">{{ position.description }}</p>
+                }
+              </label>
+            </div>
+          }
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="closeAssignModal()"
+            [disabled]="actionLoading"
+          >
+            Cancel
+          </button>
+          @if (positions.length === 0) {
+            <button
+              type="button"
+              class="btn btn-gradient-primary"
+              (click)="goToCreatePosition()"
+            >
+              Create New Position
+            </button>
+          } @else {
+            <button
+              type="button"
+              class="btn btn-gradient-primary"
+              (click)="saveAssignments()"
+              [disabled]="actionLoading"
+            >
+              @if (actionLoading) {
+                <span
+                  class="spinner-border spinner-border-sm me-2"
+                  role="status"
+                ></span>
+              }
+              Save Assignments
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

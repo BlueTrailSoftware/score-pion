@@ -1,0 +1,56 @@
+<div class="confirm-container">
+  <div class="confirm-card">
+    @if (loading) {
+      <div class="confirm-state">
+        <div class="state-icon loading">
+          <div
+            class="spinner-border"
+            role="status"
+          >
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        <h2 class="state-title">Processing your request...</h2>
+        <p class="state-subtitle">Please wait while we process your data deletion request.</p>
+      </div>
+    }
+
+    @if (success) {
+      <div class="confirm-state">
+        <div class="state-icon success">
+          <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <h2 class="state-title success">Data Anonymized Successfully</h2>
+        <p class="state-message">{{ message }}</p>
+        <p class="state-subtitle">Your personal data has been removed from our system.</p>
+        <div class="mt-4">
+          <p class="text-muted small">Need a copy of your data before it's gone?</p>
+          <a
+            routerLink="/privacy/download-my-data"
+            class="btn btn-outline-primary btn-sm"
+          >
+            <i class="bi bi-download me-2"></i>
+            Download My Data
+          </a>
+        </div>
+      </div>
+    }
+
+    @if (error) {
+      <div class="confirm-state">
+        <div class="state-icon error">
+          <i class="bi bi-x-circle-fill"></i>
+        </div>
+        <h2 class="state-title error">Error</h2>
+        <p class="state-message">{{ error }}</p>
+        <a
+          href="/privacy/delete-my-data"
+          class="btn btn-gradient-primary mt-4"
+        >
+          <i class="bi bi-arrow-clockwise me-2"></i>
+          Request New Link
+        </a>
+      </div>
+    }
+  </div>
+</div>

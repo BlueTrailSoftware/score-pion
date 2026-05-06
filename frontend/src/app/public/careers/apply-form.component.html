@@ -1,0 +1,165 @@
+<div class="apply-container">
+  <div class="apply-card">
+    <div class="apply-header">
+      <button
+        class="btn btn-outline-secondary btn-sm mb-3"
+        (click)="goBack()"
+      >
+        <i class="bi bi-arrow-left me-1"></i>
+        Back to Position
+      </button>
+
+      <h1 class="apply-title">Apply for Position</h1>
+      <p class="apply-subtitle">Fill out the form below to submit your application</p>
+    </div>
+
+    <form
+      [formGroup]="applyForm"
+      (ngSubmit)="onSubmit()"
+      class="apply-form"
+    >
+      <div class="form-section">
+        <div class="mb-4">
+          <label
+            for="name"
+            class="form-label"
+            >Full Name *</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            formControlName="name"
+            placeholder="Enter your full name"
+          />
+          @if (applyForm.get('name')?.invalid && applyForm.get('name')?.touched) {
+            <div class="text-danger small mt-1"> Name is required </div>
+          }
+        </div>
+
+        <div class="mb-4">
+          <label
+            for="email"
+            class="form-label"
+            >Email Address *</label
+          >
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            formControlName="email"
+            placeholder="Enter your email"
+          />
+          @if (applyForm.get('email')?.invalid && applyForm.get('email')?.touched) {
+            <div class="text-danger small mt-1"> Valid email is required </div>
+          }
+        </div>
+
+        <div class="mb-4">
+          <label
+            for="phone"
+            class="form-label"
+            >Phone Number</label
+          >
+          <input
+            type="tel"
+            class="form-control"
+            id="phone"
+            formControlName="phone"
+            placeholder="Enter your phone number"
+          />
+        </div>
+
+        <div class="mb-4">
+          <label
+            for="file"
+            class="form-label"
+            >Resume/CV (File Upload) *</label
+          >
+          <input
+            type="file"
+            class="form-control"
+            id="file"
+            (change)="onFileSelected($event)"
+            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
+          />
+          <div class="form-text">Allowed types: PDF, DOC, DOCX, JPG, JPEG, PNG, TXT. Maximum size: 10 MB</div>
+        </div>
+
+        <div class="mb-4">
+          <label
+            for="linkedinUrl"
+            class="form-label"
+            >LinkedIn Profile URL *</label
+          >
+          <input
+            type="url"
+            class="form-control"
+            id="linkedinUrl"
+            formControlName="linkedinUrl"
+            placeholder="https://www.linkedin.com/in/your-profile"
+          />
+          <div class="form-text">Paste the full URL to your public LinkedIn profile.</div>
+        </div>
+
+        <div class="text-muted small mb-4">
+          * At least one method (CV Upload or LinkedIn Profile) is required to submit your application.
+        </div>
+
+        <div class="mb-4">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="gdprConsent"
+              formControlName="gdprConsent"
+            />
+            <label
+              class="form-check-label"
+              for="gdprConsent"
+            >
+              I consent to the processing of my personal data in accordance with the
+              <a
+                href="/privacy-policy"
+                target="_blank"
+                >Privacy Policy</a
+              >. My data will be retained for 9 months. *
+            </label>
+          </div>
+          @if (applyForm.get('gdprConsent')?.invalid && applyForm.get('gdprConsent')?.touched) {
+            <div class="text-danger small mt-1"> You must accept the privacy policy to continue </div>
+          }
+        </div>
+      </div>
+
+      @if (error) {
+        <div
+          class="alert alert-danger mt-4"
+          role="alert"
+        >
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          {{ error }}
+        </div>
+      }
+
+      <div class="apply-actions">
+        <button
+          type="submit"
+          class="btn btn-gradient-primary btn-lg"
+          [disabled]="applyForm.invalid || loading"
+        >
+          @if (loading) {
+            <span
+              class="spinner-border spinner-border-sm me-2"
+              role="status"
+            ></span>
+            Submitting...
+          } @else {
+            <i class="bi bi-send me-2"></i>
+            Submit Application
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

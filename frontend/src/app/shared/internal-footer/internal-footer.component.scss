@@ -1,0 +1,120 @@
+@use '../../styles/theme-variables' as sp;
+
+.internal-footer {
+  background: linear-gradient(180deg, #232b6b 0%, sp.$sp-blue-dark 100%);
+  border-top: 1px solid rgba(sp.$sp-accent-green, 0.3);
+  box-shadow: 0 -2px 8px rgba(sp.$sp-text-dark, 0.15);
+  width: 100%;
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 1.1rem 1.5rem;
+  gap: 1.5rem;
+}
+
+// ── Left: Brand ──
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.footer-logo {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+  opacity: 0.85;
+}
+
+.footer-brand {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: sp.$sp-white;
+  letter-spacing: -0.25px;
+}
+
+.footer-separator {
+  color: rgba(sp.$sp-white, 0.25);
+  font-weight: 300;
+  font-size: 1rem;
+}
+
+.footer-tagline {
+  color: rgba(sp.$sp-white, 0.5);
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0.25px;
+}
+
+// ── Center: Links ──
+.footer-center {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.footer-link {
+  color: rgba(sp.$sp-white, 0.6);
+  text-decoration: none;
+  font-size: 0.8rem;
+  transition: sp.$sp-transition-fast;
+
+  &:hover {
+    color: sp.$sp-accent-green;
+  }
+}
+
+// ── Right: Copyright ──
+.footer-right {
+  flex-shrink: 0;
+}
+
+.footer-copyright {
+  color: rgba(sp.$sp-white, 0.45);
+  font-size: 0.75rem;
+}
+
+.company-link {
+  color: rgba(sp.$sp-white, 0.65);
+  text-decoration: none;
+  font-weight: 600;
+  transition: sp.$sp-transition-fast;
+
+  &:hover {
+    color: sp.$sp-accent-green;
+  }
+}
+
+// ── Responsive ──
+@media (width <= 768px) {
+  .footer-inner {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    text-align: center;
+  }
+
+  .footer-left {
+    justify-content: center;
+  }
+
+  .footer-center {
+    justify-content: center;
+  }
+}
+
+@media (width <= 576px) {
+  .footer-tagline {
+    display: none;
+  }
+
+  .footer-separator {
+    display: none;
+  }
+}

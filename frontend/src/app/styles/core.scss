@@ -1,0 +1,9 @@
+// Design system core — all styles now use theme-variables.scss as the single source of truth.
+// Legacy _variables.scss and _fonts.scss (Montserrat/Roboto) have been removed.
+
+@forward './functions';
+@forward './layout';
+@use './elements/core' as *;
+@use './vendors/core' as *;
+@use './theme' as *;
+@use './errors' as *;

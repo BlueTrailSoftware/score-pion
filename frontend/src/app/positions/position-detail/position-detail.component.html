@@ -1,0 +1,692 @@
+<div class="card squared-form-wrapper">
+  <div class="py-4 d-flex flex-column align-items-center">
+    <div class="form-wrapper gradient-header-container">
+      <div class="gradient-bg-card position-absolute"></div>
+      <div class="position-list-body">
+        @if (isLoading) {
+          <div class="text-center py-5">
+            <div
+              class="spinner-border text-primary"
+              role="status"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3 loading-text">Loading position details...</p>
+          </div>
+        }
+        @if (error && !isLoading) {
+          <div class="text-center py-5">
+            <i class="bi bi-exclamation-circle-fill text-danger empty-state-icon"></i>
+            <p class="text-danger mt-3">{{ error }}</p>
+          </div>
+        }
+        @if (position && !isLoading) {
+          <div class="w-100">
+            <div class="position-header">
+              <div class="header-content">
+                <div class="position-title-section">
+                  <div class="mb-2">
+                    <button
+                      class="btn btn-outline-secondary btn-sm mb-2"
+                      (click)="goBack()"
+                    >
+                      <i class="bi bi-arrow-left"></i>
+                    </button>
+                    <h1
+                      class="position-title mb-0"
+                      [attr.title]="position.title"
+                      >{{ position.title }}</h1
+                    >
+                  </div>
+                  <div class="subtitle">
+                    <div class="position-meta">
+                      <span
+                        class="status-badge"
+                        [ngClass]="{ active: position.isActive, inactive: !position.isActive }"
+                      >
+                        {{ position.isActive ? 'Active' : 'Inactive' }}
+                      </span>
+                      <span class="creation-date">Created: {{ position.createdAt | date: 'mediumDate' }}</span>
+                      <span class="assessments-count">Assessments: {{ position.assessments?.length || 0 }}</span>
+                      @if (isAdmin) {
+                        <span class="assessments-count"
+                          >Visibility: {{ position.external ? 'External' : 'Internal' }}</span
+                        >
+                      }
+                    </div>
+                    @if (isAdmin) {
+                      <div class="actions-section">
+                        <div class="dropdown">
+                          <button
+                            class="btn btn-outline-primary dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                          >
+                            <i class="bi bi-gear-fill me-2"></i>
+                            Actions
+                          </button>
+                          <ul class="dropdown-menu">
+                            @if (!isEditing && position.isActive) {
+                              <li>
+                                <a
+                                  class="dropdown-item"
+                                  href="javascript:void(0)"
+                                  (click)="enterEditMode()"
+                                >
+                                  <i class="bi bi-pencil me-2"></i>
+                                  Edit Position
+                                </a>
+                              </li>
+                            }
+                            <li>
+                              <a
+                                class="dropdown-item"
+                                href="javascript:void(0)"
+                                (click)="onRequestNewExam()"
+                              >
+                                <i class="bi bi-plus-circle me-2"></i>
+                                Request Assessment
+                              </a>
+                            </li>
+                            <li>
+                              <hr class="dropdown-divider" />
+                            </li>
+                            <li>
+                              <a
+                                class="dropdown-item text-danger"
+                                href="javascript:void(0)"
+                                (click)="updatePositionStatus()"
+                              >
+                                <i
+                                  class="bi"
+                                  [class.bi-pause-circle]="position.isActive"
+                                  [class.bi-play-circle]="!position.isActive"
+                                ></i>
+                                {{ position.isActive ? 'Deactivate' : 'Activate' }} Position
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            @if (!isEditing) {
+              <div class="position-description-card mb-4">
+                {{ position.description }}
+              </div>
+
+              <!-- Read-only display of new fields -->
+              <div class="card w-100 mb-4">
+                <div class="card-body">
+                  <h5 class="card-title mb-3">Position Info</h5>
+                  <div class="row">
+                    @if (position.jobType) {
+                      <div class="col-md-6 mb-3">
+                        <div class="text-muted small">Job Type</div>
+                        <div>{{ position.jobType }}</div>
+                      </div>
+                    }
+                    @if (position.workMode) {
+                      <div class="col-md-6 mb-3">
+                        <div class="text-muted small">Work Mode</div>
+                        <div>{{ position.workMode }}</div>
+                      </div>
+                    }
+                    @if (position.experienceMin !== null || position.experienceMax !== null) {
+                      <div class="col-md-6 mb-3">
+                        <div class="text-muted small">Years of Experience</div>
+                        <div>
+                          @if (position.experienceMin !== null && position.experienceMax !== null) {
+                            {{ position.experienceMin }} – {{ position.experienceMax }} years
+                          } @else if (position.experienceMin !== null) {
+                            {{ position.experienceMin }}+ years
+                          } @else {
+                            Up to {{ position.experienceMax }} years
+                          }
+                        </div>
+                      </div>
+                    }
+                    @if (position.location) {
+                      <div class="col-md-6 mb-3">
+                        <div class="text-muted small">Location</div>
+                        <div>{{ position.location }}</div>
+                      </div>
+                    }
+                    @if (position.skills && position.skills.length > 0) {
+                      <div class="col-md-6 mb-3">
+                        <div class="text-muted small">Skills</div>
+                        <div class="d-flex flex-wrap gap-2 mt-1">
+                          @for (skill of position.skills; track skill) {
+                            <span class="badge bg-light text-dark border">{{ skill }}</span>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if (!isEditing && position.fileUrl) {
+              <div class="card w-100 mb-4 file-attachment-card">
+                <div class="card-body">
+                  <h5 class="card-title mb-3">
+                    <i class="bi bi-paperclip me-2"></i>
+                    Attached File
+                  </h5>
+                  <div class="file-attachment-container">
+                    <div class="file-info">
+                      <i class="bi {{ getFileIcon() }} file-icon"></i>
+                      <div class="file-details">
+                        <div
+                          class="file-name"
+                          [title]="getFileName()"
+                          >{{ getFileName() }}</div
+                        >
+                        <div class="file-action-hint">Click to download</div>
+                      </div>
+                    </div>
+                    <a
+                      href="javascript:void(0)"
+                      class="download-link"
+                      (click)="downloadFile()"
+                    >
+                      <i class="bi bi-download me-1"></i>
+                      Download
+                    </a>
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if (isEditing) {
+              <div class="card w-100 mb-4">
+                <div class="card-body">
+                  <h5 class="card-title mb-3">Edit Position Details</h5>
+                  <form [formGroup]="positionForm">
+                    <div class="mb-3">
+                      <label
+                        for="title"
+                        class="form-label"
+                        >Title</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="title"
+                        formControlName="title"
+                        [class.is-invalid]="title?.invalid && title?.touched"
+                        placeholder="Enter position title"
+                      />
+                      @if (title?.invalid && title?.touched) {
+                        <div class="invalid-feedback">
+                          @if (title?.errors?.['required']) {
+                            <div>Title is required</div>
+                          }
+                          @if (title?.errors?.['minlength']) {
+                            <div>Title must be at least 3 characters</div>
+                          }
+                        </div>
+                      }
+                    </div>
+
+                    <div class="mb-3">
+                      <label
+                        for="description"
+                        class="form-label"
+                        >Description</label
+                      >
+                      <textarea
+                        class="form-control"
+                        id="description"
+                        formControlName="description"
+                        rows="4"
+                        [class.is-invalid]="description?.invalid && description?.touched"
+                        placeholder="Enter position description"
+                      ></textarea>
+                      @if (description?.invalid && description?.touched) {
+                        <div class="invalid-feedback">
+                          @if (description?.errors?.['required']) {
+                            <div>Description is required</div>
+                          }
+                          @if (description?.errors?.['minlength']) {
+                            <div>Description must be at least 10 characters</div>
+                          }
+                        </div>
+                      }
+                    </div>
+
+                    <div class="available-assessment-item form-check mb-2 p-2 border rounded">
+                      <label
+                        class="form-check-label w-100"
+                        [for]="isExternal"
+                      >
+                        <div class="d-flex justify-content-between align-items-center">
+                          This position is for external candidates? *
+                        </div>
+                      </label>
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        formControlName="isExternal"
+                        [id]="isExternal"
+                      />
+                    </div>
+
+                    <!-- Job Type Dropdown -->
+                    <div class="mb-3">
+                      <label
+                        for="editJobType"
+                        class="form-label"
+                        >Job Type</label
+                      >
+                      <select
+                        class="form-control"
+                        id="editJobType"
+                        formControlName="jobType"
+                      >
+                        <option value="">Select a job type</option>
+                        @for (type of JOB_TYPES; track type) {
+                          <option [value]="type">{{ type }}</option>
+                        }
+                      </select>
+                    </div>
+
+                    <!-- Work Mode Dropdown -->
+                    <div class="mb-3">
+                      <label
+                        for="editWorkMode"
+                        class="form-label"
+                        >Work Mode *</label
+                      >
+                      <select
+                        class="form-control"
+                        id="editWorkMode"
+                        formControlName="workMode"
+                        [class.is-invalid]="
+                          positionForm.get('workMode')?.invalid && positionForm.get('workMode')?.touched
+                        "
+                        (change)="onWorkModeChange($any($event.target).value)"
+                      >
+                        <option value="">Select a work mode</option>
+                        @for (mode of WORK_MODES; track mode) {
+                          <option [value]="mode">{{ mode }}</option>
+                        }
+                      </select>
+                      @if (positionForm.get('workMode')?.invalid && positionForm.get('workMode')?.touched) {
+                        <div class="invalid-feedback">
+                          @if (positionForm.get('workMode')?.errors?.['required']) {
+                            <div>Work mode is required</div>
+                          }
+                        </div>
+                      }
+                    </div>
+
+                    <!-- Experience Range -->
+                    <div class="mb-3">
+                      <label class="form-label">Years of Experience</label>
+                      <div class="d-flex gap-3">
+                        <div class="flex-fill">
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="editExperienceMin"
+                            formControlName="experienceMin"
+                            placeholder="Min"
+                            min="0"
+                            max="20"
+                            step="1"
+                          />
+                        </div>
+                        <div class="flex-fill">
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="editExperienceMax"
+                            formControlName="experienceMax"
+                            placeholder="Max"
+                            min="0"
+                            max="20"
+                            step="1"
+                          />
+                        </div>
+                      </div>
+                      @if (isExperienceRangeInvalid()) {
+                        <div class="text-danger small mt-1">Minimum experience cannot exceed maximum</div>
+                      }
+                    </div>
+
+                    <!-- Location -->
+                    <div class="mb-3">
+                      <label
+                        for="editLocation"
+                        class="form-label"
+                        >Location *</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="editLocation"
+                        formControlName="location"
+                        maxlength="200"
+                        [class.is-invalid]="locationControl?.invalid && locationControl?.touched"
+                        [class.form-control-readonly]="positionForm.get('workMode')?.value === 'Remote'"
+                        placeholder="City, state, or country"
+                      />
+                      @if (locationControl?.invalid && locationControl?.touched) {
+                        <div class="invalid-feedback">
+                          @if (locationControl?.errors?.['required']) {
+                            <div>Location is required</div>
+                          }
+                        </div>
+                      }
+                    </div>
+
+                    <!-- Skills Tag Input -->
+                    <div class="mb-3">
+                      <label class="form-label">Skills</label>
+                      <div
+                        class="skills-tag-container form-control"
+                        (click)="skillInputEl.focus()"
+                      >
+                        @for (skill of skills; track skill; let i = $index) {
+                          <span class="skill-tag">
+                            {{ skill }}
+                            <button
+                              type="button"
+                              class="skill-tag-remove"
+                              (click)="removeSkill(i)"
+                              [attr.aria-label]="'Remove skill ' + skill"
+                              >&times;</button
+                            >
+                          </span>
+                        }
+                        <input
+                          #skillInputEl
+                          type="text"
+                          class="skill-input"
+                          [(ngModel)]="skillInput"
+                          [ngModelOptions]="{ standalone: true }"
+                          (keydown)="onSkillKeydown($event)"
+                          placeholder="Type a skill and press Enter"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Attached File</label>
+
+                      @if (hasFileAttachment()) {
+                        <div class="file-attachment-card mb-2">
+                          <div class="file-attachment-container">
+                            <div class="file-info">
+                              <i class="bi {{ getFileIcon() }} file-icon"></i>
+                              <div class="file-details">
+                                <div
+                                  class="file-name"
+                                  [title]="getFileName()"
+                                  >{{ getFileName() }}</div
+                                >
+                                <div class="file-action-hint text-success">Current file</div>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              class="remove-link"
+                              (click)="removeCurrentFile()"
+                            >
+                              <i class="bi bi-trash fs-5"></i>
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      } @else {
+                        @if (fileToDelete) {
+                          <div class="alert alert-warning d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                              <i class="bi bi-exclamation-triangle"></i>
+                              <span>File marked for deletion</span>
+                            </div>
+                            <button
+                              type="button"
+                              class="btn btn-sm btn-outline-secondary"
+                              (click)="cancelFileRemoval()"
+                            >
+                              <i class="bi bi-arrow-counterclockwise me-1"></i>
+                              Undo
+                            </button>
+                          </div>
+                        }
+
+                        @if (hasNewFileSelected()) {
+                          <div class="file-attachment-card mb-2">
+                            <div class="file-attachment-container bg-white border-primary">
+                              <div class="file-info">
+                                <i class="bi bi-file-earmark-plus file-icon text-primary"></i>
+                                <div class="file-details">
+                                  <div class="file-name">{{ selectedFile?.name }}</div>
+                                  <div class="file-action-hint text-primary"
+                                    >New file selected ({{ formatFileSize(selectedFile?.size || 0) }})</div
+                                  >
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                class="remove-link"
+                                (click)="selectedFile = undefined"
+                              >
+                                <i class="bi bi-x-circle fs-5"></i>
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        } @else {
+                          <input
+                            #fileInput
+                            type="file"
+                            class="form-control"
+                            (change)="onFileSelected($event)"
+                            [attr.accept]="getAllowedExtensions()"
+                          />
+                          <div class="form-text">
+                            Allowed types: {{ getAllowedTypesString() }} (Max {{ getMaxFileSizeString() }})
+                          </div>
+                        }
+
+                        @if (fileError) {
+                          <div class="alert alert-danger mt-2">
+                            {{ fileError }}
+                          </div>
+                        }
+                      }
+                    </div>
+                  </form>
+                </div>
+              </div>
+            }
+
+            <div class="card w-100 mb-4">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="card-title mb-0">Current Assessments</h5>
+                  @if (isEditing) {
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-primary"
+                      (click)="toggleAvailableAssessments()"
+                    >
+                      <i
+                        class="bi"
+                        [class.bi-plus-circle]="!showAvailableAssessments"
+                        [class.bi-dash-circle]="showAvailableAssessments"
+                      ></i>
+                      {{ showAvailableAssessments ? 'Hide Available' : 'Add Assessments' }}
+                    </button>
+                  }
+                </div>
+
+                @if (isEditing) {
+                  @if (getCurrentAssessmentsForDisplay().length > 0) {
+                    <div class="current-assessments-list">
+                      @for (assessment of getCurrentAssessmentsForDisplay(); track assessment.assessmentId) {
+                        <div
+                          class="current-assessment-item d-flex justify-content-between align-items-center p-2 border rounded mb-2"
+                        >
+                          <div>
+                            <strong>{{ assessment.assessmentName }}</strong>
+                            <div class="text-muted small">ID: {{ assessment.assessmentId }}</div>
+                          </div>
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-danger"
+                            (click)="removeAssessment(assessment.assessmentId)"
+                          >
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <div class="text-center py-4">
+                      <i class="bi bi-clipboard-x empty-state-icon"></i>
+                      <p class="text-muted mt-2">No assessments assigned to this position</p>
+                    </div>
+                  }
+                } @else {
+                  @if (position && position.assessments && position.assessments.length > 0) {
+                    <div class="current-assessments-list">
+                      @for (assessment of position.assessments; track assessment.assessmentId) {
+                        <div
+                          class="current-assessment-item d-flex justify-content-between align-items-center p-2 border rounded mb-2"
+                        >
+                          <div>
+                            <strong>{{ assessment.assessmentName }}</strong>
+                            <div class="text-muted small">ID: {{ assessment.assessmentId }}</div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <div class="text-center py-4">
+                      <i class="bi bi-clipboard-x empty-state-icon"></i>
+                      <p class="text-muted mt-2">No assessments assigned to this position</p>
+                    </div>
+                  }
+                }
+              </div>
+            </div>
+
+            @if (isEditing && showAvailableAssessments) {
+              <div class="card w-100 mb-4">
+                <div class="card-body">
+                  <h5 class="card-title mb-3">Available Assessments</h5>
+                  <p class="card-subtitle text-muted mb-3"> Search and select assessments to add to this position </p>
+
+                  <div class="mb-3">
+                    <label
+                      for="assessmentSearch"
+                      class="form-label"
+                      >Type to search an assessment</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="assessmentSearch"
+                      placeholder="Search assessments..."
+                      (input)="searchAssessments($any($event.target).value)"
+                    />
+                  </div>
+
+                  @if (loadingAssessments) {
+                    <div class="text-center py-3">
+                      <div
+                        class="spinner-border spinner-border-sm"
+                        role="status"
+                      ></div>
+                      <span class="ms-2">Loading assessments...</span>
+                    </div>
+                  } @else {
+                    <div class="available-assessments-list">
+                      @for (
+                        assessment of searchTerm ? filteredAssessments : availableAssessments;
+                        track assessment.testID
+                      ) {
+                        <div class="available-assessment-item form-check mb-2 p-2 border rounded">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            [id]="'assessment-' + assessment.testID"
+                            [checked]="isAssessmentSelected(assessment.testID)"
+                            (change)="onAssessmentToggle(assessment.testID, $event)"
+                          />
+                          <label
+                            class="form-check-label w-100"
+                            [for]="'assessment-' + assessment.testID"
+                          >
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <strong>{{ assessment.displayName }}</strong>
+                                <div class="text-muted small"> ID: {{ assessment.testID }} </div>
+                              </div>
+                              @if (isAssessmentSelected(assessment.testID)) {
+                                <span class="badge bg-light text-dark"> Selected </span>
+                              }
+                            </div>
+                          </label>
+                        </div>
+                      }
+                    </div>
+                    @if (searchTerm && filteredAssessments.length === 0) {
+                      <div class="text-center py-4">
+                        <i class="bi bi-search empty-state-icon"></i>
+                        <p class="text-muted mt-2">No assessments found for "{{ searchTerm }}"</p>
+                      </div>
+                    }
+                  }
+                </div>
+              </div>
+            }
+
+            <div class="d-flex justify-content-between gap-3 mt-4">
+              @if (isEditing) {
+                <div class="d-flex gap-3 w-100 justify-content-end">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="cancelEdit()"
+                    [disabled]="saving"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-gradient-primary"
+                    (click)="saveChanges()"
+                    [disabled]="positionForm.invalid || isExperienceRangeInvalid() || saving"
+                  >
+                    @if (saving) {
+                      <span
+                        class="spinner-border spinner-border-sm me-2"
+                        role="status"
+                      ></span>
+                    }
+                    {{ saving ? 'Saving...' : 'Save Changes' }}
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (showRequestAssessmentModal) {
+  <app-request-assessment-modal (closeModal)="closeRequestAssessmentModal()"></app-request-assessment-modal>
+}

@@ -1,0 +1,42 @@
+@if (actions.length > 0) {
+  <div class="action-dropdown-wrapper">
+    <button
+      class="btn btn-gradient-primary btn-trigger-gradient"
+      [class.icon-only]="type === 'icon'"
+      [class.open]="isOpen"
+      type="button"
+      (click)="toggle($event)"
+      [disabled]="disabled"
+    >
+      @if (type === 'icon') {
+        <i class="bi bi-chevron-down dropdown-indicator"></i>
+      } @else {
+        <span>{{ label }}</span>
+        <i class="bi bi-chevron-down dropdown-indicator"></i>
+      }
+    </button>
+
+    @if (isOpen) {
+      <ul
+        class="action-dropdown-menu"
+        [ngStyle]="menuStyle"
+      >
+        @for (item of actions; track item.label) {
+          @if (item.dividerBefore) {
+            <li><hr class="dropdown-divider" /></li>
+          }
+          <li>
+            <button
+              class="dropdown-item {{ item.colorClass }}"
+              type="button"
+              (click)="runAction(item, $event)"
+              [disabled]="item.disabled"
+            >
+              <i class="bi {{ item.icon }} me-2"></i>{{ item.label }}
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+}

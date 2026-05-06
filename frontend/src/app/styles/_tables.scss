@@ -1,0 +1,41 @@
+// ==========================================================
+// Shared table styles — single source of truth
+
+// Replaces duplicated .table blocks that existed in:
+//   - manage-recruiters.component.scss
+//   - candidate-review.component.scss
+//   - recruiter-candidates.component.scss
+//   - global-recipients.component.scss
+
+// Usage: any component that imports theme-variables can use
+// these classes. No need to redefine table styles locally.
+// ==========================================================
+
+@use './theme-variables' as tv;
+@use 'sass:color';
+
+.sp-table {
+  margin-bottom: 0;
+
+  thead th {
+    background-color: tv.$sp-bg-light;
+    font-weight: 600;
+    border-bottom: 2px solid color.adjust(tv.$sp-text-muted, $lightness: 30%);
+    vertical-align: middle;
+  }
+
+  tbody tr:hover {
+    background-color: rgba(tv.$sp-accent-green, 0.05);
+  }
+
+  td {
+    vertical-align: middle;
+  }
+}
+
+// Responsive table text size
+@media (width <= 991.98px) {
+  .sp-table {
+    font-size: 0.875rem;
+  }
+}

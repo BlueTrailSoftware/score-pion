@@ -1,0 +1,104 @@
+<div class="careers-detail-container">
+  @if (loading) {
+    <div class="text-center py-5">
+      <div
+        class="spinner-border text-primary"
+        role="status"
+      >
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-3 loading-text">Loading position details...</p>
+    </div>
+  } @else if (error) {
+    <div class="error-state text-center py-5">
+      <i class="bi bi-exclamation-circle-fill text-danger error-icon"></i>
+      <h5 class="mt-3 text-danger">{{ error }}</h5>
+      <button
+        class="btn btn-outline-secondary mt-3"
+        (click)="goBack()"
+      >
+        <i class="bi bi-arrow-left me-2"></i>
+        Go Back
+      </button>
+    </div>
+  } @else if (position) {
+    <div class="position-detail-card">
+      <div class="position-header">
+        <button
+          class="btn btn-outline-secondary btn-sm mb-3"
+          (click)="goBack()"
+        >
+          <i class="bi bi-arrow-left me-1"></i>
+          Back to Positions
+        </button>
+
+        <div class="position-title-row">
+          <h1 class="position-title">{{ position.title }}</h1>
+          @if (position.fileUrl) {
+            <a
+              [href]="position.fileUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="file-icon-link active"
+              title="View attached document"
+            >
+              <i class="bi bi-file-earmark-pdf"></i>
+            </a>
+          } @else {
+            <span
+              class="file-icon-link disabled"
+              title="No document available"
+            >
+              <i class="bi bi-file-earmark-pdf"></i>
+            </span>
+          }
+        </div>
+
+        <div class="position-meta">
+          <span class="meta-item">
+            <i class="bi bi-calendar3 me-1"></i>
+            Posted: {{ position.createdAt | date: 'longDate' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="position-content">
+        <h5 class="section-title">Position Description</h5>
+        <div class="position-description">
+          {{ position.description }}
+        </div>
+
+        @if (position.fileUrl) {
+          <div class="position-attachment mt-4">
+            <h5 class="section-title">Additional Information</h5>
+            <div class="attachment-card">
+              <i class="bi bi-file-earmark-text attachment-icon"></i>
+              <div class="attachment-info">
+                <p class="attachment-name mb-1">Position Details Document</p>
+                <a
+                  [href]="position.fileUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="btn btn-sm btn-outline-primary"
+                >
+                  <i class="bi bi-download me-1"></i>
+                  View Document
+                </a>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="position-actions">
+        <button
+          class="btn btn-gradient-primary btn-lg"
+          (click)="onApply()"
+        >
+          <i class="bi bi-send me-2"></i>
+          Apply for this Position
+        </button>
+      </div>
+    </div>
+  }
+</div>

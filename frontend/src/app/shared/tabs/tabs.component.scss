@@ -1,0 +1,54 @@
+@use '../../styles/theme-variables' as tv;
+
+.sp-tabs {
+  border-bottom: 1px solid rgb(0 0 0 / 0.08);
+  gap: 2rem;
+  padding: 0;
+  display: flex;
+  list-style: none;
+
+  .nav-item {
+    margin-bottom: -1px;
+  }
+
+  .nav-link {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 1rem 0.25rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #64748b;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(.active) {
+      color: tv.$sp-blue-dark;
+      border-bottom-color: rgba(tv.$sp-green-active, 0.3);
+    }
+
+    &.active {
+      color: tv.$sp-blue-dark;
+      font-weight: 700;
+      border-bottom-color: tv.$sp-green-active;
+
+      .tab-count {
+        background-color: #ecfdf5;
+        color: tv.$sp-green-active;
+      }
+    }
+
+    .tab-count {
+      background-color: #f1f5f9;
+      color: #64748b;
+      font-weight: 500;
+      font-size: 0.8rem;
+      padding: 0.25em 0.6em;
+      transition: all 0.2s ease;
+    }
+  }
+}
