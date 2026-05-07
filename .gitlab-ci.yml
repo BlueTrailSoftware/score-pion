@@ -1,0 +1,137 @@
+image: docker:latest
+
+stages:
+  - ci
+  - build_and_push
+
+variables:
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: tcp://docker:2375
+  BACKEND_IMAGE: $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHORT_SHA
+  FRONTEND_IMAGE: $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHORT_SHA
+
+
+# ─── BACKEND ──────────────────────────────────────────────────────────────────
+
+.gradle_job:
+  stage: ci
+  image: gradle:8.4-jdk17
+  services: []
+  before_script:
+    - mkdir -p ~/.gradle
+    - echo "org.gradle.daemon=false" > ~/.gradle/gradle.properties
+    - echo "org.gradle.caching=true" >> ~/.gradle/gradle.properties
+    - echo "kotlin.compiler.execution.strategy=in-process" >> ~/.gradle/gradle.properties
+    - echo "org.gradle.jvmargs=-Xmx1536m -XX:MaxMetaspaceSize=512m -Dfile.encoding=UTF-8" >> ~/.gradle/gradle.properties
+  cache:
+    key: "$CI_PROJECT_PATH_SLUG-gradle"
+    paths:
+      - backend/.gradle/
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - backend/**/*
+
+backend:build:
+  extends: .gradle_job
+  variables:
+    GRADLE_OPTS: "-Xmx1536m -XX:MaxMetaspaceSize=512m"
+  script:
+    - cd backend && ./gradlew build -x test -x bootJar
+
+backend:lint:
+  extends: .gradle_job
+  variables:
+    GRADLE_OPTS: "-Xmx1536m -XX:MaxMetaspaceSize=512m"
+  script:
+    - cd backend && ./gradlew detekt
+
+backend:unit_tests:
+  extends: .gradle_job
+  needs: [backend:build]
+  before_script:
+    - mkdir -p ~/.gradle
+    - echo "org.gradle.daemon=false" > ~/.gradle/gradle.properties
+    - echo "org.gradle.caching=true" >> ~/.gradle/gradle.properties
+    - echo "kotlin.compiler.execution.strategy=out-of-process" >> ~/.gradle/gradle.properties
+    - echo "org.gradle.jvmargs=-Xmx768m -XX:MaxMetaspaceSize=256m -Dfile.encoding=UTF-8" >> ~/.gradle/gradle.properties
+  variables:
+    GRADLE_OPTS: "-Xmx768m -XX:MaxMetaspaceSize=256m"
+  script:
+    - cd backend && ./gradlew test --no-daemon
+  artifacts:
+    when: always
+    reports:
+      junit: backend/build/test-results/test/TEST-*.xml
+    paths:
+      - backend/build/reports/tests/test/
+    expire_in: 7 days
+
+backend:build_and_push:
+  stage: build_and_push
+  services:
+    - name: docker:dind
+  before_script:
+    - |
+      if [ -n "$CI_COMMIT_TAG" ]; then
+        export IMAGE_TAG="$CI_REGISTRY_IMAGE/backend:$CI_COMMIT_TAG"
+      else
+        export IMAGE_TAG="$BACKEND_IMAGE"
+      fi
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $IMAGE_TAG ./backend
+    - docker push $IMAGE_TAG
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_TAG'
+      changes:
+        - backend/**/*
+
+
+# ─── FRONTEND ────────────────────────────────────────────────────────────────
+
+frontend:test_and_build:
+  stage: ci
+  image: node:20
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq chromium
+    - printf '#!/bin/sh\nexec /usr/bin/chromium --no-sandbox --disable-dev-shm-usage "$@"\n' > /usr/local/bin/chromium-ci
+    - chmod +x /usr/local/bin/chromium-ci
+    - export CHROME_BIN=/usr/local/bin/chromium-ci
+  script:
+    - cd frontend
+    - cp src/environments/environment.example.ts src/environments/environment.ts
+    - cp src/environments/environment.example.ts src/environments/environment.prod.ts
+    - npm ci --prefer-offline
+    - npm test -- --no-watch --no-progress --browsers=ChromeHeadless
+    - npm run build
+  cache:
+    key:
+      files:
+        - frontend/package-lock.json
+    paths:
+      - frontend/node_modules/
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - frontend/**/*
+
+frontend:build_and_push:
+  stage: build_and_push
+  services:
+    - name: docker:dind
+  before_script:
+    - |
+      if [ -n "$CI_COMMIT_TAG" ]; then
+        export IMAGE_TAG="$CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_TAG"
+      else
+        export IMAGE_TAG="$FRONTEND_IMAGE"
+      fi
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $IMAGE_TAG ./frontend
+    - docker push $IMAGE_TAG
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_TAG'
+      changes:
+        - frontend/**/*

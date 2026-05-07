@@ -1,0 +1,41 @@
+# Environment (NEVER commit real credentials)
+backend/.env
+backend/.env.local
+backend/.env.production
+backend/src/.env
+backend/src/.env.local
+backend/src/.env.production
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+
+# Except examples (these document the config structure)
+!backend/.env.example
+!backend/.env.production.example
+!frontend/.env.example
+
+# OS / IDEs
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+
+# Build outputs
+backend/.gradle/
+backend/build/
+backend/data/
+frontend/dist/
+frontend/node_modules/
+frontend/.angular/
+
+# Angular environment files (only .example is committed)
+frontend/src/environments/environment.ts
+frontend/src/environments/environment.prod.ts
+
+# Claude Code / internal
+.claude/                 # Symlinks to skills (local only, not committed)
+.mcp.json               # MCP server config (local credentials, not committed)
+
+# Agent Skills are COMMITTED — they are part of the standard
+# .agents/skills/ is the canonical location for all skills

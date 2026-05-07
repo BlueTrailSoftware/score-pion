@@ -1,0 +1,43 @@
+name: Backend CI
+
+on:
+  pull_request:
+    branches: [main, master]
+    paths: ['backend/**']
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - uses: gradle/actions/setup-gradle@v3
+
+      - name: Configure Gradle
+        run: |
+          mkdir -p ~/.gradle
+          echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
+          echo "kotlin.compiler.execution.strategy=in-process" >> ~/.gradle/gradle.properties
+          echo "org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=512m -Dfile.encoding=UTF-8" >> ~/.gradle/gradle.properties
+
+      - name: Lint, build and test
+        run: ./gradlew detekt build -x bootJar
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: |
+            backend/build/test-results/test/TEST-*.xml
+            backend/build/reports/tests/test/
+          retention-days: 7
