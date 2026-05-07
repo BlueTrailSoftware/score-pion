@@ -125,7 +125,7 @@ docker-compose down
 ## Environment Setup
 
 - **Backend:** Copy `backend/.env.example` → `backend/.env` and fill in credentials
-- **Frontend:** Copy `frontend/src/environments/environment.example.ts` → `environment.ts` and `environment.prod.ts`
+- **Frontend:** Copy `frontend/.env.example` → `frontend/.env` and fill in credentials; then copy `frontend/src/environments/environment.example.ts` → `environment.ts` and `environment.prod.ts`
 
 See `backend/README.md` for detailed backend setup instructions.
 
@@ -160,6 +160,9 @@ This project includes reusable Agent Skills — modular capabilities that extend
 **Backend-specific** (Spring Boot + Kotlin):
 - `security-review` — OWASP/JWT/DynamoDB vulnerability audit
 
+**Frontend-specific** (Angular):
+- `ui-standards` — UI/UX and component standards for the Angular frontend
+
 ### Setup (One-Time)
 
 **Claude Code:**
@@ -169,6 +172,9 @@ bash scripts/setup-agent-skills.sh
 
 # Setup backend-specific skills (if working in backend/)
 bash backend/scripts/setup-agent-skills.sh
+
+# Setup frontend-specific skills (if working in frontend/)
+bash frontend/scripts/setup-agent-skills.sh
 ```
 
 **Other tools** (Cursor, Copilot, Windsurf, Cline, etc.):

@@ -25,10 +25,10 @@ This project follows the [Agent Skills](https://agentskills.io) standard. Skills
 
 ```bash
 # Setup ROOT-level skills (one-time after cloning)
-bash scripts/setup-claude-skills.sh
+bash scripts/setup-agent-skills.sh
 
 # Setup BACKEND-specific skills (if working in backend/)
-bash backend/scripts/setup-claude-skills.sh
+bash backend/scripts/setup-agent-skills.sh
 ```
 
 This creates symlinks in `.claude/skills/` for Claude Code. Other Agent Skills-compliant tools (Cursor, Copilot, Windsurf, etc.) read directly from `.agents/skills/` — no additional setup needed.

@@ -1,8 +1,13 @@
 FROM gradle:8.4-jdk17 AS build
 WORKDIR /home/gradle/src
-COPY --chown=gradle:gradle build.gradle.kts settings.gradle.kts ./
+
+# Copy build files first to cache dependency resolution layer
+COPY --chown=gradle:gradle backend/build.gradle.kts backend/settings.gradle.kts ./
 RUN gradle dependencies --no-daemon || true
-COPY --chown=gradle:gradle . .
+
+# Copy source and .git (needed for gradle-git-properties)
+COPY --chown=gradle:gradle backend/ .
+COPY --chown=gradle:gradle .git/ .git/
 
 RUN gradle build -x test --no-daemon
 

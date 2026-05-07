@@ -156,3 +156,7 @@ configurations.all {
         }
     }
 }
+
+gitProperties {
+    failOnNoGitDirectory = false
+}

@@ -183,6 +183,58 @@
   color: tv.$sp-gradient-start !important;
 }
 
+.position-metadata-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 1.25rem 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid tv.$sp-bg-light;
+}
+
+.metadata-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+
+  i {
+    color: tv.$sp-gradient-start;
+    font-size: 1.1rem;
+  }
+}
+
+.metadata-label {
+  color: tv.$sp-text-muted;
+  font-weight: 500;
+}
+
+.metadata-value {
+  color: tv.$sp-blue-dark;
+  font-weight: 600;
+}
+
+.position-skills-section {
+  margin-bottom: 1.5rem;
+}
+
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.skill-tag {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.3rem 0.75rem;
+  border-radius: tv.$sp-border-radius-full;
+  background-color: tv.$sp-status-active-bg;
+  color: tv.$sp-status-active-text;
+  border: 1px solid tv.$sp-status-active-border;
+}
+
 @media (width <= 768px) {
   .careers-detail-container {
     padding: 1rem;
@@ -198,6 +250,14 @@
 
   .file-icon-link {
     font-size: 1.5rem;
+  }
+
+  .position-metadata-section {
+    gap: 1rem;
+  }
+
+  .metadata-item {
+    font-size: 0.9rem;
   }
 
   .position-actions {

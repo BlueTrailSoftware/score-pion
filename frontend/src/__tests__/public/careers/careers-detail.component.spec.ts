@@ -14,6 +14,20 @@ const mockPosition: PublicPosition = {
   createdAt: new Date('2024-01-01'),
 };
 
+const mockPositionWithMetadata: PublicPosition = {
+  id: 'p-2',
+  title: 'Senior Engineer',
+  description: 'Lead projects',
+  fileUrl: null,
+  createdAt: new Date('2024-06-15'),
+  jobType: 'Full Time',
+  workMode: 'Remote',
+  experienceMin: 3,
+  experienceMax: 5,
+  location: 'New York, NY',
+  skills: ['TypeScript', 'Angular', 'Node.js'],
+};
+
 describe('CareersDetailComponent', () => {
   let component: CareersDetailComponent;
   let fixture: ComponentFixture<CareersDetailComponent>;
@@ -129,6 +143,82 @@ describe('CareersDetailComponent', () => {
       spyOn(router, 'navigate');
       component.onApply();
       expect(router.navigate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('metadata rendering', () => {
+    function setPositionAndDetect(pos: PublicPosition) {
+      positionServiceSpy.getPublicPositionById.and.returnValue(of({ status: 'success', message: 'OK', data: pos }));
+      createComponent();
+      fixture.detectChanges();
+    }
+
+    it('should render jobType when present', () => {
+      setPositionAndDetect(mockPositionWithMetadata);
+      const metadataItems = fixture.nativeElement.querySelectorAll('.metadata-item');
+      const texts = Array.from(metadataItems).map((el: any) => el.textContent);
+      expect(texts.some((t: string) => t.includes('Full Time'))).toBeTrue();
+    });
+
+    it('should omit jobType when absent', () => {
+      setPositionAndDetect({ ...mockPositionWithMetadata, jobType: undefined });
+      const metadataItems = fixture.nativeElement.querySelectorAll('.metadata-item');
+      const texts = Array.from(metadataItems).map((el: any) => el.textContent);
+      expect(texts.some((t: string) => t.includes('Job Type'))).toBeFalse();
+    });
+
+    it('should render workMode when present', () => {
+      setPositionAndDetect(mockPositionWithMetadata);
+      const metadataItems = fixture.nativeElement.querySelectorAll('.metadata-item');
+      const texts = Array.from(metadataItems).map((el: any) => el.textContent);
+      expect(texts.some((t: string) => t.includes('Remote'))).toBeTrue();
+    });
+
+    it('should omit workMode when absent', () => {
+      setPositionAndDetect({ ...mockPositionWithMetadata, workMode: undefined });
+      const metadataItems = fixture.nativeElement.querySelectorAll('.metadata-item');
+      const texts = Array.from(metadataItems).map((el: any) => el.textContent);
+      expect(texts.some((t: string) => t.includes('Work Mode'))).toBeFalse();
+    });
+
+    it('should render experience label from formatter', () => {
+      setPositionAndDetect(mockPositionWithMetadata);
+      const metadataItems = fixture.nativeElement.querySelectorAll('.metadata-item');
+      const texts = Array.from(metadataItems).map((el: any) => el.textContent);
+      expect(texts.some((t: string) => t.includes('3 – 5 years'))).toBeTrue();
+    });
+
+    it('should render location when present', () => {
+      setPositionAndDetect(mockPositionWithMetadata);
+      const metadataItems = fixture.nativeElement.querySelectorAll('.metadata-item');
+      const texts = Array.from(metadataItems).map((el: any) => el.textContent);
+      expect(texts.some((t: string) => t.includes('New York, NY'))).toBeTrue();
+    });
+
+    it('should omit location when absent', () => {
+      setPositionAndDetect({ ...mockPositionWithMetadata, location: undefined });
+      const metadataItems = fixture.nativeElement.querySelectorAll('.metadata-item');
+      const texts = Array.from(metadataItems).map((el: any) => el.textContent);
+      expect(texts.some((t: string) => t.includes('Location'))).toBeFalse();
+    });
+
+    it('should render skills as tags when array is non-empty', () => {
+      setPositionAndDetect(mockPositionWithMetadata);
+      const skillTags = fixture.nativeElement.querySelectorAll('.skill-tag');
+      expect(skillTags.length).toBe(3);
+      const skillTexts = Array.from(skillTags).map((el: any) => el.textContent.trim());
+      expect(skillTexts).toEqual(['TypeScript', 'Angular', 'Node.js']);
+    });
+
+    it('should omit skills section when skills array is empty', () => {
+      setPositionAndDetect({ ...mockPositionWithMetadata, skills: [] });
+      expect(fixture.nativeElement.querySelector('.position-skills-section')).toBeNull();
+    });
+
+    it('should omit metadata section entirely when no metadata fields are set', () => {
+      setPositionAndDetect(mockPosition);
+      expect(fixture.nativeElement.querySelector('.position-metadata-section')).toBeNull();
+      expect(fixture.nativeElement.querySelector('.position-skills-section')).toBeNull();
     });
   });
 });

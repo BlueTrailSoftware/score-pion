@@ -118,6 +118,12 @@ export interface PublicPosition {
   description: string;
   fileUrl: string | null;
   createdAt: Date;
+  jobType?: JobType;
+  workMode?: WorkMode;
+  experienceMin?: number;
+  experienceMax?: number;
+  location?: string;
+  skills?: string[];
 }
 
 export interface PublicPositionListCache {

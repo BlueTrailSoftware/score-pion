@@ -62,6 +62,50 @@
         </div>
       </div>
 
+      @if (position.jobType || position.workMode || experienceLabel || position.location) {
+        <div class="position-metadata-section">
+          @if (position.jobType) {
+            <div class="metadata-item">
+              <i class="bi bi-briefcase"></i>
+              <span class="metadata-label">Job Type</span>
+              <span class="metadata-value">{{ position.jobType }}</span>
+            </div>
+          }
+          @if (position.workMode) {
+            <div class="metadata-item">
+              <i class="bi bi-building"></i>
+              <span class="metadata-label">Work Mode</span>
+              <span class="metadata-value">{{ position.workMode }}</span>
+            </div>
+          }
+          @if (experienceLabel) {
+            <div class="metadata-item">
+              <i class="bi bi-clock-history"></i>
+              <span class="metadata-label">Experience</span>
+              <span class="metadata-value">{{ experienceLabel }}</span>
+            </div>
+          }
+          @if (position.location) {
+            <div class="metadata-item">
+              <i class="bi bi-geo-alt"></i>
+              <span class="metadata-label">Location</span>
+              <span class="metadata-value">{{ position.location }}</span>
+            </div>
+          }
+        </div>
+      }
+
+      @if (position.skills && position.skills.length > 0) {
+        <div class="position-skills-section">
+          <h5 class="section-title">Skills</h5>
+          <div class="skills-list">
+            @for (skill of position.skills; track skill) {
+              <span class="skill-tag">{{ skill }}</span>
+            }
+          </div>
+        </div>
+      }
+
       <div class="position-content">
         <h5 class="section-title">Position Description</h5>
         <div class="position-description">

@@ -11,31 +11,20 @@ version: "3.9"
 
 services:
   backend:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     ports:
       - "7070:7070"
     env_file: backend/.env
     environment:
+      # Docker network overrides — these replace the values in backend/.env
+      # so the backend connects to sibling containers by their service names
       - AWS_DYNAMODB_ENDPOINT=http://dynamodb-local:8000
-      - AWS_REGION=${AWS_REGION:-us-east-1}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_ENDPOINT_URL_S3=http://minio:9000
       - AWS_S3_FORCE_PATH_STYLE=true
-      - AWS_S3_FILES_ENDPOINT=http://localhost:9000/score-pion-files
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRATION=${JWT_EXPIRATION}
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-      - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
-      - SMTP_HOST=${SMTP_HOST}
-      - SMTP_PORT=${SMTP_PORT}
-      - SMTP_USERNAME=${SMTP_USERNAME}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
-      - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - CODERBYTE_API_TOKEN=${CODERBYTE_API_TOKEN}
-      - TICKET_MANAGER_TOKEN=${TICKET_MANAGER_TOKEN}
-      - GCHAT_INTERNAL_WEBHOOK_URL=${GCHAT_INTERNAL_WEBHOOK_URL}
-      - GCHAT_EXTERNAL_WEBHOOK_URL=${GCHAT_EXTERNAL_WEBHOOK_URL}
+      - SMTP_HOST=mailpit
+      - SMTP_PORT=1025
     depends_on:
       init-dynamodb:
         condition: service_completed_successfully

@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { PositionService } from '../../services/position.service';
 import { PublicPosition } from '../../models/position.model';
+import { formatExperienceRange } from './careers-position-card/careers-position-card.utils';
 
 @Component({
   selector: 'app-careers-detail',
@@ -80,6 +81,10 @@ export class CareersDetailComponent implements OnInit, OnDestroy {
           }
         },
       });
+  }
+
+  public get experienceLabel(): string | null {
+    return formatExperienceRange(this.position?.experienceMin, this.position?.experienceMax);
   }
 
   public goBack(): void {

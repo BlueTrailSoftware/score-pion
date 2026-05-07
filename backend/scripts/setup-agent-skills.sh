@@ -5,7 +5,7 @@
 # - security-review: OWASP/JWT/DynamoDB audit (Kotlin + Spring Boot)
 #
 # Root-level skills (sync-docs, ticket, find-skills) are configured at:
-# bash scripts/setup-claude-skills.sh
+# bash scripts/setup-agent-skills.sh
 #
 set -e
 
@@ -48,4 +48,4 @@ echo "ℹ Other Agent Skills-compliant tools (Cursor, Copilot, etc.) read"
 echo "  directly from .agents/skills/ — no additional setup needed."
 echo ""
 echo "Note: Root-level skills (sync-docs, ticket, find-skills) are configured"
-echo "      separately. Run: bash scripts/setup-claude-skills.sh"
+echo "      separately. Run: bash scripts/setup-agent-skills.sh"
