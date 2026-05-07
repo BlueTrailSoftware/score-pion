@@ -59,10 +59,10 @@ One-time setup after cloning:
 
 ```bash
 # Setup root-level skills
-bash scripts/setup-claude-skills.sh
+bash scripts/setup-agent-skills.sh
 
 # Setup backend-specific skills (optional, but recommended)
-bash backend/scripts/setup-claude-skills.sh
+bash backend/scripts/setup-agent-skills.sh
 ```
 
 This creates symlinks in `.claude/skills/` so Claude Code can discover the skills.
@@ -91,7 +91,7 @@ Score Pion follows the [Agent Skills](https://agentskills.io) standard:
 
 - **`.agents/skills/`** — Canonical location (all tools read from here)
 - **`.claude/skills/`** — Claude Code symlinks (local, not committed)
-- **Script-based setup** — `setup-claude-skills.sh` (agent-agnostic)
+- **Script-based setup** — `setup-agent-skills.sh` (agent-agnostic)
 
 This means:
 - ✅ Tools beyond Claude Code can use these skills (Cursor, Copilot, etc.)
@@ -126,8 +126,8 @@ To create a new skill:
 
 3. **Re-run setup scripts:**
    ```bash
-   bash scripts/setup-claude-skills.sh
-   bash backend/scripts/setup-claude-skills.sh
+   bash scripts/setup-agent-skills.sh
+   bash backend/scripts/setup-agent-skills.sh
    ```
 
 4. **Commit the skill:**

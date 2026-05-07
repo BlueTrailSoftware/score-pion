@@ -1,12 +1,12 @@
 #!/bin/bash
-# Root-level Agent Skills setup for Claude Code and other AI agents.
+# Root-level Agent Skills setup.
 #
 # This script is AGENT-AGNOSTIC and works with any tool that supports Agent Skills:
-# - Claude Code (symlinks skills to .claude/skills/)
-# - Cursor, Copilot, Windsurf, etc. (read directly from .agents/skills/)
+# - Tools with .claude/skills/ support (e.g. Claude Code): symlinks skills there automatically
+# - Cursor, Copilot, Windsurf, etc.: read directly from .agents/skills/, no setup needed
 #
 # Root-level skills: sync-docs, ticket, find-skills (applicable to entire monorepo)
-# Backend-specific skills: see backend/scripts/setup-claude-skills.sh
+# Backend-specific skills: see backend/scripts/setup-agent-skills.sh
 #
 set -e
 
@@ -18,7 +18,7 @@ mkdir -p "$DST"
 
 echo "Setting up root-level Agent Skills..."
 echo "  Source: $SRC"
-echo "  Claude Code destination: $DST"
+echo "  Destination: $DST"
 echo ""
 
 for skill_dir in "$SRC"/*/; do
@@ -26,19 +26,17 @@ for skill_dir in "$SRC"/*/; do
   name=$(basename "$skill_dir")
   target="$DST/$name"
 
-  # Skip if already linked
   if [ -e "$target" ] || [ -L "$target" ]; then
     echo "  ⊘ $name (already exists, skipping)"
     continue
   fi
 
-  # Create symlink for Claude Code
   ln -s "$(realpath "$skill_dir")" "$target"
   echo "  ✅ $name"
 done
 
 echo ""
-echo "✓ Root skills ready for Claude Code"
+echo "✓ Root skills ready"
 echo "  - sync-docs: Generate docs/roles/ and docs/flows/"
 echo "  - ticket: Manage Asana lifecycle"
 echo "  - find-skills: Discover and install skills"
@@ -47,4 +45,4 @@ echo "ℹ Other Agent Skills-compliant tools (Cursor, Copilot, etc.) read"
 echo "  directly from .agents/skills/ — no additional setup needed."
 echo ""
 echo "Note: Backend-specific skills (security-review) are configured separately."
-echo "      Run: bash backend/scripts/setup-claude-skills.sh"
+echo "      Run: bash backend/scripts/setup-agent-skills.sh"

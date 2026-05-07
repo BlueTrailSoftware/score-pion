@@ -112,7 +112,7 @@ cd score-pion
 
 # 2. Set up backend environment
 cp backend/.env.example backend/.env
-# Edit backend/.env with your credentials (see backend/CLAUDE.md for details)
+# Edit backend/.env with your credentials (see backend/README.md for details)
 
 # 3. Set up frontend environment
 cp frontend/src/environments/environment.example.ts frontend/src/environments/environment.ts
@@ -202,7 +202,7 @@ main
 
 ## Coding Standards
 
-All code must follow the standards specific to its stack. See the detailed guides below, then refer to `backend/CLAUDE.md` and `frontend/CLAUDE.md` for stack-specific conventions.
+All code must follow the standards specific to its stack. See the detailed guides below, then refer to `backend/README.md` and `frontend/README.md` for stack-specific conventions.
 
 ### General principles (all stacks)
 
@@ -551,8 +551,8 @@ Before contributing, familiarize yourself with the project structure and design:
 | Resource | Description |
 |---|---|
 | `README.md` | Quick start, local setup, and available commands |
-| `backend/CLAUDE.md` | Backend architecture, Gradle commands, and Kotlin conventions |
-| `frontend/CLAUDE.md` | Frontend architecture, npm commands, and Angular conventions |
+| `backend/README.md` | Backend architecture, Gradle commands, and Kotlin conventions |
+| `frontend/README.md` | Frontend architecture, npm commands, and Angular conventions |
 | `docs/roles/` | Per-role capabilities (admin, recruiter, applicant) |
 | `docs/flows/` | Cross-role business flows (invitation, assessment, application, authentication, GDPR) |
 
@@ -566,8 +566,8 @@ Before contributing, familiarize yourself with the project structure and design:
 
 ## Getting help
 
-- **Documentation questions:** Open an issue with the `question` label or check the relevant `CLAUDE.md` file for your stack.
-- **Setup issues:** See [Setting Up the Development Environment](#setting-up-the-development-environment) or the stack-specific guides in `backend/CLAUDE.md` and `frontend/CLAUDE.md`.
+- **Documentation questions:** Open an issue with the `question` label or check the relevant README for your stack.
+- **Setup issues:** See [Setting Up the Development Environment](#setting-up-the-development-environment) or the stack-specific guides in `backend/README.md` and `frontend/README.md`.
 - **General questions:** Open an issue with the `question` label or start a discussion on GitHub.
 
 ---

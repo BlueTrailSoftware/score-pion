@@ -25,7 +25,7 @@ Each module includes:
 
 ### How to Use This with Your AI Tool
 
-1. **Provide context** — Share relevant module README or `CLAUDE.md` with your AI tool
+1. **Provide context** — Share the relevant module `AGENTS.md` or README with your AI tool
 2. **Ask for code generation** — Request features, fixes, or documentation
 3. **Follow conventions** — Let your AI tool know about code style and architecture patterns
 4. **Test thoroughly** — AI-generated code needs review; always test before committing
@@ -37,7 +37,7 @@ Each module includes:
 ```bash
 # With Claude Code CLI
 claude-code --work-dir ./backend
-# Claude Code will automatically use backend/CLAUDE.md and backend/AGENTS.md for context
+# Claude Code will automatically use backend/AGENTS.md for context
 ```
 
 #### Using Cursor
@@ -58,9 +58,9 @@ claude-code --work-dir ./backend
 
 | Topic | Location |
 |-------|----------|
-| **Agent Skills setup** | `scripts/setup-claude-skills.sh` (root), `backend/scripts/setup-claude-skills.sh` (backend) |
-| **Backend guide** | `backend/AGENTS.md`, `backend/CLAUDE.md` |
-| **Frontend guide** | `frontend/README.md`, `frontend/CLAUDE.md` |
+| **Agent Skills setup** | `scripts/setup-agent-skills.sh` (root), `backend/scripts/setup-agent-skills.sh` (backend) |
+| **Backend guide** | `backend/AGENTS.md` |
+| **Frontend guide** | `frontend/README.md` |
 | **Environment setup** | `backend/.env.example`, `frontend/README.md` |
 | **Contribution guidelines** | `CONTRIBUTING.md` |
 | **Docker/Infra** | `docker-compose.yml`, `docs/` |
@@ -77,18 +77,16 @@ score-pion/
 │       └── find-skills/       # Discover and install skills
 │
 ├── backend/                   # Kotlin/Spring Boot API
-│   ├── CLAUDE.md              # Backend Claude Code guide
 │   ├── AGENTS.md              # Backend AI developer guide (security-review skill)
 │   ├── .agents/skills/        # Backend-specific skills
 │   │   └── security-review/   # OWASP/JWT/DynamoDB audit
 │   ├── .env.example           # Backend configuration template
 │   ├── .env.production.example # Production configuration template
 │   ├── scripts/
-│   │   └── setup-claude-skills.sh # Setup backend skills
+│   │   └── setup-agent-skills.sh # Setup backend skills
 │   └── src/
 │
 ├── frontend/                  # Angular SPA
-│   ├── CLAUDE.md              # Frontend Claude Code guide
 │   ├── README.md              # Frontend setup and conventions
 │   ├── src/environments/      # Angular environment configuration
 │   └── ...
@@ -96,11 +94,40 @@ score-pion/
 ├── docker/                    # Infra and compose file overrides
 ├── docs/                      # Internal documentation
 ├── scripts/
-│   └── setup-claude-skills.sh # Setup root-level skills
+│   └── setup-agent-skills.sh  # Setup root-level skills
 ├── docker-compose.yml         # Full stack local development
-├── CLAUDE.md                  # Root-level Claude Code guide
 └── AGENTS.md                  # This file — tool-agnostic guide
 ```
+
+## Local Development
+
+```bash
+# Start the full stack
+cp backend/.env.example backend/.env
+# Edit backend/.env with your credentials, then:
+docker-compose up
+
+# Stop all containers
+docker-compose down
+```
+
+## CI/CD
+
+**GitHub Actions** (`.github/workflows/`) — runs on pull requests and pushes to main/master.
+- `backend-ci.yml` — lints, tests, and builds on `backend/**` changes
+- `backend-build-and-push.yml` — pushes Docker image on main/master push
+- `frontend-ci.yml` — lints, tests, and builds on `frontend/**` changes
+
+**GitLab CI** (`.gitlab-ci.yml`) — jobs are path-filtered with `rules: changes:`.
+- Backend jobs: trigger on `backend/**`
+- Frontend jobs: trigger on `frontend/**`
+
+## Environment Setup
+
+- **Backend:** Copy `backend/.env.example` → `backend/.env` and fill in credentials
+- **Frontend:** Copy `frontend/src/environments/environment.example.ts` → `environment.ts` and `environment.prod.ts`
+
+See `backend/README.md` for detailed backend setup instructions.
 
 ## Contributing
 
@@ -138,10 +165,10 @@ This project includes reusable Agent Skills — modular capabilities that extend
 **Claude Code:**
 ```bash
 # Setup root-level skills
-bash scripts/setup-claude-skills.sh
+bash scripts/setup-agent-skills.sh
 
 # Setup backend-specific skills (if working in backend/)
-bash backend/scripts/setup-claude-skills.sh
+bash backend/scripts/setup-agent-skills.sh
 ```
 
 **Other tools** (Cursor, Copilot, Windsurf, Cline, etc.):
@@ -149,18 +176,6 @@ bash backend/scripts/setup-claude-skills.sh
 - No setup script needed
 
 ---
-
-## For Claude Code Users
-
-If you're using Claude Code, see:
-- `backend/CLAUDE.md` — Backend-specific guidance and tools
-- `frontend/CLAUDE.md` — Frontend-specific guidance and tools
-- `CLAUDE.md` — Project-level setup and CI/CD info
-
-Additional resources:
-- `/help` — Claude Code help
-- `CONTRIBUTING.md` — Contribution guidelines for both backend and frontend
-- `backend/AGENTS.md` — Backend agent tooling and skills
 
 ## Questions?
 
