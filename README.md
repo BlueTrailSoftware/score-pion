@@ -14,7 +14,7 @@ Score Pion is an open-source candidate assessment management platform. It allows
 └── LICENSE
 ```
 
-For detailed documentation see [`backend/AGENTS.md`](backend/AGENTS.md) and [`frontend/README.md`](frontend/README.md).
+For detailed documentation see [`backend/README.md`](backend/README.md) and [`frontend/README.md`](frontend/README.md).
 
 ## Quick Start
 
