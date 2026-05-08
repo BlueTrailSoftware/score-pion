@@ -107,7 +107,8 @@ class NotificationOrchestratorTest {
             EmailTemplate(
                 to = "admin@example.com",
                 subject = "Test",
-                textContent = "Test"
+                textContent = "Test",
+                from = "test"
             )
         )
 
@@ -254,7 +255,8 @@ class NotificationOrchestratorTest {
             EmailTemplate(
                 to = "admin@example.com",
                 subject = "Test",
-                textContent = "Test"
+                textContent = "Test",
+                from = "test"
             )
         )
 
@@ -327,7 +329,8 @@ class NotificationOrchestratorTest {
             EmailTemplate(
                 to = recruiterEmail,
                 subject = "Position Assignment",
-                textContent = "You have been assigned to new positions"
+                textContent = "You have been assigned to new positions",
+                from = "test"
             )
         )
 
@@ -380,7 +383,8 @@ class NotificationOrchestratorTest {
             EmailTemplate(
                 to = applicantEmail,
                 subject = "Application Approved",
-                textContent = "Congratulations!"
+                textContent = "Congratulations!",
+                from = "test"
             )
         )
 
@@ -410,7 +414,8 @@ class NotificationOrchestratorTest {
             EmailTemplate(
                 to = applicantEmail,
                 subject = "Application Approved",
-                textContent = "Congratulations!"
+                textContent = "Congratulations!",
+                from = "test"
             )
         )
 
@@ -441,7 +446,8 @@ class NotificationOrchestratorTest {
             EmailTemplate(
                 to = applicantEmail,
                 subject = "Application Approved",
-                textContent = "Congratulations!"
+                textContent = "Congratulations!",
+                from = "test"
             )
         )
 
@@ -475,7 +481,8 @@ class NotificationOrchestratorTest {
             EmailTemplate(
                 to = applicantEmail,
                 subject = "Application Status",
-                textContent = "Thank you for applying"
+                textContent = "Thank you for applying",
+                from = "test"
             )
         )
 
@@ -505,7 +512,8 @@ class NotificationOrchestratorTest {
             EmailTemplate(
                 to = applicantEmail,
                 subject = "Application Status",
-                textContent = "Thank you for applying"
+                textContent = "Thank you for applying",
+                from = "test"
             )
         )
 
@@ -537,7 +545,8 @@ class NotificationOrchestratorTest {
             EmailTemplate(
                 to = applicantEmail,
                 subject = "Application Status",
-                textContent = "Thank you for applying"
+                textContent = "Thank you for applying",
+                from = "test"
             )
         )
 
@@ -573,7 +582,8 @@ class NotificationOrchestratorTest {
             EmailTemplate(
                 to = "admin@example.com",
                 subject = "Assessment Started",
-                textContent = "Test"
+                textContent = "Test",
+                from = "test"
             )
         )
 
@@ -602,7 +612,8 @@ class NotificationOrchestratorTest {
             EmailTemplate(
                 to = "admin@example.com",
                 subject = "Assessment Started",
-                textContent = "Test"
+                textContent = "Test",
+                from = "test"
             )
         )
 
@@ -631,14 +642,16 @@ class NotificationOrchestratorTest {
             EmailTemplate(
                 to = "admin@example.com",
                 subject = "New Application",
-                textContent = "Test"
+                textContent = "Test",
+                from = "test"
             )
         )
         whenever(emailTemplateFactory.createCandidateApplicationConfirmationEmail(any(), any(), any())).thenReturn(
             EmailTemplate(
                 to = candidateEmail,
                 subject = "Application Received",
-                textContent = "Test"
+                textContent = "Test",
+                from = "test"
             )
         )
 
@@ -678,7 +691,8 @@ class NotificationOrchestratorTest {
             EmailTemplate(
                 to = "admin@example.com",
                 subject = "Assessment Completed",
-                textContent = "Test"
+                textContent = "Test",
+                from = "test"
             )
         )
 
@@ -709,7 +723,8 @@ class NotificationOrchestratorTest {
             EmailTemplate(
                 to = "admin@example.com",
                 subject = "Assessment Pending",
-                textContent = "Test"
+                textContent = "Test",
+                from = "test"
             )
         )
 
@@ -737,7 +752,8 @@ class NotificationOrchestratorTest {
         val emailTemplate = EmailTemplate(
             to = "recruiter@example.com",
             subject = "Candidate Invitation Sent - Alice",
-            textContent = "Hello!"
+            textContent = "Hello!",
+            from = "test"
         )
         whenever(
             emailTemplateFactory.createRecruiterCandidateInvitationConfirmationEmail(
@@ -793,7 +809,8 @@ class NotificationOrchestratorTest {
             EmailTemplate(
                 to = adminEmail,
                 subject = "Admin Invitation",
-                textContent = "Test"
+                textContent = "Test",
+                from = "test"
             )
         )
 
