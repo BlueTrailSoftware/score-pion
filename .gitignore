@@ -36,6 +36,7 @@ frontend/src/environments/environment.prod.ts
 # Claude Code / MCP (local only, never commit)
 **/.claude/
 **/.mcp.json
+**/CLAUDE.md
 
 # Agent Skills are COMMITTED — they are part of the standard
 # .agents/skills/ is the canonical location for all skills

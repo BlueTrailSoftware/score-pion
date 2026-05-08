@@ -60,7 +60,7 @@ claude-code --work-dir ./backend
 |-------|----------|
 | **Agent Skills setup** | `scripts/setup-agent-skills.sh` (root), `backend/scripts/setup-agent-skills.sh` (backend) |
 | **Backend guide** | `backend/AGENTS.md` |
-| **Frontend guide** | `frontend/README.md` |
+| **Frontend guide** | `frontend/AGENTS.md` |
 | **Environment setup** | `backend/.env.example`, `frontend/README.md` |
 | **Contribution guidelines** | `CONTRIBUTING.md` |
 | **Docker/Infra** | `docker-compose.yml`, `docs/` |
@@ -87,7 +87,10 @@ score-pion/
 │   └── src/
 │
 ├── frontend/                  # Angular SPA
-│   ├── README.md              # Frontend setup and conventions
+│   ├── AGENTS.md              # Frontend AI developer guide (ui-standards skill)
+│   ├── .agents/skills/        # Frontend-specific skills
+│   │   └── ui-standards/      # Angular UI/UX component standards
+│   ├── README.md              # Full frontend documentation
 │   ├── src/environments/      # Angular environment configuration
 │   └── ...
 │

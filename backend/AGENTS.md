@@ -6,6 +6,7 @@
 # Auto-generate/update docs/roles/ and docs/flows/
 # (If using an Agent Skills client)
 /sync-docs
+```
 
 ## Agent Skills
 
