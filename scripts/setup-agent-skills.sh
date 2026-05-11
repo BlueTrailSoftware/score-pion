@@ -10,7 +10,7 @@
 #
 set -e
 
-REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SRC="$REPO_ROOT/.agents/skills"
 DST="$REPO_ROOT/.claude/skills"
 

@@ -1,0 +1,100 @@
+version: "3.9"
+
+services:
+  backend:
+    build: .
+    ports:
+      - "7070:7070"
+    env_file:
+      - .env
+    environment:
+      - AWS_DYNAMODB_ENDPOINT=http://dynamodb-local:8000
+      - AWS_ENDPOINT_URL_S3=http://minio:9000
+      - SMTP_HOST=mailpit
+      - SMTP_PORT=1025
+    depends_on:
+      - dynamodb-local
+      - minio
+      - mailpit
+    networks:
+      - scorepion-network
+
+  dynamodb-local:
+    container_name: scorepion-dynamodb-local
+    image: amazon/dynamodb-local:latest
+    ports:
+      - "8000:8000"
+    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"
+    networks:
+      - scorepion-network
+
+  dynamodb-admin:
+    container_name: scorepion-dynamodb-admin
+    image: aaronshaf/dynamodb-admin:latest
+    ports:
+      - "8001:8001"
+    environment:
+      - DYNAMO_ENDPOINT=http://dynamodb-local:8000
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    depends_on:
+      - dynamodb-local
+    networks:
+      - scorepion-network
+
+  minio:
+    container_name: scorepion-minio
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z-cpuv1
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID}
+      MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - scorepion-network
+
+  mailpit:
+    container_name: scorepion-mailpit
+    image: axllent/mailpit:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - scorepion-network
+
+  create-buckets:
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      - MINIO_ACCESS_KEY=${AWS_ACCESS_KEY_ID}
+      - MINIO_SECRET_KEY=${AWS_SECRET_ACCESS_KEY}
+      - BUCKET_NAME=${AWS_S3_BUCKET_NAME}
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 $$MINIO_ACCESS_KEY $$MINIO_SECRET_KEY;
+      /usr/bin/mc mb myminio/$$BUCKET_NAME;
+      /usr/bin/mc anonymous set download myminio/$$BUCKET_NAME;
+      exit 0;
+      "
+    networks:
+      - scorepion-network
+
+networks:
+  scorepion-network:
+    driver: bridge
+
+volumes:
+  minio_data:
+    driver: local

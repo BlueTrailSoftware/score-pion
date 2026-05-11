@@ -1,0 +1,98 @@
+<div class="position-list-card">
+  @if (showHeader && (title || subtitle)) {
+    <div class="card w-100 header-card">
+      <div class="card-body">
+        @if (title) {
+          <h5 class="card-title mb-3">{{ title }}</h5>
+        }
+        @if (subtitle) {
+          <p class="card-subtitle text-muted mb-0 card-subtitle-custom">
+            {{ subtitle }}
+          </p>
+        }
+      </div>
+    </div>
+  }
+
+  <div class="w-100 form-fields-container">
+    @if (loading) {
+      <div class="text-center py-5">
+        <div
+          class="spinner-border text-primary"
+          role="status"
+        >
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3 loading-text">Loading positions...</p>
+      </div>
+    } @else if (positions?.length === 0) {
+      <div class="text-center py-5">
+        <i class="bi bi-inbox empty-state-icon"></i>
+        <p class="text-muted mt-3">No positions available at the moment</p>
+      </div>
+    } @else {
+      <div class="positions-list">
+        @for (position of positions; track position.id) {
+          <div
+            class="position-card"
+            [class.clickable]="mode === 'view'"
+          >
+            <div class="position-card-content">
+              <div class="position-info">
+                <h6 class="position-title">{{ position.title }}</h6>
+                @if (position.description) {
+                  <p class="position-description">
+                    {{ position.description }}
+                  </p>
+                }
+                @if (showStatus) {
+                  <span
+                    class="position-status badge"
+                    [ngClass]="{ 'bg-success': position.isActive, 'bg-secondary': !position.isActive }"
+                  >
+                    {{ position.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                }
+              </div>
+
+              <div class="position-meta">
+                @if (mode === 'view') {
+                  <span
+                    class="position-status badge"
+                    [ngClass]="{
+                      'bg-success': position.isActive,
+                      'bg-secondary': !position.isActive,
+                    }"
+                  >
+                    {{ position.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                } @else if (mode === 'invite') {
+                  <div class="position-actions">
+                    <button
+                      class="btn btn-outline-primary btn-sm action-btn view-details-btn"
+                      (click)="onPositionClick(position)"
+                    >
+                      View Details
+                    </button>
+                    <span
+                      class="invite-btn-wrapper"
+                      [title]="getInviteButtonTooltip(position)"
+                    >
+                      <button
+                        class="btn btn-primary btn-sm action-btn invite-btn"
+                        (click)="onInvite(position, $event)"
+                        [disabled]="!position.isActive || position.assessmentsCount === 0"
+                      >
+                        Invite
+                      </button>
+                    </span>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

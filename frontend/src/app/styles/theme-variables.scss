@@ -1,0 +1,123 @@
+// Main colors
+$sp-gradient-start: #11998e;
+$sp-gradient-end: #57c06f;
+$sp-accent-green: #38ef7d;
+$sp-green-active: #10b981;
+$sp-green-main: #5ac775;
+$sp-green-border: #3faa58;
+$sp-bts-green: #38b872;
+$sp-blue-dark: #171f5e;
+$sp-accent-blue: #0ea5e9;
+$sp-accent-purple: #a855f7;
+$sp-text-muted: #6c757d;
+$sp-pending-orange: #e48b09;
+$sp-white: #fff;
+$sp-text-dark: #000;
+
+// Pastel colors for badges and buttons
+$sp-pastel-mint-green: #a7e3bc;
+$sp-pastel-mint-green-dark: #87c7a7;
+$sp-pastel-lavender-gray: #d1d5db;
+$sp-pastel-sky-blue: #aed9e0;
+$sp-pastel-peach: #ffcba4;
+$sp-pastel-periwinkle: #9db4d6;
+
+// Status colors — outline badge design (border + subtle bg)
+// Active / Invited
+$sp-status-active-border: #10b981;
+$sp-status-active-bg: #ecfdf5;
+$sp-status-active-text: #065f46;
+
+// Pending
+$sp-status-pending-border: #f59e0b;
+$sp-status-pending-bg: #fffbeb;
+$sp-status-pending-text: #92400e;
+
+// Inactive
+$sp-status-inactive-border: #9ca3af;
+$sp-status-inactive-bg: #f3f4f6;
+$sp-status-inactive-text: #4b5563;
+
+// Rejected
+$sp-status-rejected-border: #ef4444;
+$sp-status-rejected-bg: #fef2f2;
+$sp-status-rejected-text: #991b1b;
+
+// Completed
+$sp-status-completed-border: #3b82f6;
+$sp-status-completed-bg: #eff6ff;
+$sp-status-completed-text: #1e40af;
+
+// Assessments count badge
+$sp-badge-assessments-bg: $sp-pastel-sky-blue;
+$sp-badge-assessments-text: #2d5770;
+
+// Button colors
+$sp-btn-activate-bg: $sp-pastel-mint-green-dark;
+$sp-btn-activate-hover: #72b58f;
+$sp-btn-activate-text: #1e4230;
+$sp-btn-deactivate-bg: #fecaca; // soft red — visually distinct from Pending badge
+$sp-btn-deactivate-hover: #fca5a5;
+$sp-btn-deactivate-text: #991b1b;
+$sp-btn-outline-border: $sp-pastel-periwinkle;
+$sp-btn-outline-text: #4a5f80;
+$sp-btn-outline-hover-bg: rgb(157 180 214 / 0.15);
+
+// Backgrounds
+$sp-bg-overlay-dark: rgb(20 26 73 / 0.5);
+$sp-bg-light: #f8f9fa;
+
+// Light waves for login background
+$sp-wave-light-1: rgb(56 239 125 / 0.08);
+$sp-wave-light-2: rgb(17 153 142 / 0.06);
+$sp-wave-light-3: rgb(90 199 117 / 0.04);
+
+// Danger
+$sp-danger: #dc3545;
+
+// Shadows
+$sp-shadow-card: 0 0.5rem 1.5rem rgb(0 0 0 / 0.1);
+$sp-shadow-glow-green: 0 0.25rem 0.5rem rgb(56 239 125 / 0.08);
+$sp-shadow-modal: 0 1rem 3rem rgb(0 0 0 / 0.3);
+$sp-shadow-gradient: 0 0.5rem 1.5rem rgb(17 153 142 / 0.15);
+$sp-shadow-focus: 0 0 0 0.2rem rgb(56 239 125 / 0.25);
+$sp-shadow-hover: 0 0.75rem 2rem rgb(0 0 0 / 0.15);
+$sp-shadow-hover-glow: 0 0.5rem 1rem rgb(56 239 125 / 0.15);
+
+// Border radius
+$sp-border-radius: 1rem;
+$sp-border-radius-sm: 0.5rem;
+$sp-border-radius-full: 50px;
+
+// Transitions
+$sp-ease-smooth: cubic-bezier(0.23, 1, 0.32, 1);
+$sp-transition-fast: 0.3s ease;
+$sp-transition-medium: 0.4s $sp-ease-smooth;
+$sp-transition-slow: 0.5s $sp-ease-smooth;
+
+// Mixins
+@mixin sp-gradient-bg {
+  background: linear-gradient(90deg, $sp-gradient-start 0%, $sp-gradient-end 100%);
+}
+
+@mixin sp-gradient-diagonal {
+  background: linear-gradient(135deg, $sp-gradient-start, $sp-gradient-end);
+}
+
+@mixin sp-glow-green($intensity: 0.3) {
+  filter: drop-shadow(0 0 20px rgba(56, 239, 125, $intensity));
+}
+
+@mixin sp-glow-green-hover($intensity: 0.5) {
+  filter: drop-shadow(0 0 30px rgba(56, 239, 125, $intensity));
+}
+
+@mixin sp-card-base {
+  border-radius: $sp-border-radius;
+  box-shadow: $sp-shadow-card, $sp-shadow-glow-green;
+}
+
+@mixin sp-card-hover {
+  transform: translateY(-2px);
+  box-shadow: $sp-shadow-hover, $sp-shadow-hover-glow;
+}

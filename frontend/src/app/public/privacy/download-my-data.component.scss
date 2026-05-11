@@ -1,0 +1,98 @@
+@use '../../styles/_privacy.scss' as p;
+@use '../../styles/theme-variables.scss' as tv;
+
+.privacy-container {
+  @include p.privacy-container;
+}
+
+.privacy-card {
+  @include p.privacy-card;
+}
+
+.privacy-header {
+  @include p.privacy-header;
+}
+
+.header-icon {
+  @include p.header-icon;
+
+  &.primary {
+    background-color: rgba(tv.$sp-gradient-start, 0.15);
+    color: tv.$sp-gradient-start;
+  }
+}
+
+.privacy-title {
+  @include p.privacy-title;
+
+  &.primary {
+    color: tv.$sp-gradient-start;
+  }
+}
+
+.privacy-subtitle {
+  @include p.privacy-subtitle;
+}
+
+.info-card {
+  @include p.alert-card;
+
+  background-color: p.$sp-info-light;
+  border: 1px solid tv.$sp-gradient-start;
+}
+
+.info-card-icon {
+  @include p.alert-card-icon;
+
+  color: tv.$sp-gradient-start;
+}
+
+.info-card-content {
+  @include p.alert-card-content;
+
+  color: p.$sp-info-dark;
+
+  strong {
+    color: tv.$sp-gradient-start;
+  }
+}
+
+.privacy-form {
+  @include p.privacy-form;
+}
+
+.form-label {
+  @include p.form-label;
+}
+
+.form-control {
+  @include p.form-control(tv.$sp-gradient-start, tv.$sp-shadow-focus);
+}
+
+.form-text {
+  @include p.form-text;
+}
+
+.success-card {
+  @include p.success-card;
+}
+
+.privacy-actions {
+  @include p.privacy-actions;
+}
+
+.btn-gradient-primary {
+  @include p.btn-gradient-primary;
+}
+
+.spinner-border {
+  @include p.spinner-border;
+}
+
+@include p.privacy-responsive;
+
+@media (width <= 768px) {
+  .btn-gradient-primary {
+    width: 100%;
+  }
+}

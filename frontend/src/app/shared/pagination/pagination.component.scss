@@ -1,0 +1,30 @@
+@use '../../styles/theme-variables' as tv;
+
+.pagination {
+  .page-link {
+    color: tv.$sp-green-main;
+    border: none;
+    margin: 0 2px;
+    border-radius: 4px;
+    
+    &:hover {
+      background-color: rgba(tv.$sp-green-main, 0.1);
+      color: tv.$sp-blue-dark;
+    }
+    
+    &:focus {
+      box-shadow: 0 0 0 0.25rem rgba(tv.$sp-green-main, 0.25);
+    }
+  }
+
+  .page-item.active .page-link {
+    background-color: tv.$sp-green-main;
+    border-color: tv.$sp-green-border;
+    color: #fff;
+  }
+
+  .page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: transparent;
+  }
+}

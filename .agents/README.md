@@ -12,9 +12,13 @@ This directory contains [Agent Skills](https://agentskills.io) — reusable capa
 │   ├── ticket/                        # Asana ticket lifecycle
 │   └── find-skills/                   # Discover and install skills
 │
-└── ../backend/.agents/
+├── ../backend/.agents/
+│   └── skills/
+│       └── security-review/           # Backend-specific security audit
+│
+└── ../frontend/.agents/
     └── skills/
-        └── security-review/           # Backend-specific security audit
+        └── ui-standards/              # Frontend UI/UX component standards
 ```
 
 ## 🎯 Root-Level Skills
@@ -63,6 +67,9 @@ bash scripts/setup-agent-skills.sh
 
 # Setup backend-specific skills (optional, but recommended)
 bash backend/scripts/setup-agent-skills.sh
+
+# Setup frontend-specific skills (optional, but recommended)
+bash frontend/scripts/setup-agent-skills.sh
 ```
 
 This creates symlinks in `.claude/skills/` so Claude Code can discover the skills.
@@ -124,10 +131,17 @@ To create a new skill:
    # Create backend/.agents/skills/my-skill/SKILL.md
    ```
 
-3. **Re-run setup scripts:**
+3. **Frontend-specific:**
+   ```bash
+   mkdir -p frontend/.agents/skills/my-skill
+   # Create frontend/.agents/skills/my-skill/SKILL.md
+   ```
+
+4. **Re-run setup scripts:**
    ```bash
    bash scripts/setup-agent-skills.sh
    bash backend/scripts/setup-agent-skills.sh
+   bash frontend/scripts/setup-agent-skills.sh
    ```
 
 4. **Commit the skill:**

@@ -1,0 +1,41 @@
+// ==========================================================
+// Shared form styles — single source of truth
+
+// Covers:
+//   - Form control focus states (border + shadow with $sp-* vars)
+//   - Label styling (fw-semibold, above the field)
+//   - Required field indicator (red asterisk)
+//   - Validation error display (is-invalid + invalid-feedback)
+//   - Layout variants: modal forms (stacked) vs in-page forms (card)
+
+// Conventions:
+//   - Forms with validation: use Angular Reactive Forms
+//   - Simple inputs (search, filters): ngModel is acceptable
+//   - Labels: always above the field, with .form-label.fw-semibold
+//   - Required fields: <span class="text-danger">*</span> after label
+// ==========================================================
+
+@use './theme-variables' as tv;
+
+// Focus states for all form controls
+.form-control:focus,
+.form-select:focus {
+  border-color: tv.$sp-gradient-start;
+  box-shadow: tv.$sp-shadow-focus;
+}
+
+// Invalid state
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: tv.$sp-danger;
+}
+
+// In-page form card (used for edit modes, create flows)
+.sp-form-card {
+  @include tv.sp-card-base;
+
+  .card-title {
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+}

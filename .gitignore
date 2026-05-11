@@ -33,9 +33,10 @@ frontend/.angular/
 frontend/src/environments/environment.ts
 frontend/src/environments/environment.prod.ts
 
-# Claude Code / internal
-.claude/                 # Symlinks to skills (local only, not committed)
-.mcp.json               # MCP server config (local credentials, not committed)
+# Claude Code / MCP (local only, never commit)
+**/.claude/
+**/.mcp.json
+**/CLAUDE.md
 
 # Agent Skills are COMMITTED — they are part of the standard
 # .agents/skills/ is the canonical location for all skills

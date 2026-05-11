@@ -1,0 +1,81 @@
+@use '../../styles/theme-variables' as sp;
+
+.waves-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wave-svg {
+  position: absolute;
+  bottom: -10%;
+  left: -5%;
+  width: 110%;
+  height: 110%;
+}
+
+.wave-path {
+  transform-origin: center;
+}
+
+.wave-1 {
+  fill: sp.$sp-wave-light-1;
+  animation: wave-float-1 12s ease-in-out infinite;
+}
+
+.wave-2 {
+  fill: sp.$sp-wave-light-2;
+  animation: wave-float-2 15s ease-in-out infinite;
+}
+
+.wave-3 {
+  fill: sp.$sp-wave-light-3;
+  animation: wave-float-3 18s ease-in-out infinite;
+}
+
+@keyframes wave-float-1 {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+
+  50% {
+    transform: translateX(-4%) translateY(2%);
+  }
+
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+@keyframes wave-float-2 {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+
+  50% {
+    transform: translateX(3%) translateY(-1.5%);
+  }
+
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+@keyframes wave-float-3 {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+
+  50% {
+    transform: translateX(-2.5%) translateY(1.5%);
+  }
+
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}

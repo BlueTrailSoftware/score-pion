@@ -1,0 +1,36 @@
+@use '../../styles/_privacy.scss' as p;
+@use '../../styles/theme-variables.scss' as tv;
+
+.confirm-container {
+  @include p.privacy-container;
+}
+
+.confirm-card {
+  @include p.privacy-card(3rem 2rem);
+}
+
+.confirm-state {
+  @include p.confirm-state;
+}
+
+.state-icon {
+  @include p.state-icon;
+}
+
+.state-title {
+  @include p.state-title;
+}
+
+.state-message {
+  @include p.state-message;
+}
+
+.state-subtitle {
+  @include p.state-subtitle;
+}
+
+.btn-gradient-primary {
+  @include p.btn-gradient-primary(true);
+}
+
+@include p.privacy-responsive;

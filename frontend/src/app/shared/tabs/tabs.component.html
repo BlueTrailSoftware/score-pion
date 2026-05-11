@@ -1,0 +1,19 @@
+<ul class="nav sp-tabs">
+  @for (option of options; track option.id) {
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeId === option.id"
+        (click)="selectTab(option.id)"
+        type="button"
+      >
+        <span class="tab-label">{{ option.label }}</span>
+        @if (option.count !== undefined) {
+          <span class="badge rounded-pill tab-count">
+            {{ option.count }}
+          </span>
+        }
+      </button>
+    </li>
+  }
+</ul>

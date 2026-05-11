@@ -1,0 +1,63 @@
+<nav class="navbar">
+  <div class="container-fluid">
+    <a
+      class="navbar-brand"
+      [routerLink]="getHomeRoute()"
+    >
+      <img
+        class="scorpion-logo"
+        src="assets/images/logos/scorpion-logo-v2.png"
+        alt="Score Pion"
+      />
+      <span>Score Pion</span>
+    </a>
+
+    @if (!isLoading) {
+      <div class="d-flex align-items-center ms-auto">
+        @if (userProfile) {
+          <div class="d-flex align-items-center gap-3">
+            <div class="user-info-container">
+              <div class="user-avatar">
+                @if (userProfile.pictureUrl && !imageLoadError) {
+                  <img
+                    [src]="userProfile.pictureUrl"
+                    [alt]="userProfile.name || userProfile.email"
+                    (error)="onImageError()"
+                  />
+                }
+                @if (!userProfile.pictureUrl || imageLoadError) {
+                  <div class="avatar-initials">
+                    {{ getUserInitials() }}
+                  </div>
+                }
+              </div>
+
+              <div class="user-details">
+                <div class="user-name">{{ userProfile.name || userProfile.email }}</div>
+                @if (userProfile.name) {
+                  <div class="user-email">{{ userProfile.email }}</div>
+                }
+              </div>
+            </div>
+
+            <button
+              class="btn btn-logout"
+              (click)="logout()"
+            >
+              <span>Logout</span>
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    @if (isLoading) {
+      <div
+        class="spinner-border text-success"
+        role="status"
+      >
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    }
+  </div>
+</nav>

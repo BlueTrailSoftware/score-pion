@@ -1,0 +1,104 @@
+@use '../../styles/theme-variables' as tv;
+
+.secondary-nav {
+  background: linear-gradient(180deg, #232b6b 0%, tv.$sp-blue-dark 100%);
+  border-bottom: 1px solid rgba(tv.$sp-accent-green, 0.3);
+  box-shadow: 0 2px 8px rgba(tv.$sp-text-dark, 0.15);
+  padding: 2px 0;
+}
+
+.container-fluid {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.nav-tabs {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 0.5rem;
+  overflow-x: auto;
+  border-bottom: none;
+
+  &::-webkit-scrollbar {
+    height: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(tv.$sp-white, 0.05);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(tv.$sp-white, 0.2);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgba(tv.$sp-white, 0.3);
+    }
+  }
+}
+
+.nav-tab {
+  flex-shrink: 0;
+}
+
+.nav-tab-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: rgba(tv.$sp-white, 0.8);
+  text-decoration: none;
+  font-weight: 500;
+  transition: tv.$sp-transition-fast;
+  white-space: nowrap;
+  border-radius: tv.$sp-border-radius-sm;
+
+  i {
+    font-size: 1rem;
+    transition: tv.$sp-transition-fast;
+  }
+
+  &:hover {
+    color: tv.$sp-accent-green;
+    background: rgba(tv.$sp-accent-green, 0.1);
+  }
+
+  &.active {
+    color: tv.$sp-accent-green;
+    background: rgba(tv.$sp-accent-green, 0.15);
+    font-weight: 600;
+  }
+}
+
+// Responsive
+@media (width <= 991.98px) {
+  .nav-tabs {
+    gap: 0.25rem;
+  }
+
+  .nav-tab-link {
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+
+    i {
+      font-size: 1rem;
+    }
+  }
+}
+
+@media (width <= 575.98px) {
+  .nav-tab-link {
+    padding: 0.75rem 0.875rem;
+
+    span {
+      display: none;
+    }
+
+    i {
+      font-size: 1.25rem;
+    }
+  }
+}

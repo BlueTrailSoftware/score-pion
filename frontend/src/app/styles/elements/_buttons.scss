@@ -1,0 +1,137 @@
+@use '../theme-variables' as tv;
+
+// ===========================================
+// Standard button variants — single source of truth
+// ===========================================
+
+button {
+  &:focus {
+    outline: none;
+  }
+}
+
+// ==========================================================
+// Standard button variants — single source of truth
+
+// Primary gradient button is defined globally in styles.scss as .btn-gradient-primary
+
+// Secondary — solid gray, used for "Cancel" or less prominent actions
+.btn-secondary {
+  background-color: tv.$sp-pastel-lavender-gray;
+  color: #4b5563;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: #c1c5cb;
+    color: #374151;
+    transform: translateY(-1px);
+    box-shadow: 0 0.25rem 0.5rem rgb(0 0 0 / 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// These variants replace scattered button classes from:
+//   - manage-recruiters.component.scss (btn-activate, btn-deactivate, btn-outline-manage)
+//   - global-recipients.component.scss (btn-action-edit, btn-action-delete)
+//   - position-detail.component.scss (btn-outline-primary override)
+// ==========================================================
+
+// Outline Manage — used for secondary page actions (e.g., Manage Positions)
+.btn-outline-manage {
+  background: transparent;
+  border: 1.5px solid tv.$sp-btn-outline-border;
+  color: tv.$sp-btn-outline-text;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: tv.$sp-btn-outline-hover-bg;
+    color: tv.$sp-blue-dark;
+  }
+}
+
+// Activate — green mint
+.btn-activate {
+  background-color: tv.$sp-btn-activate-bg;
+  color: tv.$sp-btn-activate-text;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: tv.$sp-btn-activate-hover;
+    color: tv.$sp-btn-activate-text;
+    transform: translateY(-1px);
+    box-shadow: 0 0.25rem 0.5rem rgba(tv.$sp-btn-activate-bg, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Deactivate — soft red (visually distinct from Pending badge)
+.btn-deactivate {
+  background-color: tv.$sp-btn-deactivate-bg;
+  color: tv.$sp-btn-deactivate-text;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: tv.$sp-btn-deactivate-hover;
+    color: tv.$sp-btn-deactivate-text;
+    transform: translateY(-1px);
+    box-shadow: 0 0.25rem 0.5rem rgba(tv.$sp-btn-deactivate-bg, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Inline table action — Edit (ghost style)
+.btn-action-edit {
+  color: tv.$sp-btn-outline-text;
+  background: transparent;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    color: tv.$sp-gradient-start;
+    background-color: rgba(tv.$sp-gradient-start, 0.08);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Inline table action — Delete (ghost style, red on hover)
+.btn-action-delete {
+  color: tv.$sp-text-muted;
+  background: transparent;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    color: tv.$sp-danger;
+    background-color: rgba(tv.$sp-danger, 0.08);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

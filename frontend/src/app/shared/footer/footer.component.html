@@ -1,0 +1,42 @@
+<footer class="app-footer">
+  <div class="footer-main">
+    <div class="footer-brand">
+      <div class="brand-logo">
+        <img
+          class="scorpion-logo"
+          src="assets/images/logos/scorpion-logo-v2.png"
+          alt="Score Pion"
+        />
+        <span class="brand-name">Score Pion</span>
+      </div>
+    </div>
+
+    <div class="footer-columns">
+      <div class="footer-column">
+        <h4 class="column-title">Your Privacy</h4>
+        <a routerLink="/privacy/download-my-data">Download My Data</a>
+        <a routerLink="/privacy/delete-my-data">Delete My Data</a>
+      </div>
+
+      <div class="footer-column">
+        <h4 class="column-title">Legal</h4>
+        <a routerLink="/privacy-policy">Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-divider"></div>
+
+  <div class="footer-bottom">
+    <span class="footer-copyright">
+      &copy; {{ currentYear }}
+      <a
+        [href]="companyUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="company-link"
+        >{{ companyName }}</a
+      >. All rights reserved.
+    </span>
+  </div>
+</footer>

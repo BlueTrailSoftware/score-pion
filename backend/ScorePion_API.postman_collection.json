@@ -1,0 +1,1536 @@
+{
+  "info": {
+    "_postman_id": "score-pion-api-collection",
+    "name": "ScorePion API",
+    "description": "Complete API collection for ScorePion - Coderbyte Assessment Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:7070",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI5YmY3ZmRjOS03YTE2LTRlYjMtYWQ5Yy04Y2ViNmRhNGJiMjciLCJlbWFpbCI6ImRhdmlkckBibHVldHJhaWxzb2Z0LmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2MTMxNTkxOCwiZXhwIjoxNzYxNDAyMzE4fQ.EVexmLKF8iPNHS1sJFktZmjytQdcezF7AY1U-6zORO7lTOKkW2LbkguJUqPJfTFfeeVL_DRzx79zkKKagGIBIg",
+      "type": "string"
+    },
+    {
+      "key": "recruiterId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "positionId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "candidateEmail",
+      "value": "candidate@example.com",
+      "type": "string"
+    },
+    {
+      "key": "candidateName",
+      "value": "Jane Smith",
+      "type": "string"
+    },
+    {
+      "key": "globalRecipientEmail",
+      "value": "notifications@example.com",
+      "type": "string"
+    },
+    {
+      "key": "filePath",
+      "value": "/path/to/file",
+      "type": "string"
+    },
+    {
+      "key": "applicantId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "privacyToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Assessments",
+      "item": [
+        {
+          "name": "Get All Assessments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/assessments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "assessments"
+              ]
+            },
+            "description": "Get all assessments from Coderbyte. Admins see all assessments (to assign to positions), recruiters see empty list."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for managing assessments from Coderbyte (ADMIN only)"
+    },
+    {
+      "name": "Positions",
+      "item": [
+        {
+          "name": "Create Position",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "type": "text",
+                  "value": "{\n  \"title\": \"Senior Kotlin Developer\",\n  \"description\": \"Position for experienced Kotlin developers with backend expertise\",\n  \"external\": true,\n  \"assessmentIds\": [\n    \"kotlin-dev-9ntxc1nuo-rdr47me\",\n    \"kotlin-dev-nhn768qy4d\"\n  ]\n}",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "{{filePath}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/positions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "positions"
+              ]
+            },
+            "description": "Create a new open position with associated Coderbyte assessments and optional file attachment. Requires ADMIN role.\n\nForm Data Parameters:\n- data: JSON string containing position details (title, description, external, assessmentIds)\n- file: Optional file attachment (e.g., job description PDF)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Positions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/positions?activeOnly=false",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "positions"
+              ],
+              "query": [
+                {
+                  "key": "activeOnly",
+                  "value": "false",
+                  "description": "Filter to show only active positions"
+                }
+              ]
+            },
+            "description": "Get all positions. Set activeOnly=true to filter only active positions."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Position by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/positions/{{positionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "positions",
+                "{{positionId}}"
+              ]
+            },
+            "description": "Get detailed information about a specific position including all assessments."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Position",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json, text/plain, */*"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "type": "text",
+                  "value": "{\n  \"title\": \"Senior Kotlin Developer (Updated)\",\n  \"description\": \"Updated description for Kotlin developer position\",\n  \"external\": true,\n  \"assessmentIds\": [\n    \"kotlin-dev-9ntxc1nuo-rdr47me\",\n    \"kotlin-dev-nhn768qy4d\",\n    \"technical-assessment-qz54bru\"\n  ],\n  \"deleteFile\": false\n}",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "{{filePath}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/positions/{{positionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "positions",
+                "{{positionId}}"
+              ]
+            },
+            "description": "Update an existing position's title, description, external flag, assessments, and file attachment.\n\nForm Data Parameters:\n- data: JSON string containing updated position details with deleteFile flag (true to remove existing file)\n- file: Optional new file attachment (only if replacing existing file)"
+          },
+          "response": []
+        },
+        {
+          "name": "Activate Position",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/positions/{{positionId}}/activate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "positions",
+                "{{positionId}}",
+                "activate"
+              ]
+            },
+            "description": "Activate a position that was previously deactivated. Returns 200 OK with success message."
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate Position",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/positions/{{positionId}}/activate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "positions",
+                "{{positionId}}",
+                "activate"
+              ]
+            },
+            "description": "Deactivate a position (soft delete). The position won't be deleted but marked as inactive. Returns 200 OK with success message."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for managing open positions (ADMIN only)"
+    },
+    {
+      "name": "Candidates",
+      "item": [
+        {
+          "name": "Invite Candidate to Position",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"candidate@example.com\",\n  \"candidateName\": \"John Doe\",\n  \"positionId\": \"{{positionId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/candidates/invite",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "candidates",
+                "invite"
+              ]
+            },
+            "description": "Invite a candidate to all assessments associated with a position. Both ADMIN and RECRUITER roles can use this endpoint. The system will automatically send invitations for all assessments linked to the position and send a Google Chat notification."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for managing candidates (ADMIN and RECRUITER)"
+    },
+    {
+      "name": "Recruiters",
+      "item": [
+        {
+          "name": "Get My Positions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recruiters/positions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recruiters",
+                "positions"
+              ]
+            },
+            "description": "Get all positions assigned to the current logged-in recruiter. RECRUITER role only."
+          },
+          "response": []
+        },
+        {
+          "name": "Invite Recruiter (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"recruiter@example.com\",\n  \"positionIds\": [\n    \"position-id-1\",\n    \"position-id-2\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/recruiters/invite",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "recruiters",
+                "invite"
+              ]
+            },
+            "description": "Send an invitation to a recruiter with optional position assignments. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Recruiters",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/recruiters",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "recruiters"
+              ]
+            },
+            "description": "Get list of all recruiters with their position count."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Recruiter by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/recruiters/{{recruiterId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "recruiters",
+                "{{recruiterId}}"
+              ]
+            },
+            "description": "Get detailed information about a specific recruiter including all assigned positions."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Recruiter Active Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/recruiters/{{recruiterId}}/activate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "recruiters",
+                "{{recruiterId}}",
+                "activate"
+              ]
+            },
+            "description": "Activate or deactivate a recruiter account."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for recruiters: view assigned positions (RECRUITER) and manage recruiter accounts (ADMIN)"
+    },
+    {
+      "name": "Recruiter Positions",
+      "item": [
+        {
+          "name": "Sync Recruiter Positions",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"positionIds\": [\n    \"position-id-1\",\n    \"position-id-2\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/recruiters/{{recruiterId}}/positions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "recruiters",
+                "{{recruiterId}}",
+                "positions"
+              ]
+            },
+            "description": "Synchronize recruiter's positions. This is a state replacement operation: send the complete list of positionIds the recruiter should have. Positions not in the list will be revoked, new ones will be granted. Empty array removes all positions."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Recruiter Positions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/recruiters/{{recruiterId}}/positions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "recruiters",
+                "{{recruiterId}}",
+                "positions"
+              ]
+            },
+            "description": "Get all positions assigned to a specific recruiter."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for managing position access for recruiters (ADMIN only)"
+    },
+    {
+      "name": "Invitations",
+      "item": [
+        {
+          "name": "Get Pending Invitations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/invitations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "invitations"
+              ]
+            },
+            "description": "Get all pending recruiter invitations."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for managing recruiter invitations"
+    },
+    {
+      "name": "Global Notification Recipients",
+      "item": [
+        {
+          "name": "Get Global Recipients Configuration",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/settings/global-recipients",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "global-recipients"
+              ]
+            },
+            "description": "Get the complete global recipients configuration including metadata (emails, description, updatedAt, updatedBy). Returns empty configuration if not initialized. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Global Recipients Email List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/settings/global-recipients/emails",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "global-recipients",
+                "emails"
+              ]
+            },
+            "description": "Get only the list of email addresses configured as global recipients. Returns { \"emails\": [\"email1@example.com\", \"email2@example.com\"] }. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Add Email to Global Recipients",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{globalRecipientEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/settings/global-recipients/emails",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "global-recipients",
+                "emails"
+              ]
+            },
+            "description": "Add a new email address to the global recipients list. These emails will receive notifications for all candidate invitations.\n\nValidations:\n- Email format must be valid\n- Email must not already exist in the list\n\nReturns:\n- 200: Email added successfully with updated configuration\n- 400: Invalid email format or email already exists\n- 500: Internal server error\n\nRequires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Email from Global Recipients",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/settings/global-recipients/emails/{{globalRecipientEmail}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "global-recipients",
+                "emails",
+                "{{globalRecipientEmail}}"
+              ]
+            },
+            "description": "Remove an email address from the global recipients list.\n\nReturns:\n- 200: Email removed successfully with updated configuration\n- 404: Email not found in recipients list\n- 500: Internal server error\n\nNote: URL encode the email address if it contains special characters.\n\nRequires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Email in Global Recipients",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldEmail\": \"old-user@example.com\",\n  \"newEmail\": \"new-user@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/settings/global-recipients/emails",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "global-recipients",
+                "emails"
+              ]
+            },
+            "description": "Update an existing email address in the global recipients list. This replaces the old email with the new one while maintaining the position in the list.\n\nValidations:\n- New email format must be valid\n- Old email must exist in the list\n- New email must not already exist in the list (unless it's the same as old email)\n\nReturns:\n- 200: Email updated successfully with updated configuration\n- 400: Invalid request (old email not found, new email invalid format, or new email already exists)\n- 500: Internal server error\n\nRequires ADMIN role."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for managing global notification recipients. Global recipients receive email notifications for all candidate invitations regardless of position or recruiter. Only ADMIN users can manage these settings.\n\n⚠️ NOTE: Currently the email template for global recipient notifications is not implemented (see NotificationOrchestrator.kt:278-288). The emails are stored in the database but notifications are not being sent yet."
+    },
+    {
+      "name": "Webhook",
+      "item": [
+        {
+          "name": "[LEGACY] Coderbyte Webhook - Completed with Report Ready",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operation\": \"assessment_completed\",\n  \"time_expired\": false,\n  \"report_ready\": true,\n  \"organization_id\": \"example-org\",\n  \"email\": \"admin@example.com\",\n  \"report_url\": \"https://coderbyte.com/report/usernfu0hnfxx:kotlin-dev-9ntxc1nuo-ib1wl6m\",\n  \"assessment_id\": \"kotlin-dev-9ntxc1nuo-ib1wl6m\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhook/coderbyte",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "webhook",
+                "coderbyte"
+              ]
+            },
+            "description": "⚠️ LEGACY ENDPOINT (To be deprecated)\n\n✅ Scenario 1: Assessment completed normally, report ready\n\nThe ideal scenario where:\n- Candidate completed the assessment normally (time_expired=false)\n- Report has been fully processed by Coderbyte (report_ready=true)\n\nThe webhook will:\n1. Fetch the full report from Coderbyte API\n2. Update the invitation record with results\n3. Send email to recruiter with complete report\n4. Send Google Chat notification with detailed results (internal channel always, external channel if workspace is 'External')\n\nTest data: Real completed assessment by admin@example.com for Java/Kotlin- SQL- NoSQL- Async (Internal @ST)"
+          },
+          "response": []
+        },
+        {
+          "name": "[LEGACY] Coderbyte Webhook - Completed but Report Processing",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operation\": \"assessment_completed\",\n  \"time_expired\": false,\n  \"report_ready\": false,\n  \"organization_id\": \"example-org\",\n  \"email\": \"admin@example.com\",\n  \"report_url\": \"https://coderbyte.com/report/usernfu0hnfxx:kotlin-dev-9ntxc1nuo-ib1wl6m\",\n  \"assessment_id\": \"kotlin-dev-9ntxc1nuo-ib1wl6m\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhook/coderbyte",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "webhook",
+                "coderbyte"
+              ]
+            },
+            "description": "⚠️ LEGACY ENDPOINT (To be deprecated)\n\n⏳ Scenario 2: Assessment completed normally, report still processing\n\nWhen:\n- Candidate completed the assessment normally (time_expired=false)\n- Report is still being processed by Coderbyte (report_ready=false)\n\nThe webhook will:\n1. Send email to recruiter notifying report is pending\n2. Send Google Chat notification to internal channel only (no workspace information available)\n3. Coderbyte will send another webhook later when report is ready\n\nNote: This is a temporary state notification. Full results will be sent when Coderbyte sends another webhook with report_ready=true"
+          },
+          "response": []
+        },
+        {
+          "name": "[LEGACY] Coderbyte Webhook - Time Expired with Report Ready",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operation\": \"assessment_completed\",\n  \"time_expired\": true,\n  \"report_ready\": true,\n  \"organization_id\": \"example-org\",\n  \"email\": \"admin@example.com\",\n  \"report_url\": \"https://coderbyte.com/report/usernfu0hnfxx:kotlin-dev-9ntxc1nuo-ib1wl6m\",\n  \"assessment_id\": \"kotlin-dev-9ntxc1nuo-ib1wl6m\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhook/coderbyte",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "webhook",
+                "coderbyte"
+              ]
+            },
+            "description": "⚠️ LEGACY ENDPOINT (To be deprecated)\n\n⏰ Scenario 3: Time limit expired, report ready\n\nWhen:\n- Assessment time limit was reached (time_expired=true)\n- Report has been processed by Coderbyte (report_ready=true)\n\nThe webhook will:\n1. Fetch the full report from Coderbyte API\n2. Update the invitation record with results\n3. Send email to recruiter with complete report and time expiration note\n4. Send Google Chat notification with ⏰ icon indicating time expiration\n\nNote: The report may show incomplete challenges or lower scores due to time expiration"
+          },
+          "response": []
+        },
+        {
+          "name": "[LEGACY] Coderbyte Webhook - Time Expired and Report Processing",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operation\": \"assessment_completed\",\n  \"time_expired\": true,\n  \"report_ready\": false,\n  \"organization_id\": \"example-org\",\n  \"email\": \"admin@example.com\",\n  \"report_url\": \"https://coderbyte.com/report/usernfu0hnfxx:kotlin-dev-9ntxc1nuo-ib1wl6m\",\n  \"assessment_id\": \"kotlin-dev-9ntxc1nuo-ib1wl6m\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhook/coderbyte",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "webhook",
+                "coderbyte"
+              ]
+            },
+            "description": "⚠️ LEGACY ENDPOINT (To be deprecated)\n\n⏰⏳ Scenario 4: Time limit expired, report still processing\n\nWhen:\n- Assessment time limit was reached (time_expired=true)\n- Report is still being processed by Coderbyte (report_ready=false)\n\nThe webhook will:\n1. Send email to recruiter notifying time expiration and pending report\n2. Send Google Chat notification to internal channel with time expiration warning\n3. Coderbyte will send another webhook later when report is ready\n\nNote: This is the worst-case scenario - time expired AND report not ready. Full results will be sent when Coderbyte sends another webhook with report_ready=true"
+          },
+          "response": []
+        },
+        {
+          "name": "[NEW] Assessment Completed - Completed with Report Ready",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operation\": \"assessment_completed\",\n  \"time_expired\": false,\n  \"report_ready\": true,\n  \"organization_id\": \"example-org\",\n  \"email\": \"admin@example.com\",\n  \"report_url\": \"https://coderbyte.com/report/usernfu0hnfxx:kotlin-dev-9ntxc1nuo-ib1wl6m\",\n  \"assessment_id\": \"kotlin-dev-9ntxc1nuo-ib1wl6m\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhook/coderbyte/assessment/completed",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "webhook",
+                "coderbyte",
+                "assessment",
+                "completed"
+              ]
+            },
+            "description": "🆕 NEW ENDPOINT (Preferred)\n\n✅ Scenario 1: Assessment completed normally, report ready\n\nThis is the new preferred webhook endpoint for assessment completion events.\n\nThe ideal scenario where:\n- Candidate completed the assessment normally (time_expired=false)\n- Report has been fully processed by Coderbyte (report_ready=true)\n\nThe webhook will:\n1. Fetch the full report from Coderbyte API\n2. Update the invitation record with results\n3. Send email to recruiter with complete report\n4. Send Google Chat notification with detailed results (internal channel always, external channel if workspace is 'External')\n\nTest data: Real completed assessment by admin@example.com for Java/Kotlin- SQL- NoSQL- Async (Internal @ST)"
+          },
+          "response": []
+        },
+        {
+          "name": "[NEW] Assessment Completed - Completed but Report Processing",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operation\": \"assessment_completed\",\n  \"time_expired\": false,\n  \"report_ready\": false,\n  \"organization_id\": \"example-org\",\n  \"email\": \"admin@example.com\",\n  \"report_url\": \"https://coderbyte.com/report/usernfu0hnfxx:kotlin-dev-9ntxc1nuo-ib1wl6m\",\n  \"assessment_id\": \"kotlin-dev-9ntxc1nuo-ib1wl6m\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhook/coderbyte/assessment/completed",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "webhook",
+                "coderbyte",
+                "assessment",
+                "completed"
+              ]
+            },
+            "description": "🆕 NEW ENDPOINT (Preferred)\n\n⏳ Scenario 2: Assessment completed normally, report still processing\n\nWhen:\n- Candidate completed the assessment normally (time_expired=false)\n- Report is still being processed by Coderbyte (report_ready=false)\n\nThe webhook will:\n1. Send email to recruiter notifying report is pending\n2. Send Google Chat notification to internal channel only (no workspace information available)\n3. Coderbyte will send another webhook later when report is ready\n\nNote: This is a temporary state notification. Full results will be sent when Coderbyte sends another webhook with report_ready=true"
+          },
+          "response": []
+        },
+        {
+          "name": "[NEW] Assessment Completed - Time Expired with Report Ready",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operation\": \"assessment_completed\",\n  \"time_expired\": true,\n  \"report_ready\": true,\n  \"organization_id\": \"example-org\",\n  \"email\": \"admin@example.com\",\n  \"report_url\": \"https://coderbyte.com/report/usernfu0hnfxx:kotlin-dev-9ntxc1nuo-ib1wl6m\",\n  \"assessment_id\": \"kotlin-dev-9ntxc1nuo-ib1wl6m\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhook/coderbyte/assessment/completed",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "webhook",
+                "coderbyte",
+                "assessment",
+                "completed"
+              ]
+            },
+            "description": "🆕 NEW ENDPOINT (Preferred)\n\n⏰ Scenario 3: Time limit expired, report ready\n\nWhen:\n- Assessment time limit was reached (time_expired=true)\n- Report has been processed by Coderbyte (report_ready=true)\n\nThe webhook will:\n1. Fetch the full report from Coderbyte API\n2. Update the invitation record with results\n3. Send email to recruiter with complete report and time expiration note\n4. Send Google Chat notification with ⏰ icon indicating time expiration\n\nNote: The report may show incomplete challenges or lower scores due to time expiration"
+          },
+          "response": []
+        },
+        {
+          "name": "[NEW] Assessment Completed - Time Expired and Report Processing",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operation\": \"assessment_completed\",\n  \"time_expired\": true,\n  \"report_ready\": false,\n  \"organization_id\": \"example-org\",\n  \"email\": \"admin@example.com\",\n  \"report_url\": \"https://coderbyte.com/report/usernfu0hnfxx:kotlin-dev-9ntxc1nuo-ib1wl6m\",\n  \"assessment_id\": \"kotlin-dev-9ntxc1nuo-ib1wl6m\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhook/coderbyte/assessment/completed",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "webhook",
+                "coderbyte",
+                "assessment",
+                "completed"
+              ]
+            },
+            "description": "🆕 NEW ENDPOINT (Preferred)\n\n⏰⏳ Scenario 4: Time limit expired, report still processing\n\nWhen:\n- Assessment time limit was reached (time_expired=true)\n- Report is still being processed by Coderbyte (report_ready=false)\n\nThe webhook will:\n1. Send email to recruiter notifying time expiration and pending report\n2. Send Google Chat notification to internal channel with time expiration warning\n3. Coderbyte will send another webhook later when report is ready\n\nNote: This is the worst-case scenario - time expired AND report not ready. Full results will be sent when Coderbyte sends another webhook with report_ready=true"
+          },
+          "response": []
+        }
+      ],
+      "description": "Webhook endpoints for external integrations\n\nNOTE: The collection includes both legacy (/webhook/coderbyte) and new (/webhook/coderbyte/assessment/completed) endpoints. The new endpoint is preferred and will be the only supported endpoint in the future."
+    },
+    {
+      "name": "Applicants",
+      "item": [
+        {
+          "name": "Apply to Position (Public)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "type": "text",
+                  "value": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"+1234567890\",\n  \"positionId\": \"{{positionId}}\",\n  \"linkedinUrl\": \"https://linkedin.com/in/johndoe\",\n  \"gdprConsent\": true,\n  \"captchaToken\": \"test-token\"\n}",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "{{filePath}}",
+                  "description": "Optional — provide either this file or linkedinUrl in data"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/applicants/apply",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "applicants",
+                "apply"
+              ]
+            },
+            "description": "Public endpoint for external candidates to submit their application. No authentication required.\n\nForm Data Parameters:\n- data (text/application/json): JSON with name, email, phone, positionId, linkedinUrl (optional), gdprConsent, captchaToken\n- file (file, optional): CV/resume — required if linkedinUrl is not provided\n\nValidations:\n- Position must exist and be active\n- Email format validation\n- Phone format validation\n- Name cannot be empty\n- Must provide either file or linkedinUrl\n- No duplicate applications (same email + position)\n\nReturns:\n- 200: Application submitted successfully\n- 400: Invalid request (validation errors or duplicate application)\n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Applicant",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "type": "text",
+                  "value": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"+1234567890\",\n  \"deleteFile\": false\n}",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "{{filePath}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/applicants/{{applicantId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "applicants",
+                "{{applicantId}}"
+              ]
+            },
+            "description": "Update an existing applicant's information and file attachment. ADMIN only.\n\nForm Data Parameters:\n- data: JSON string containing updated applicant details with deleteFile flag (true to remove existing file)\n- file: Optional new file attachment (only if replacing existing file)\n\nValidations:\n- Applicant must exist\n- Email format validation (if email is being updated)\n- Phone format validation (if phone is being updated)\n- Cannot update positionId\n\nReturns:\n- 200: Applicant updated successfully\n- 400: Invalid request (validation errors)\n- 404: Applicant not found\n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Available Positions (Public)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/applicants/positions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "applicants",
+                "positions"
+              ]
+            },
+            "description": "Public endpoint to view available positions. No authentication required.\n\nReturns:\n- List of all active positions marked as external (external=true)\n- Sorted by creation date (most recent first)\n- Includes: id, title, description, createdAt\n\nUsed by external candidates to browse open job positions on the BTS website."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Position Detail (Public)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/applicants/positions/{{positionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "applicants",
+                "positions",
+                "{{positionId}}"
+              ]
+            },
+            "description": "Public endpoint to view detailed information about a specific position. No authentication required.\n\nValidations:\n- Position must exist\n- Position must be active (isActive=true)\n- Position must be external (external=true)\n\nReturns:\n- 200: Position details (id, title, description, fileUrl, createdAt)\n- 404: Position not found or not available\n\nUsed by external candidates to view full job description before applying."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Applicants (No Filters)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/applicants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "applicants"
+              ]
+            },
+            "description": "Get ALL applicants without any filters. ADMIN only.\n\nReturns complete list of all applicants from all positions with all statuses, enriched with position titles."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Applicants (Filter by Status)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/applicants?status=pending",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "applicants"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending",
+                  "description": "Filter by status: pending, invited, rejected"
+                }
+              ]
+            },
+            "description": "Get all applicants filtered by status only (across all positions). ADMIN only.\n\nValid status values:\n- pending: Applications awaiting review\n- invited: Applicant has been invited to assessment\n- rejected: Rejected applications\n\nReturns list of applicants from all positions with the specified status, enriched with position titles."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Applicants (Filter by Position)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/applicants?positionId={{positionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "applicants"
+              ],
+              "query": [
+                {
+                  "key": "positionId",
+                  "value": "{{positionId}}",
+                  "description": "Filter by position ID"
+                }
+              ]
+            },
+            "description": "Get all applicants for a specific position (all statuses). ADMIN only.\n\nReturns list of all applicants who applied to the specified position, regardless of status, enriched with position title."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Applicants (Search by Name, Email, or Position)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/applicants?search=john",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "applicants"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "john",
+                  "description": "Search in name, email, or position title (case-insensitive partial match)"
+                }
+              ]
+            },
+            "description": "Search applicants by name, email, or position title. ADMIN only.\n\nThe search parameter performs a case-insensitive partial match across multiple fields:\n- Applicant name (e.g., search=john matches \"John Doe\")\n- Applicant email (e.g., search=gmail matches \"candidate@gmail.com\")\n- Position title (e.g., search=developer matches \"Senior Developer\")\n\nReturns list of applicants where any of these fields contains the search term."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Applicants (All Filters Combined)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/applicants?status=pending&positionId={{positionId}}&search=kotlin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "applicants"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending",
+                  "description": "Filter by status: pending, invited, rejected"
+                },
+                {
+                  "key": "positionId",
+                  "value": "{{positionId}}",
+                  "description": "Filter by position ID"
+                },
+                {
+                  "key": "search",
+                  "value": "developer",
+                  "description": "Search in name, email, or position title (case-insensitive)"
+                }
+              ]
+            },
+            "description": "Get applicants with all filters combined (status + position + search). ADMIN only.\n\nAll filters work together:\n- status: Filter by application status (pending, invited, rejected)\n- positionId: Filter by specific position\n- search: Search in applicant name, email, or position title (case-insensitive partial match)\n\nExample: Find all pending applicants whose name, email, or position contains 'developer'."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Applicant by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/applicants/{{applicantId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "applicants",
+                "{{applicantId}}"
+              ]
+            },
+            "description": "Get detailed information about a specific applicant. ADMIN only.\n\nReturns:\n- 200: Applicant details with position title\n- 404: Applicant not found\n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Applicant Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"rejected\",\n  \"statusNote\": \"Does not meet the minimum experience requirement.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/applicants/{{applicantId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "applicants",
+                "{{applicantId}}",
+                "status"
+              ]
+            },
+            "description": "Update applicant status (pending, invited, rejected). ADMIN only.\n\nValid statuses:\n- pending: Initial status, awaiting review\n- invited: Applicant has been invited to assessment\n- rejected: Admin rejected the application\n\nOptional fields:\n- statusNote: Internal note tied to the current status. For rejections, this appears in the Google Chat notification but is NOT sent to the candidate. Cleared if omitted on next status update.\n\nThe system automatically records:\n- reviewedBy: ID of the admin who changed the status\n- reviewedAt: Timestamp of the status change\n- updatedAt: Timestamp of the update\n\nReturns:\n- 200: Status updated successfully\n- 400: Invalid status value or applicant not found\n- 500: Internal server error"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for managing external candidate applications. Public endpoint for candidates to apply, ADMIN endpoints to manage applications."
+    },
+    {
+      "name": "Privacy & GDPR",
+      "item": [
+        {
+          "name": "Request Data Erasure",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"candidate@example.com\",\n  \"captchaToken\": \"03AGdBq24...\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/applicants/privacy/erasures",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "applicants",
+                "privacy",
+                "erasures"
+              ]
+            },
+            "description": "Request data erasure (GDPR Right to be Forgotten). Public endpoint - no authentication required.\n\nProcess:\n1. User submits email and captcha token\n2. System validates captcha\n3. If applicant data exists, sends verification email with token\n4. User must click verification link to confirm deletion\n\nRequest Body:\n- email: Email address of the applicant\n- captchaToken: reCAPTCHA v3 token (action: 'delete_data')\n\nReturns:\n- 200: Verification email sent (or generic message if no data found)\n- 400: Invalid captcha or validation error\n\nNote: For security, always returns success message even if email not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm Data Erasure",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/applicants/privacy/erasures/{{privacyToken}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "applicants",
+                "privacy",
+                "erasures",
+                "{{privacyToken}}"
+              ]
+            },
+            "description": "Confirm data erasure using verification token. Public endpoint - no authentication required.\n\nProcess:\n1. User clicks verification link from email (contains token)\n2. System validates token (expires after 24 hours)\n3. Anonymizes all applicant records for that email\n4. Sends confirmation email\n\nPath Parameter:\n- token: Verification token from email link\n\nReturns:\n- 200: Data successfully anonymized with count of records processed\n- 400: Invalid/expired token, no data found, or already anonymized\n\nNote: Anonymization replaces personal data with generic values and marks status as ANONYMIZED."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Data Export",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"candidate@example.com\",\n  \"captchaToken\": \"03AGdBq24...\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/applicants/privacy/exports",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "applicants",
+                "privacy",
+                "exports"
+              ]
+            },
+            "description": "Request data export (GDPR Right to Data Portability). Public endpoint - no authentication required.\n\nProcess:\n1. User submits email and captcha token\n2. System validates captcha\n3. If applicant data exists, sends email with download link\n4. User must click download link to get data\n\nRequest Body:\n- email: Email address of the applicant\n- captchaToken: reCAPTCHA v3 token (action: 'download_data')\n\nReturns:\n- 200: Download link sent (or generic message if no data found)\n- 400: Invalid captcha or validation error\n\nNote: For security, always returns success message even if email not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Download Data Export",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/applicants/privacy/exports/{{privacyToken}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "applicants",
+                "privacy",
+                "exports",
+                "{{privacyToken}}"
+              ]
+            },
+            "description": "Download data export using verification token. Public endpoint - no authentication required.\n\nProcess:\n1. User clicks download link from email (contains token)\n2. System validates token (expires after 24 hours)\n3. Returns JSON file with all applicant data\n\nPath Parameter:\n- token: Verification token from email link\n\nReturns:\n- 200: JSON file download (Content-Disposition: attachment; filename=\"my_data_YYYY-MM-DD.json\")\n- 400: Invalid or expired token\n- 410: Data has been deleted/anonymized and is no longer available\n\nNote: Cannot download data that has been anonymized."
+          },
+          "response": []
+        }
+      ],
+      "description": "GDPR compliance endpoints for data privacy. Public endpoints (no authentication required) that allow applicants to:\n- Request data erasure (Right to be Forgotten)\n- Request data export (Right to Data Portability)\n\nAll requests require reCAPTCHA validation and email verification via token."
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "Spring Boot actuator health check endpoint."
+          },
+          "response": []
+        }
+      ],
+      "description": "Health and monitoring endpoints"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  }
+}

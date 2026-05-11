@@ -1,0 +1,192 @@
+@use '../../styles/core' as *;
+@use '../../styles/theme-variables' as sp;
+
+.pass {
+  position: relative;
+
+  a {
+    position: absolute;
+    top: -19px;
+    right: 8px;
+    font-size: 13px;
+    color: sp.$sp-text-muted;
+    cursor: pointer;
+
+    @include small {
+      top: -17px;
+      font-size: 11px;
+    }
+  }
+}
+
+.body-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 90%;
+  max-width: 300px;
+
+  .title {
+    margin: 30px 0 14px;
+    font-size: 20px;
+
+    @include small {
+      font-size: 16px;
+    }
+  }
+
+  .alert {
+    height: 40px;
+    margin: 12px 0 46px;
+
+    @include small {
+      height: 32px;
+    }
+
+    span {
+      margin-right: -14px;
+      padding-right: 0;
+      font-size: 16px;
+
+      @include small {
+        margin: 0;
+        font-size: 12px;
+      }
+    }
+
+    .alert-icon {
+      bottom: 1px;
+
+      @include small {
+        bottom: 0;
+      }
+    }
+  }
+
+  .input-container {
+    margin: 32px 0;
+  }
+
+  .login-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+  }
+
+  .google-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 8px;
+
+    #google-signin-button {
+      min-height: 42px;
+      display: flex;
+      justify-content: center;
+
+      ::ng-deep div[role='button'] {
+        @include sp.sp-gradient-bg;
+
+        box-shadow: sp.$sp-shadow-card, sp.$sp-shadow-glow-green;
+        border: none;
+        border-radius: sp.$sp-border-radius-sm;
+        transition: sp.$sp-transition-fast;
+
+        span {
+          color: sp.$sp-white;
+          text-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+          font-weight: 500;
+        }
+
+        svg,
+        img {
+          filter: drop-shadow(0 1px 3px rgb(0 0 0 / 0.3)) drop-shadow(0 0 2px rgb(255 255 255 / 0.8));
+        }
+
+        &:hover {
+          @include sp.sp-card-hover;
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+      }
+    }
+
+    #google-signin-button iframe {
+      margin: 0 auto;
+    }
+
+    #gis-error {
+      font-size: 14px;
+      color: sp.$sp-pending-orange;
+      width: 100%;
+      margin-block: 10px 2px;
+      text-align: center;
+
+      @include small {
+        font-size: 12px;
+      }
+    }
+  }
+
+  .auth0-login {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+
+    .auth0-button {
+      @include sp.sp-gradient-bg;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      min-width: 200px;
+      height: 42px;
+      padding: 0 24px;
+      border: none;
+      border-radius: sp.$sp-border-radius-sm;
+      box-shadow: sp.$sp-shadow-card, sp.$sp-shadow-glow-green;
+      cursor: pointer;
+      transition: sp.$sp-transition-fast;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      color: sp.$sp-white;
+      text-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+
+      &:hover {
+        @include sp.sp-card-hover;
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      @include small {
+        height: 38px;
+        min-width: 180px;
+        font-size: 13px;
+        padding: 0 20px;
+        gap: 10px;
+
+        .auth0-icon {
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+  }
+
+  .button-size {
+    height: 40px;
+
+    @include small {
+      height: 32px;
+    }
+  }
+}

@@ -1,0 +1,59 @@
+@use './theme-variables' as tv;
+
+// ==========================================================
+// Shared page layout wrappers — single source of truth
+
+// Replaces duplicated wrappers:
+//   - .manage-recruiters-wrapper (90%, 1200px)
+//   - .candidate-review-wrapper (90%, 1200px)
+//   - .global-recipients-wrapper (90%, 1200px)
+//   - .recruiter-candidates-wrapper (90%, 1200px)
+//   - .invite-candidate-wrapper (80%, 700px)
+
+// Usage:
+//   <div class="sp-page-wrapper">  — standard full-width layout
+//   <div class="sp-page-wrapper sp-page-wrapper--narrow"> — form/create
+// ==========================================================
+
+// Main view container for pages with the official background image
+.sp-main-container {
+  min-height: 100vh;
+  isolation: isolate;
+  background-image: url('/assets/images/backgrounds/invite-candidate-bg.avif');
+  background-size: cover;
+  background-position-y: center;
+  position: relative;
+  background-color: tv.$sp-white;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: tv.$sp-bg-overlay-dark;
+    z-index: -1;
+  }
+}
+
+.sp-page-wrapper {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 4.5rem;
+  padding-bottom: 3rem;
+
+  // Narrow variant for form-centric pages (create, invite, etc.)
+  &--narrow {
+    width: 80%;
+    max-width: 700px;
+  }
+}
+
+@media (width <= 991.98px) {
+  .sp-page-wrapper {
+    padding-top: 2.5rem;
+    width: 95%;
+  }
+}

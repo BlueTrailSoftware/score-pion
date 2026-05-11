@@ -1,0 +1,107 @@
+@use '../../styles/theme-variables' as tv;
+@use 'sass:color';
+
+.global-recipients-wrapper {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 4.5rem;
+}
+
+.search-box {
+  flex: 1;
+  max-width: 400px;
+
+  input {
+    border-radius: tv.$sp-border-radius-sm;
+  }
+}
+
+.card {
+  @include tv.sp-card-base;
+}
+
+.table {
+  margin-bottom: 0;
+
+  thead th {
+    background-color: tv.$sp-bg-light;
+    font-weight: 600;
+    border-bottom: 2px solid color.adjust(tv.$sp-text-muted, $lightness: 30%);
+  }
+
+  tbody tr:hover {
+    background-color: rgba(tv.$sp-accent-green, 0.05);
+  }
+
+  td {
+    vertical-align: middle;
+  }
+}
+
+.btn-action-edit {
+  color: tv.$sp-btn-outline-text;
+  background: transparent;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    color: tv.$sp-gradient-start;
+    background-color: rgba(tv.$sp-gradient-start, 0.08);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.btn-action-delete {
+  color: tv.$sp-text-muted;
+  background: transparent;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    color: tv.$sp-danger;
+    background-color: rgba(tv.$sp-danger, 0.08);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.empty-state-icon {
+  font-size: 2.5rem;
+  color: tv.$sp-text-muted;
+  opacity: 0.5;
+}
+
+.modal {
+  display: block;
+}
+
+.modal-content {
+  border-radius: tv.$sp-border-radius;
+  box-shadow: tv.$sp-shadow-modal;
+}
+
+@media (width <= 991.98px) {
+  .global-recipients-wrapper {
+    padding-top: 2.5rem;
+    width: 95%;
+  }
+
+  .table {
+    font-size: 0.875rem;
+  }
+
+  .btn-sm {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}

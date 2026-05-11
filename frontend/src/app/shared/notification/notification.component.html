@@ -1,0 +1,19 @@
+<div class="notification-container">
+  @for (notification of activeNotifications; track notification.id) {
+    <div
+      class="alert d-flex align-items-center justify-content-between position-relative notification-animate"
+      [ngClass]="getAlertClass(notification.type)"
+      [class.notification-hide]="notification.hiding"
+      (animationend)="onAnimationEnd(notification)"
+      role="alert"
+    >
+      <span class="flex-grow-1">{{ notification.message }}</span>
+      <button
+        type="button"
+        class="btn-close position-absolute end-0 top-50 translate-middle-y me-3"
+        aria-label="Close"
+        (click)="closeNotification(notification)"
+      ></button>
+    </div>
+  }
+</div>

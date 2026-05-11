@@ -1,0 +1,73 @@
+<div
+  class="position-card"
+  role="button"
+  tabindex="0"
+  (click)="onCardClick()"
+  (keydown)="onKeydown($event)"
+>
+  <div class="position-card-header">
+    <div class="position-title-row">
+      <h5 class="position-title">{{ position.title }}</h5>
+      @if (position.fileUrl) {
+        <a
+          [href]="position.fileUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="file-icon-link active"
+          (click)="$event.stopPropagation()"
+          title="View attached document"
+        >
+          <i class="bi bi-file-earmark-pdf"></i>
+        </a>
+      } @else {
+        <span
+          class="file-icon-link disabled"
+          title="No document available"
+        >
+          <i class="bi bi-file-earmark-pdf"></i>
+        </span>
+      }
+    </div>
+    <span class="position-date">
+      <i class="bi bi-calendar3 me-1"></i>
+      {{ position.createdAt | date: 'mediumDate' }}
+    </span>
+  </div>
+
+  <p class="position-description">{{ position.description }}</p>
+
+  @if (position.jobType || position.workMode || getExperienceLabel() || position.location) {
+    <div class="position-metadata">
+      @if (position.jobType) {
+        <span class="metadata-item"> <i class="bi bi-briefcase me-1"></i>{{ position.jobType }} </span>
+      }
+      @if (position.workMode) {
+        <span class="metadata-item"> <i class="bi bi-building me-1"></i>{{ position.workMode }} </span>
+      }
+      @if (getExperienceLabel(); as expLabel) {
+        <span class="metadata-item"> <i class="bi bi-clock-history me-1"></i>{{ expLabel }} </span>
+      }
+      @if (position.location) {
+        <span class="metadata-item"> <i class="bi bi-geo-alt me-1"></i>{{ position.location }} </span>
+      }
+    </div>
+  }
+
+  @if (position.skills && position.skills.length > 0) {
+    <div class="position-skills">
+      @for (skill of visibleSkills; track skill) {
+        <span class="skill-tag">{{ skill }}</span>
+      }
+      @if (remainingSkillsCount > 0) {
+        <span class="skill-tag more-tag">+{{ remainingSkillsCount }} more</span>
+      }
+    </div>
+  }
+
+  <div class="position-card-footer">
+    <button class="btn btn-outline-primary btn-sm view-details-btn">
+      View Details
+      <i class="bi bi-arrow-right ms-1"></i>
+    </button>
+  </div>
+</div>

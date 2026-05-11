@@ -1,0 +1,151 @@
+.form-animated-stack {
+  gap: 0.5rem;
+  transition: gap 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.form-animated-stack.has-message {
+  gap: 2.5rem;
+}
+
+.error-message-animate {
+  animation: dropIn 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.success-message-animate {
+  animation: dropIn 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.success-message-hide {
+  animation: fadeOutUp 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+// ============================================
+// BUTTONS
+// ============================================
+
+.btn-create {
+  margin: 1.5rem 0.5rem 0.5rem;
+}
+
+.invite-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.invite-header-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.invite-header-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.invite-header-subtitle {
+  color: #5f6b7a;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.invite-actions-dropdown {
+  display: flex;
+  align-self: flex-start;
+  flex-shrink: 0;
+}
+
+@keyframes dropIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.95);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeOutUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.95);
+  }
+}
+
+.modal-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90%;
+  overflow-wrap: break-word;
+}
+
+.invite-candidate-wrapper {
+  width: 80%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding-top: 4.5rem;
+  padding: 1.5rem 0;
+}
+
+.invite-candidate-card,
+.header-card {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.bg-gradient {
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 1.5rem rgb(17 153 142 / 0.15);
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 0.2rem rgb(56 239 125 / 0.25);
+  border-color: #38ef7d;
+}
+
+@media (width <= 991.98px) {
+  .gradient-bg-card {
+    width: 115%;
+    min-width: 105%;
+  }
+
+  .invite-candidate-wrapper {
+    padding-top: 2.5rem;
+    width: 95%;
+    padding: 1rem 0;
+  }
+}
+
+@media (width <= 575.98px) {
+  .invite-header-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .invite-header-title {
+    font-size: 1.25rem;
+  }
+
+  .invite-actions-dropdown {
+    width: 100%;
+  }
+
+  .invite-actions-dropdown .btn {
+    width: 100%;
+  }
+}

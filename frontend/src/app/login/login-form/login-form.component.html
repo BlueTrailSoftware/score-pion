@@ -1,0 +1,23 @@
+<div class="body-form">
+  <h3 class="title">Welcome to {{ companyName }}'s Score-Pion platform!</h3>
+  <div class="google-button">
+    <div #googleSignInContainer>
+      <!-- This div will be used for manual button rendering -->
+      <div id="google-signin-button"></div>
+    </div>
+
+    @if (gisErrorMessage !== null) {
+      <div id="gis-error">
+        {{ gisErrorMessage }}
+      </div>
+    }
+  </div>
+  <div class="auth0-login">
+    <button
+      class="auth0-button"
+      (click)="loginWithAuth0()"
+    >
+      <span>Continue with Auth0</span>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,116 @@
+// Modal styling for Request Assessment
+// Use tv for variables
+@use '../../../styles/theme-variables' as tv;
+
+// .modal-overlay is handled globally
+// .modal-content is handled globally
+
+.modal-header {
+  border-bottom: 1px solid #e9ecef;
+  padding: 1.25rem;
+
+  .modal-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+  }
+
+  .btn-close {
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+
+    &:not(:disabled):hover {
+      opacity: 0.75;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.modal-body {
+  padding: 1.5rem;
+
+  .form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .text-danger {
+    color: #dc3545;
+  }
+
+  .text-muted {
+    color: #6c757d;
+  }
+
+  .form-control {
+    border-radius: 0.25rem;
+
+    &.is-invalid {
+      border-color: #dc3545;
+      box-shadow: none;
+
+      &:focus {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.2rem rgb(220 53 69 / 0.25);
+      }
+    }
+
+    &:focus {
+      border-color: #80bdff;
+      box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 0.25);
+    }
+  }
+
+  .invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+
+  .input-group {
+    margin-bottom: 0.5rem;
+
+    .input-group-text {
+      border: 1px solid #ced4da;
+      padding: 0.375rem 0.75rem;
+    }
+  }
+}
+
+.modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+
+  .btn {
+    min-width: 100px;
+    font-weight: 500;
+
+    &:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (width <= 576px) {
+  .modal-dialog {
+    margin: 0.5rem;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 1rem;
+  }
+
+  .modal-title {
+    font-size: 1.1rem;
+  }
+}

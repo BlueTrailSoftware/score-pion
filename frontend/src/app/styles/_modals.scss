@@ -1,0 +1,22 @@
+// ==========================================================
+// Shared modal styles — single source of truth
+
+// Replaces 3 different overlay implementations:
+//   - manage-recruiters: .modal-overlay class
+//   - candidate-review / global-recipients: inline style
+//   - positions-manage: Bootstrap .modal-backdrop
+
+// Usage: always use .modal-overlay on the outermost modal div
+//   <div class="modal fade show d-block modal-overlay">
+// ==========================================================
+
+@use './theme-variables' as tv;
+
+.modal-overlay {
+  background-color: tv.$sp-bg-overlay-dark;
+}
+
+.modal-content {
+  border-radius: tv.$sp-border-radius;
+  box-shadow: tv.$sp-shadow-modal;
+}

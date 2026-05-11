@@ -1,0 +1,92 @@
+// ==========================================================
+// Shared status badge styles — single source of truth
+
+// Design: outline badges (colored border + subtle background)
+// Replaces scattered badge definitions in:
+//   - styles.scss (badge-status-invited/rejected/pending)
+//   - manage-recruiters.component.scss (badge-status-active/inactive)
+//   - position-detail.component.scss (status-badge, status-indicator)
+
+// Usage: apply via StatusBadgePipe or directly with class names.
+// ==========================================================
+
+@use './theme-variables' as tv;
+
+// Base badge mixin
+@mixin sp-badge-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.8rem;
+  border-radius: tv.$sp-border-radius-full;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: none;
+  cursor: help;
+}
+
+// Active / Invited — green
+.badge-status-active,
+.badge-status-invited {
+  @include sp-badge-base;
+
+  border-color: tv.$sp-status-active-border;
+  background-color: tv.$sp-status-active-bg;
+  color: tv.$sp-status-active-text;
+}
+
+// Pending — yellow / amber
+.badge-status-pending {
+  @include sp-badge-base;
+
+  border-color: tv.$sp-status-pending-border;
+  background-color: tv.$sp-status-pending-bg;
+  color: tv.$sp-status-pending-text;
+}
+
+// Inactive — gray
+.badge-status-inactive {
+  @include sp-badge-base;
+
+  border-color: tv.$sp-status-inactive-border;
+  background-color: tv.$sp-status-inactive-bg;
+  color: tv.$sp-status-inactive-text;
+}
+
+// Rejected — red
+.badge-status-rejected {
+  @include sp-badge-base;
+
+  border-color: tv.$sp-status-rejected-border;
+  background-color: tv.$sp-status-rejected-bg;
+  color: tv.$sp-status-rejected-text;
+}
+
+// Completed — blue
+.badge-status-completed {
+  @include sp-badge-base;
+
+  border-color: tv.$sp-status-completed-border;
+  background-color: tv.$sp-status-completed-bg;
+  color: tv.$sp-status-completed-text;
+}
+
+// Unknown / fallback
+.badge-status-unknown {
+  @include sp-badge-base;
+
+  border-color: tv.$sp-pastel-lavender-gray;
+  background-color: tv.$sp-bg-light;
+  color: tv.$sp-text-muted;
+}
+
+// Assessments count badge (non-status, informational)
+.badge-assessments-count {
+  display: inline-block;
+  padding: 0.3rem 0.75rem;
+  border-radius: tv.$sp-border-radius-full;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background-color: tv.$sp-badge-assessments-bg;
+  color: tv.$sp-badge-assessments-text;
+}

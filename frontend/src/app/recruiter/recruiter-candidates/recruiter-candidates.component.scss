@@ -1,0 +1,46 @@
+@use '../../styles/theme-variables' as tv;
+@use 'sass:color';
+
+.recruiter-candidates-wrapper {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 4.5rem;
+}
+
+.card {
+  border-radius: 1rem;
+  box-shadow:
+    0 0.5rem 1.5rem rgba(tv.$sp-text-dark, 0.1),
+    0 0.25rem 0.5rem rgba(tv.$sp-accent-green, 0.08);
+}
+
+.table {
+  margin-bottom: 0;
+
+  thead th {
+    background-color: tv.$sp-bg-light;
+    font-weight: 600;
+    border-bottom: 2px solid color.adjust(tv.$sp-text-muted, $lightness: 30%);
+    vertical-align: middle;
+  }
+
+  tbody tr:hover {
+    background-color: rgba(tv.$sp-accent-green, 0.05);
+  }
+
+  td {
+    vertical-align: middle;
+  }
+}
+
+@media (width <= 991.98px) {
+  .recruiter-candidates-wrapper {
+    padding-top: 2.5rem;
+    width: 95%;
+  }
+
+  .table {
+    font-size: 0.875rem;
+  }
+}

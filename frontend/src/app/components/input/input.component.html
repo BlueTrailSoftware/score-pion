@@ -1,0 +1,92 @@
+<div
+  class="floating-label-wrap"
+  [formGroup]="parentForm"
+>
+  @if (type === 'number') {
+    <input
+      #inputField
+      [type]="type"
+      class="form-control floating-label-field"
+      [id]="id"
+      [min]="min"
+      [max]="max"
+      [formControlName]="name"
+      autocomplete="off"
+      placeholder=" "
+      [ngClass]="{
+        error: displayError && control.errors,
+        'padding-left': withImage,
+      }"
+      (blur)="trimElement($event.target); checkForErrors(false)"
+      (focus)="focused()"
+      (keydown.space)="disableSpace($event)"
+    />
+  } @else {
+    <input
+      #inputField
+      [type]="type"
+      class="form-control floating-label-field"
+      [id]="id"
+      [formControlName]="name"
+      autocomplete="off"
+      placeholder=" "
+      [readonly]="isFromOldForm"
+      [ngClass]="{
+        error: displayError && control.errors,
+        'padding-left': withImage,
+        capitalize: capitalize,
+        'show-icon': showIcon,
+        'text-center': centerText,
+        'border-orange': dependecy,
+        'capitalize-text': isDatabaseInput,
+        'read-only': isFromOldForm,
+      }"
+      (blur)="trimElement($event.target); checkForErrors(false)"
+      (focus)="focused()"
+      (input)="onInput($event)"
+      (keydown.space)="disableSpace($event)"
+    />
+    @if (isDatabaseInput && showDeleteButton) {
+      <img
+        src="assets/images/icons/cancel.svg"
+        alt="Delete Icon"
+        class="delete-icon"
+        (click)="pressDelete()"
+      />
+    }
+  }
+
+  @if (showLabel) {
+    @if (!withImage) {
+      <label
+        [for]="id"
+        class="floating-label"
+        [ngClass]="{
+          'error-label': (displayError && control.errors) || dependecy,
+          'with-delete': isDatabaseInput && showDeleteButton,
+        }"
+        (click)="focusInput()"
+      >
+        {{ labelText }}
+      </label>
+    }
+  }
+
+  @if (displayError && control.errors) {
+    <div
+      class="errors"
+      [ngClass]="{
+        relative: relativeErrors,
+        'relative-mobile': relativeMobileErrors,
+      }"
+    >
+      <ng-container *ngFor="let error of errors | keyvalue">
+        @if (control.errors[error.key]) {
+          <small class="form-text hint overlap">
+            {{ error.value }}
+          </small>
+        }
+      </ng-container>
+    </div>
+  }
+</div>

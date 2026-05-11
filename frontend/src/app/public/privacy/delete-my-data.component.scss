@@ -1,0 +1,105 @@
+@use '../../styles/_privacy.scss' as p;
+@use '../../styles/theme-variables.scss' as tv;
+
+.privacy-container {
+  @include p.privacy-container;
+}
+
+.privacy-card {
+  @include p.privacy-card;
+}
+
+.privacy-header {
+  @include p.privacy-header;
+}
+
+.header-icon {
+  @include p.header-icon;
+
+  &.danger {
+    background-color: p.$sp-danger-light;
+    color: p.$sp-danger;
+  }
+}
+
+.privacy-title {
+  @include p.privacy-title;
+
+  &.danger {
+    color: p.$sp-danger;
+  }
+}
+
+.privacy-subtitle {
+  @include p.privacy-subtitle;
+}
+
+.warning-card {
+  @include p.alert-card;
+
+  background-color: p.$sp-danger-light;
+  border: 1px solid p.$sp-danger;
+}
+
+.warning-card-icon {
+  @include p.alert-card-icon;
+
+  color: p.$sp-danger;
+}
+
+.warning-card-content {
+  @include p.alert-card-content;
+
+  color: p.$sp-danger-dark;
+
+  strong {
+    color: p.$sp-danger;
+  }
+}
+
+.privacy-form {
+  @include p.privacy-form;
+}
+
+.form-label {
+  @include p.form-label;
+}
+
+.form-control {
+  @include p.form-control(p.$sp-danger, 0 0 0 0.2rem rgba(p.$sp-danger, 0.25));
+}
+
+.form-text {
+  @include p.form-text;
+}
+
+.success-card {
+  @include p.success-card;
+}
+
+.privacy-actions {
+  @include p.privacy-actions;
+}
+
+.btn-danger-gradient {
+  @include p.btn-gradient-primary;
+
+  background: linear-gradient(135deg, p.$sp-danger, #c82333);
+  box-shadow: 0 0.5rem 1.5rem rgba(p.$sp-danger, 0.15);
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 0.75rem 2rem rgba(p.$sp-danger, 0.25);
+  }
+}
+
+.spinner-border {
+  @include p.spinner-border;
+}
+
+@include p.privacy-responsive;
+
+@media (width <= 768px) {
+  .btn-danger-gradient {
+    width: 100%;
+  }
+}

@@ -1,0 +1,56 @@
+<div class="confirm-container">
+  <div class="confirm-card">
+    @if (loading) {
+      <div class="confirm-state">
+        <div class="state-icon loading">
+          <div
+            class="spinner-border"
+            role="status"
+          >
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        <h2 class="state-title">Preparing your data download...</h2>
+        <p class="state-subtitle">Please wait while we prepare your data.</p>
+      </div>
+    }
+
+    @if (success) {
+      <div class="confirm-state">
+        <div class="state-icon success">
+          <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <h2 class="state-title success">Download Started</h2>
+        <p class="state-message">Your data download has started automatically.</p>
+        <p class="state-subtitle">Check your downloads folder for the JSON file.</p>
+        <div class="mt-4">
+          <p class="text-muted small">Want to remove your data from our system?</p>
+          <a
+            routerLink="/privacy/delete-my-data"
+            class="btn btn-outline-danger btn-sm"
+          >
+            <i class="bi bi-trash3 me-2"></i>
+            Delete My Data
+          </a>
+        </div>
+      </div>
+    }
+
+    @if (error) {
+      <div class="confirm-state">
+        <div class="state-icon error">
+          <i class="bi bi-x-circle-fill"></i>
+        </div>
+        <h2 class="state-title error">Error</h2>
+        <p class="state-message">{{ error }}</p>
+        <a
+          href="/privacy/download-my-data"
+          class="btn btn-gradient-primary mt-4"
+        >
+          <i class="bi bi-arrow-clockwise me-2"></i>
+          Request New Link
+        </a>
+      </div>
+    }
+  </div>
+</div>

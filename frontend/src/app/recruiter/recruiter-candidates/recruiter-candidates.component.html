@@ -1,0 +1,91 @@
+<div class="card squared-form-wrapper">
+  <div class="recruiter-candidates-wrapper py-4">
+    <app-gradient-page-header
+      title="Review Candidates"
+      subtitle="Review candidates from your assigned positions."
+    >
+    </app-gradient-page-header>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="filters-container d-flex flex-wrap gap-3 align-items-end">
+          <div class="form-group flex-grow-1">
+            <label
+              for="filterSearch"
+              class="form-label small text-muted"
+              >Search</label
+            >
+            <input
+              type="text"
+              id="filterSearch"
+              class="form-control"
+              placeholder="Search by name, email or position..."
+              [(ngModel)]="filterSearch"
+              (input)="onFilterChange()"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @if (loading) {
+      <div class="text-center py-5">
+        <div
+          class="spinner-border text-success"
+          style="width: 3rem; height: 3rem"
+          role="status"
+        >
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    }
+
+    @if (!loading) {
+      <div class="card">
+        <div class="card-body">
+          @if (candidates.length === 0) {
+            <p class="text-muted text-center py-4">No candidates found.</p>
+          } @else {
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Position</th>
+                    <th>Invited At</th>
+                    <th>Assessments</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (candidate of candidates; track candidate.candidateEmail + candidate.positionId) {
+                    <tr>
+                      <td>{{ candidate.candidateName }}</td>
+                      <td>{{ candidate.candidateEmail }}</td>
+                      <td>{{ candidate.positionTitle ?? '—' }}</td>
+                      <td>{{ candidate.invitedAt | date: 'short' }}</td>
+                      <td class="text-center">
+                        @if (candidate.assessments.length) {
+                          <app-assessment-table [assessments]="candidate.assessments" />
+                        } @else {
+                          <span class="text-muted">—</span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+        <app-pagination
+          [currentPage]="currentPage"
+          [totalItems]="total"
+          [pageSize]="pageSize"
+          [disabled]="loading"
+          (pageChange)="onPageChange($event)"
+        />
+      </div>
+    }
+  </div>
+</div>
