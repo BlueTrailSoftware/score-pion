@@ -19,12 +19,12 @@ services:
     env_file: backend/.env
     environment:
       # Docker network overrides — these replace the values in backend/.env
-      # so the backend connects to sibling containers by their service names
+      # so the backend connects to sibling containers by their service names.
+      # SMTP is intentionally NOT overridden here: set SMTP_HOST/PORT in backend/.env
+      # to control email routing (mailpit for debug mode, real SMTP for production-like mode).
       - AWS_DYNAMODB_ENDPOINT=http://dynamodb-local:8000
       - AWS_ENDPOINT_URL_S3=http://minio:9000
       - AWS_S3_FORCE_PATH_STYLE=true
-      - SMTP_HOST=mailpit
-      - SMTP_PORT=1025
     depends_on:
       init-dynamodb:
         condition: service_completed_successfully
