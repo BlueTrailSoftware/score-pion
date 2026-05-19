@@ -1,4 +1,4 @@
-﻿package org.example.notifier.application.useCases
+package org.example.notifier.application.useCases
 
 import kotlinx.coroutines.runBlocking
 import org.example.notifier.application.service.core.OpenPositionService
@@ -11,6 +11,7 @@ import org.example.notifier.application.useCases.createPosition.CreatePositionUs
 import org.example.notifier.domain.position.OpenPosition
 import org.example.notifier.domain.position.OpenPositionAssessment
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
@@ -50,6 +51,7 @@ class CreatePositionUseCaseTest {
         notificationOrchestrator = mock(NotificationOrchestrator::class.java)
         fileService = mock(FileService::class.java)
         useCase = CreatePositionUseCase(openPositionService, assessmentPlatformService, notificationOrchestrator, fileService)
+        runBlocking { whenever(openPositionService.getAllPositions()).thenReturn(emptyList()) }
     }
 
     @Test
@@ -146,6 +148,29 @@ class CreatePositionUseCaseTest {
         val namesCaptor = argumentCaptor<Map<String, String>>()
         verify(openPositionService).createPosition(any(), namesCaptor.capture())
         assertEquals(mapOf("a-1" to "Java Test"), namesCaptor.firstValue)
+    }
+
+    @Test
+    fun `execute should reject duplicate title case-insensitively`() = runBlocking<Unit> {
+        val existing = position.copy(id = "pos-existing", title = "backend engineer")
+        whenever(openPositionService.getAllPositions()).thenReturn(listOf(existing))
+
+        val exception = assertThrows(IllegalArgumentException::class.java) {
+            runBlocking {
+                useCase.execute(
+                    CreatePositionCommand(
+                        title = "Backend Engineer",
+                        description = "Another backend role",
+                        external = false,
+                        assessmentIds = emptyList(),
+                        createdByEmail = "admin@example.com",
+                        workMode = "Remote",
+                        location = "Berlin"
+                    )
+                )
+            }
+        }
+        assertEquals("A position with the name 'Backend Engineer' already exists", exception.message)
     }
 
     @Test

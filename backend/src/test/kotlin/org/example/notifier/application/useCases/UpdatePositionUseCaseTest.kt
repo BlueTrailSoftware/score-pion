@@ -1,4 +1,4 @@
-﻿package org.example.notifier.application.useCases
+package org.example.notifier.application.useCases
 
 import kotlinx.coroutines.runBlocking
 import org.example.notifier.application.service.core.OpenPositionService
@@ -50,6 +50,7 @@ class UpdatePositionUseCaseTest {
         assessmentPlatformService = mock(AssessmentPlatformService::class.java)
         fileService = mock(FileService::class.java)
         useCase = UpdatePositionUseCase(openPositionService, assessmentPlatformService, fileService)
+        runBlocking { whenever(openPositionService.getAllPositions()).thenReturn(listOf(existingPosition)) }
     }
 
     @Test
@@ -321,5 +322,29 @@ class UpdatePositionUseCaseTest {
             isFileDeleted = true
         )
         assertEquals(true, result.isFileDeleted)
+    }
+
+    @Test
+    fun `execute should reject update when another position has the same title`() = runBlocking<Unit> {
+        val conflicting = OpenPosition(
+            id = "pos-2",
+            title = "updated title",
+            description = "Other role",
+            createdBy = "admin@example.com"
+        )
+        whenever(openPositionService.getPosition("pos-1")).thenReturn(existingPosition)
+        whenever(openPositionService.getAllPositions()).thenReturn(listOf(existingPosition, conflicting))
+
+        assertThrows<IllegalArgumentException> {
+            useCase.execute(
+                UpdatePositionCommand(
+                    positionId = "pos-1",
+                    title = "Updated Title",
+                    description = "New desc",
+                    external = false,
+                    assessmentIds = emptyList()
+                )
+            )
+        }
     }
 }
