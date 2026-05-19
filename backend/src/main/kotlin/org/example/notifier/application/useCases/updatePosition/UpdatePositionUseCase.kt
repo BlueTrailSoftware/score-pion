@@ -1,4 +1,4 @@
-﻿package org.example.notifier.application.useCases.updatePosition
+package org.example.notifier.application.useCases.updatePosition
 
 import org.example.notifier.application.service.core.OpenPositionService
 import org.example.notifier.application.service.integration.AssessmentPlatformService
@@ -31,6 +31,11 @@ class UpdatePositionUseCase(
 
         val currentPosition = openPositionService.getPosition(command.positionId)
             ?: throw IllegalArgumentException("Position not found with id: ${command.positionId}")
+
+        val allPositions = openPositionService.getAllPositions()
+        require(allPositions.none { it.id != command.positionId && it.title.equals(command.title.trim(), ignoreCase = true) }) {
+            "A position with the name '${command.title}' already exists"
+        }
 
         val availableAssessments = assessmentPlatformService.getAvailableAssessments()
         val assessmentNames = availableAssessments

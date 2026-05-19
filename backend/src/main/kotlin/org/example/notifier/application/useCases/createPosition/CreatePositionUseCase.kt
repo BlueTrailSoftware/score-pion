@@ -1,4 +1,4 @@
-﻿package org.example.notifier.application.useCases.createPosition
+package org.example.notifier.application.useCases.createPosition
 
 import org.example.notifier.application.service.core.OpenPositionService
 import org.example.notifier.application.service.integration.AssessmentPlatformService
@@ -31,6 +31,11 @@ class CreatePositionUseCase(
             experienceMax = command.experienceMax,
             skills = command.skills
         )
+
+        val allPositions = openPositionService.getAllPositions()
+        require(allPositions.none { it.title.equals(command.title.trim(), ignoreCase = true) }) {
+            "A position with the name '${command.title}' already exists"
+        }
 
         val availableAssessments = assessmentPlatformService.getAvailableAssessments()
         val assessmentNames = availableAssessments
