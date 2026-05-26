@@ -1,4 +1,4 @@
-﻿package org.example.notifier.application.useCases.inviteCandidate
+package org.example.notifier.application.useCases.inviteCandidate
 
 import kotlinx.coroutines.runBlocking
 import org.example.notifier.application.service.core.ApplicantService
@@ -7,9 +7,9 @@ import org.example.notifier.application.service.core.OpenPositionService
 import org.example.notifier.application.service.core.UserService
 import org.example.notifier.application.service.integration.AssessmentInfo
 import org.example.notifier.application.service.integration.AssessmentPlatformService
-import org.example.notifier.application.service.notification.NotificationOrchestrator
 import org.example.notifier.domain.applicant.Applicant
 import org.example.notifier.domain.applicant.ApplicantStatus
+import org.example.notifier.domain.event.CandidateInvitedEvent
 import org.example.notifier.domain.position.OpenPosition
 import org.example.notifier.domain.position.OpenPositionAssessment
 import org.example.notifier.domain.user.User
@@ -25,6 +25,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
+import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDateTime
 
 class InviteCandidateUseCaseTest {
@@ -34,7 +35,7 @@ class InviteCandidateUseCaseTest {
     private lateinit var assessmentPlatformService: AssessmentPlatformService
     private lateinit var invitationService: InvitationService
     private lateinit var userService: UserService
-    private lateinit var notificationOrchestrator: NotificationOrchestrator
+    private lateinit var eventPublisher: ApplicationEventPublisher
     private lateinit var logger: LoggerPort
     private lateinit var useCase: InviteCandidateUseCase
 
@@ -53,7 +54,7 @@ class InviteCandidateUseCaseTest {
         assessmentPlatformService = mock(AssessmentPlatformService::class.java)
         invitationService = mock(InvitationService::class.java)
         userService = mock(UserService::class.java)
-        notificationOrchestrator = mock(NotificationOrchestrator::class.java)
+        eventPublisher = mock(ApplicationEventPublisher::class.java)
         logger = mock(LoggerPort::class.java)
         useCase = InviteCandidateUseCase(
             applicantService,
@@ -61,7 +62,7 @@ class InviteCandidateUseCaseTest {
             assessmentPlatformService,
             invitationService,
             userService,
-            notificationOrchestrator,
+            eventPublisher,
             logger
         )
     }
@@ -157,41 +158,33 @@ class InviteCandidateUseCaseTest {
         })
     }
 
-    // --- notifications ---
+    // --- events ---
 
     @Test
-    fun `execute sends candidate and recruiter notifications on success`() = runBlocking<Unit> {
+    fun `execute publishes candidate invited event on success`() = runBlocking<Unit> {
         whenever(applicantService.findByEmailAndPositionId(any(), any())).thenReturn(null)
         whenever(openPositionService.getPositionAssessments(positionId))
             .thenReturn(listOf(buildAssessment("a-1", "Java Test")))
         whenever(assessmentPlatformService.getAvailableAssessments()).thenReturn(availableAssessments)
         whenever(invitationService.createInvitation(any())).thenAnswer { it.arguments[0] }
-        val position = buildPosition("Senior Developer")
-        val recruiter = buildRecruiter()
-        whenever(openPositionService.getPosition(positionId)).thenReturn(position)
-        whenever(userService.findById(recruiterId)).thenReturn(recruiter)
+        whenever(openPositionService.getPosition(positionId)).thenReturn(buildPosition("Senior Developer"))
+        whenever(userService.findById(recruiterId)).thenReturn(buildRecruiter())
 
         useCase.execute(buildCommand())
 
-        verify(notificationOrchestrator).notifyCandidateInvitation(
-            candidateEmail = "candidate@example.com",
-            candidateName = "John Doe",
-            positionTitle = "Senior Developer",
-            recruiterName = "Recruiter Name",
-            assessmentsCount = 1
-        )
-        verify(notificationOrchestrator).notifyRecruiterCandidateInvitation(
-            recruiterEmail = "recruiter@example.com",
-            recruiterName = "Recruiter Name",
-            candidateName = "John Doe",
-            candidateEmail = "candidate@example.com",
-            positionTitle = "Senior Developer",
-            assessmentsCount = 1
-        )
+        verify(eventPublisher).publishEvent(argThat<CandidateInvitedEvent> { event ->
+            event is CandidateInvitedEvent
+                && event.candidateEmail == "candidate@example.com"
+                && event.candidateName == "John Doe"
+                && event.positionTitle == "Senior Developer"
+                && event.recruiterEmail == "recruiter@example.com"
+                && event.recruiterName == "Recruiter Name"
+                && event.assessmentsCount == 1
+        })
     }
 
     @Test
-    fun `execute does not send notifications when all assessment invitations fail`() = runBlocking<Unit> {
+    fun `execute does not publish event when all assessment invitations fail`() = runBlocking<Unit> {
         whenever(applicantService.findByEmailAndPositionId(any(), any())).thenReturn(null)
         whenever(openPositionService.getPositionAssessments(positionId))
             .thenReturn(listOf(buildAssessment("a-1", "Java Test")))
@@ -201,12 +194,11 @@ class InviteCandidateUseCaseTest {
 
         useCase.execute(buildCommand())
 
-        verify(notificationOrchestrator, never()).notifyCandidateInvitation(any(), any(), any(), any(), any())
-        verify(notificationOrchestrator, never()).notifyRecruiterCandidateInvitation(any(), any(), any(), any(), any(), any())
+        verify(eventPublisher, never()).publishEvent(argThat<Any> { event -> event is CandidateInvitedEvent })
     }
 
     @Test
-    fun `execute does not send notifications when assessment not found in available list`() = runBlocking<Unit> {
+    fun `execute does not publish event when assessment not found in available list`() = runBlocking<Unit> {
         whenever(applicantService.findByEmailAndPositionId(any(), any())).thenReturn(null)
         whenever(openPositionService.getPositionAssessments(positionId))
             .thenReturn(listOf(buildAssessment("unknown-id", "Unknown")))
@@ -214,12 +206,12 @@ class InviteCandidateUseCaseTest {
 
         useCase.execute(buildCommand())
 
-        verify(notificationOrchestrator, never()).notifyCandidateInvitation(any(), any(), any(), any(), any())
+        verify(eventPublisher, never()).publishEvent(argThat<Any> { event -> event is CandidateInvitedEvent })
         verify(invitationService, never()).createInvitation(any())
     }
 
     @Test
-    fun `execute sends notifications when at least one assessment succeeds`() = runBlocking<Unit> {
+    fun `execute publishes event when at least one assessment succeeds`() = runBlocking<Unit> {
         whenever(applicantService.findByEmailAndPositionId(any(), any())).thenReturn(null)
         whenever(openPositionService.getPositionAssessments(positionId))
             .thenReturn(listOf(buildAssessment("a-1", "Java Test"), buildAssessment("a-2", "SQL Test")))
@@ -232,11 +224,11 @@ class InviteCandidateUseCaseTest {
 
         useCase.execute(buildCommand())
 
-        verify(notificationOrchestrator).notifyCandidateInvitation(any(), any(), any(), any(), any())
+        verify(eventPublisher).publishEvent(argThat<Any> { event -> event is CandidateInvitedEvent })
     }
 
     @Test
-    fun `execute does not send notifications when createInvitation fails for all assessments`() = runBlocking<Unit> {
+    fun `execute does not publish event when createInvitation fails for all assessments`() = runBlocking<Unit> {
         whenever(applicantService.findByEmailAndPositionId(any(), any())).thenReturn(null)
         whenever(openPositionService.getPositionAssessments(positionId))
             .thenReturn(listOf(buildAssessment("a-1", "Java Test")))
@@ -245,7 +237,7 @@ class InviteCandidateUseCaseTest {
 
         useCase.execute(buildCommand())
 
-        verify(notificationOrchestrator, never()).notifyCandidateInvitation(any(), any(), any(), any(), any())
+        verify(eventPublisher, never()).publishEvent(argThat<Any> { event -> event is CandidateInvitedEvent })
     }
 
     @Test
@@ -260,22 +252,7 @@ class InviteCandidateUseCaseTest {
     }
 
     @Test
-    fun `execute does not throw when notification fails`() = runBlocking<Unit> {
-        whenever(applicantService.findByEmailAndPositionId(any(), any())).thenReturn(null)
-        whenever(openPositionService.getPositionAssessments(positionId))
-            .thenReturn(listOf(buildAssessment("a-1", "Java Test")))
-        whenever(assessmentPlatformService.getAvailableAssessments()).thenReturn(availableAssessments)
-        whenever(invitationService.createInvitation(any())).thenAnswer { it.arguments[0] }
-        whenever(openPositionService.getPosition(positionId)).thenReturn(buildPosition("Dev"))
-        whenever(userService.findById(recruiterId)).thenReturn(buildRecruiter())
-        whenever(notificationOrchestrator.notifyCandidateInvitation(any(), any(), any(), any(), any()))
-            .thenThrow(RuntimeException("notification error"))
-
-        useCase.execute(buildCommand())
-    }
-
-    @Test
-    fun `execute does not send notifications when position not found`() = runBlocking<Unit> {
+    fun `execute does not publish event when position not found`() = runBlocking<Unit> {
         whenever(applicantService.findByEmailAndPositionId(any(), any())).thenReturn(null)
         whenever(openPositionService.getPositionAssessments(positionId))
             .thenReturn(listOf(buildAssessment("a-1", "Java Test")))
@@ -286,7 +263,7 @@ class InviteCandidateUseCaseTest {
 
         useCase.execute(buildCommand())
 
-        verify(notificationOrchestrator, never()).notifyCandidateInvitation(any(), any(), any(), any(), any())
+        verify(eventPublisher, never()).publishEvent(argThat<Any> { event -> event is CandidateInvitedEvent })
     }
 
     // --- helpers ---

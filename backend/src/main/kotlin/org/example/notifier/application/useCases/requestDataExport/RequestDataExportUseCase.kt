@@ -2,9 +2,10 @@ package org.example.notifier.application.useCases.requestDataExport
 
 import org.example.notifier.application.service.core.ApplicantService
 import org.example.notifier.application.service.integration.CaptchaService
-import org.example.notifier.application.service.notification.NotificationOrchestrator
 import org.example.notifier.application.service.security.PrivacyTokenService
+import org.example.notifier.domain.event.DataExportRequestedEvent
 import org.example.notifier.infrastructure.logging.LoggerPort
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 
 @Component
@@ -12,7 +13,7 @@ class RequestDataExportUseCase(
     private val captchaService: CaptchaService,
     private val applicantService: ApplicantService,
     private val privacyTokenService: PrivacyTokenService,
-    private val notificationOrchestrator: NotificationOrchestrator,
+    private val eventPublisher: ApplicationEventPublisher,
     private val logger: LoggerPort
 ) {
 
@@ -31,7 +32,7 @@ class RequestDataExportUseCase(
         }
 
         val token = privacyTokenService.generateDownloadToken(command.email)
-        notificationOrchestrator.notifyDataExportRequest(command.email, token)
+        eventPublisher.publishEvent(DataExportRequestedEvent(email = command.email, token = token))
 
         return RequestDataExportResult.DownloadEmailSent
     }

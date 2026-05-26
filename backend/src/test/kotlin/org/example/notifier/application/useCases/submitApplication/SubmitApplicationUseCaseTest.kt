@@ -1,4 +1,4 @@
-﻿package org.example.notifier.application.useCases.submitApplication
+package org.example.notifier.application.useCases.submitApplication
 
 import kotlinx.coroutines.runBlocking
 import org.example.notifier.application.service.core.ApplicantService
@@ -6,9 +6,9 @@ import org.example.notifier.application.service.core.InvitationService
 import org.example.notifier.application.service.core.OpenPositionService
 import org.example.notifier.application.service.file.FileService
 import org.example.notifier.application.service.integration.CaptchaService
-import org.example.notifier.application.service.notification.NotificationOrchestrator
 import org.example.notifier.domain.applicant.Applicant
 import org.example.notifier.domain.applicant.ApplicantStatus
+import org.example.notifier.domain.event.CandidateApplicationEvent
 import org.example.notifier.domain.position.OpenPosition
 import org.example.notifier.infrastructure.logging.LoggerPort
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -18,10 +18,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.codec.multipart.FilePart
 import java.time.LocalDateTime
 
@@ -32,7 +34,7 @@ class SubmitApplicationUseCaseTest {
     private lateinit var invitationService: InvitationService
     private lateinit var openPositionService: OpenPositionService
     private lateinit var fileService: FileService
-    private lateinit var notificationOrchestrator: NotificationOrchestrator
+    private lateinit var eventPublisher: ApplicationEventPublisher
     private lateinit var logger: LoggerPort
     private lateinit var useCase: SubmitApplicationUseCase
 
@@ -66,7 +68,7 @@ class SubmitApplicationUseCaseTest {
         invitationService = mock(InvitationService::class.java)
         openPositionService = mock(OpenPositionService::class.java)
         fileService = mock(FileService::class.java)
-        notificationOrchestrator = mock(NotificationOrchestrator::class.java)
+        eventPublisher = mock(ApplicationEventPublisher::class.java)
         logger = mock(LoggerPort::class.java)
         useCase = SubmitApplicationUseCase(
             captchaService = captchaService,
@@ -74,7 +76,7 @@ class SubmitApplicationUseCaseTest {
             invitationService = invitationService,
             openPositionService = openPositionService,
             fileService = fileService,
-            notificationOrchestrator = notificationOrchestrator,
+            eventPublisher = eventPublisher,
             logger = logger,
             dataRetentionMonths = 12L
         )
@@ -228,14 +230,31 @@ class SubmitApplicationUseCaseTest {
     }
 
     @Test
-    fun `execute does not throw when notification fails`() = runBlocking<Unit> {
+    fun `execute publishes candidate application event on success`() = runBlocking<Unit> {
         whenever(captchaService.validateToken(any(), any())).thenReturn(true)
         whenever(openPositionService.getPosition(positionId)).thenReturn(activePosition)
         whenever(applicantService.findByEmailAndPositionId(any(), any())).thenReturn(null)
         whenever(invitationService.existsForCandidateAndPosition(any(), any())).thenReturn(false)
         whenever(applicantService.createApplicant(any())).thenReturn(savedApplicant)
-        whenever(notificationOrchestrator.notifyCandidateApplication(any(), any(), any(), any()))
-            .thenThrow(RuntimeException("SMTP error"))
+
+        useCase.execute(buildCommand(filePart = null, linkedinUrl = "https://linkedin.com/in/jane"))
+
+        verify(eventPublisher).publishEvent(argThat<CandidateApplicationEvent> { event ->
+            event is CandidateApplicationEvent
+                && event.candidateEmail == "jane@example.com"
+                && event.candidateName == "Jane Doe"
+                && event.positionTitle == "Backend Engineer"
+        })
+    }
+
+    @Test
+    fun `execute does not throw when event publishing fails`() = runBlocking<Unit> {
+        whenever(captchaService.validateToken(any(), any())).thenReturn(true)
+        whenever(openPositionService.getPosition(positionId)).thenReturn(activePosition)
+        whenever(applicantService.findByEmailAndPositionId(any(), any())).thenReturn(null)
+        whenever(invitationService.existsForCandidateAndPosition(any(), any())).thenReturn(false)
+        whenever(applicantService.createApplicant(any())).thenReturn(savedApplicant)
+        whenever(eventPublisher.publishEvent(any())).thenThrow(RuntimeException("event bus down"))
 
         val result = useCase.execute(buildCommand())
 

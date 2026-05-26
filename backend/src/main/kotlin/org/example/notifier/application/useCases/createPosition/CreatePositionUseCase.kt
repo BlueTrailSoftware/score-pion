@@ -1,22 +1,23 @@
 package org.example.notifier.application.useCases.createPosition
 
-import org.example.notifier.application.service.core.OpenPositionService
-import org.example.notifier.application.service.integration.AssessmentPlatformService
-import org.example.notifier.application.service.notification.NotificationOrchestrator
 import org.example.notifier.application.model.position.PositionAssessmentItem
 import org.example.notifier.application.model.position.PositionResult
+import org.example.notifier.application.service.core.OpenPositionService
 import org.example.notifier.application.service.file.FileService
+import org.example.notifier.application.service.integration.AssessmentPlatformService
 import org.example.notifier.application.util.validatePositionExtendedFields
+import org.example.notifier.domain.event.PositionCreatedNotificationEvent
 import org.example.notifier.domain.position.OpenPosition
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 
 @Component
 class CreatePositionUseCase(
     private val openPositionService: OpenPositionService,
     private val assessmentPlatformService: AssessmentPlatformService,
-    private val notificationOrchestrator: NotificationOrchestrator,
+    private val eventPublisher: ApplicationEventPublisher,
     private val fileService: FileService
-    ) {
+) {
 
     private companion object {
         private const val UNKNOWN_ASSESSMENT_NAME = "Unknown Assessment"
@@ -67,10 +68,12 @@ class CreatePositionUseCase(
         val assessments = openPositionService.getPositionAssessments(position.id)
             .map { PositionAssessmentItem(it.assessmentId, it.assessmentName, it.addedAt) }
 
-        notificationOrchestrator.notifyPositionCreated(
-            createdBy = command.createdByEmail,
-            position = position,
-            assessmentNames = assessmentNames.values.toList()
+        eventPublisher.publishEvent(
+            PositionCreatedNotificationEvent(
+                createdBy = command.createdByEmail,
+                position = position,
+                assessmentNames = assessmentNames.values.toList()
+            )
         )
 
         return PositionResult(

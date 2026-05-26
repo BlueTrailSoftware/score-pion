@@ -2,16 +2,17 @@ package org.example.notifier.application.useCases.syncRecruiterPositions
 
 import org.example.notifier.application.service.core.OpenPositionService
 import org.example.notifier.application.service.core.UserService
-import org.example.notifier.application.service.notification.NotificationOrchestrator
+import org.example.notifier.domain.event.RecruiterPositionsAssignedEvent
 import org.example.notifier.domain.position.OpenPosition
 import org.example.notifier.infrastructure.logging.LoggerPort
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 
 @Component
 class SyncRecruiterPositionsUseCase(
     private val openPositionService: OpenPositionService,
     private val userService: UserService,
-    private val notificationOrchestrator: NotificationOrchestrator,
+    private val eventPublisher: ApplicationEventPublisher,
     private val logger: LoggerPort
 ) {
 
@@ -39,26 +40,28 @@ class SyncRecruiterPositionsUseCase(
             }
 
         val assignedPositions = openPositionService.getPositionsByIdsBatch(command.positionIds)
-        notifyRecruiter(command.recruiterId, assignedPositions)
+        publishRecruiterAssignmentEvent(command.recruiterId, assignedPositions)
     }
 
-    private suspend fun notifyRecruiter(recruiterId: String, positions: List<OpenPosition>) {
+    private suspend fun publishRecruiterAssignmentEvent(recruiterId: String, positions: List<OpenPosition>) {
         val recruiter = userService.findById(recruiterId)
 
         if (recruiter == null) {
-            logger.error("Cannot send position assignment: Recruiter not found with ID: {}", recruiterId)
+            logger.error("Cannot publish position assignment event: Recruiter not found with ID: {}", recruiterId)
             return
         }
 
         if (recruiter.email.isBlank()) {
-            logger.error("Cannot send position assignment: Recruiter has no email. ID: {}", recruiterId)
+            logger.error("Cannot publish position assignment event: Recruiter has no email. ID: {}", recruiterId)
             return
         }
 
-        notificationOrchestrator.notifyPositionAssignment(
-            recruiterEmail = recruiter.email,
-            recruiterName = recruiter.name,
-            positions = positions
+        eventPublisher.publishEvent(
+            RecruiterPositionsAssignedEvent(
+                recruiterEmail = recruiter.email,
+                recruiterName = recruiter.name,
+                positions = positions
+            )
         )
     }
 }

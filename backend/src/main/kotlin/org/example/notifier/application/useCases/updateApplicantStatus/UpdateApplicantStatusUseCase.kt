@@ -1,4 +1,4 @@
-﻿package org.example.notifier.application.useCases.updateApplicantStatus
+package org.example.notifier.application.useCases.updateApplicantStatus
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -10,13 +10,14 @@ import org.example.notifier.application.service.core.ApplicantService
 import org.example.notifier.application.service.core.InvitationService
 import org.example.notifier.application.service.core.OpenPositionService
 import org.example.notifier.application.service.integration.AssessmentPlatformService
-import org.example.notifier.application.service.notification.NotificationOrchestrator
 import org.example.notifier.domain.applicant.Applicant
 import org.example.notifier.domain.applicant.ApplicantStatus
+import org.example.notifier.domain.event.ApplicantStatusChangedEvent
 import org.example.notifier.domain.invitation.Invitation
 import org.example.notifier.domain.position.OpenPosition
 import org.example.notifier.domain.shared.SystemConstants
 import org.example.notifier.infrastructure.logging.LoggerPort
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 
 @Component
@@ -25,7 +26,7 @@ class UpdateApplicantStatusUseCase(
     private val openPositionService: OpenPositionService,
     private val assessmentPlatformService: AssessmentPlatformService,
     private val invitationService: InvitationService,
-    private val notificationOrchestrator: NotificationOrchestrator,
+    private val eventPublisher: ApplicationEventPublisher,
     private val logger: LoggerPort
 ) {
 
@@ -54,14 +55,17 @@ class UpdateApplicantStatusUseCase(
             ApplicantStatus.INVITED -> {
                 if (position != null) {
                     try {
-                        notificationOrchestrator.notifyApplicantApproval(
-                            applicantEmail = applicant.email,
-                            applicantName = applicant.name,
-                            positionTitle = position.title,
-                            reviewedBy = reviewedByEmail
+                        eventPublisher.publishEvent(
+                            ApplicantStatusChangedEvent(
+                                applicantEmail = applicant.email,
+                                applicantName = applicant.name,
+                                positionTitle = position.title,
+                                newStatus = ApplicantStatus.INVITED,
+                                reviewedBy = reviewedByEmail
+                            )
                         )
                     } catch (e: Exception) {
-                        logger.error("Failed to send approval notification for applicant {}: {}", applicant.id, e.message)
+                        logger.error("Failed to publish approval event for applicant {}: {}", applicant.id, e.message)
                     }
                 } else {
                     logger.warn("Position not found for applicant {}, skipping notification", applicant.id)
@@ -71,15 +75,18 @@ class UpdateApplicantStatusUseCase(
             ApplicantStatus.REJECTED -> {
                 if (position != null) {
                     try {
-                        notificationOrchestrator.notifyApplicantRejection(
-                            applicantEmail = applicant.email,
-                            applicantName = applicant.name,
-                            positionTitle = position.title,
-                            statusNote = statusNote,
-                            reviewedBy = reviewedByEmail
+                        eventPublisher.publishEvent(
+                            ApplicantStatusChangedEvent(
+                                applicantEmail = applicant.email,
+                                applicantName = applicant.name,
+                                positionTitle = position.title,
+                                newStatus = ApplicantStatus.REJECTED,
+                                reviewedBy = reviewedByEmail,
+                                statusNote = statusNote
+                            )
                         )
                     } catch (e: Exception) {
-                        logger.error("Failed to send rejection notification for applicant {}: {}", applicant.id, e.message)
+                        logger.error("Failed to publish rejection event for applicant {}: {}", applicant.id, e.message)
                     }
                 } else {
                     logger.warn("Position not found for applicant {}, skipping notification", applicant.id)

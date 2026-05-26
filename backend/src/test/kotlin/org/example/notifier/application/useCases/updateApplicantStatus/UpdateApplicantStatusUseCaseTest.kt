@@ -1,4 +1,4 @@
-﻿package org.example.notifier.application.useCases.updateApplicantStatus
+package org.example.notifier.application.useCases.updateApplicantStatus
 
 import kotlinx.coroutines.runBlocking
 import org.example.notifier.application.service.core.ApplicantService
@@ -6,9 +6,9 @@ import org.example.notifier.application.service.core.InvitationService
 import org.example.notifier.application.service.core.OpenPositionService
 import org.example.notifier.application.service.integration.AssessmentInfo
 import org.example.notifier.application.service.integration.AssessmentPlatformService
-import org.example.notifier.application.service.notification.NotificationOrchestrator
 import org.example.notifier.domain.applicant.Applicant
 import org.example.notifier.domain.applicant.ApplicantStatus
+import org.example.notifier.domain.event.ApplicantStatusChangedEvent
 import org.example.notifier.domain.position.OpenPosition
 import org.example.notifier.domain.position.OpenPositionAssessment
 import org.example.notifier.domain.user.User
@@ -25,6 +25,7 @@ import org.mockito.kotlin.argThat
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDateTime
 
 class UpdateApplicantStatusUseCaseTest {
@@ -33,7 +34,7 @@ class UpdateApplicantStatusUseCaseTest {
     private lateinit var openPositionService: OpenPositionService
     private lateinit var assessmentPlatformService: AssessmentPlatformService
     private lateinit var invitationService: InvitationService
-    private lateinit var notificationOrchestrator: NotificationOrchestrator
+    private lateinit var eventPublisher: ApplicationEventPublisher
     private lateinit var logger: LoggerPort
     private lateinit var useCase: UpdateApplicantStatusUseCase
 
@@ -51,14 +52,14 @@ class UpdateApplicantStatusUseCaseTest {
         openPositionService = mock(OpenPositionService::class.java)
         assessmentPlatformService = mock(AssessmentPlatformService::class.java)
         invitationService = mock(InvitationService::class.java)
-        notificationOrchestrator = mock(NotificationOrchestrator::class.java)
+        eventPublisher = mock(ApplicationEventPublisher::class.java)
         logger = mock(LoggerPort::class.java)
         useCase = UpdateApplicantStatusUseCase(
             applicantService,
             openPositionService,
             assessmentPlatformService,
             invitationService,
-            notificationOrchestrator,
+            eventPublisher,
             logger
         )
     }
@@ -92,10 +93,10 @@ class UpdateApplicantStatusUseCaseTest {
         assertNull(result.positionTitle)
     }
 
-    // --- INVITED notifications ---
+    // --- INVITED events ---
 
     @Test
-    fun `execute sends approval notification when status is INVITED`() = runBlocking<Unit> {
+    fun `execute publishes approval event when status is INVITED`() = runBlocking<Unit> {
         val applicant = buildApplicant(ApplicantStatus.INVITED)
         val position = buildPosition("Senior Dev")
         whenever(applicantService.updateApplicantStatus(any(), any(), any(), anyOrNull())).thenReturn(applicant)
@@ -107,16 +108,18 @@ class UpdateApplicantStatusUseCaseTest {
 
         useCase.execute(buildCommand("INVITED"))
 
-        verify(notificationOrchestrator).notifyApplicantApproval(
-            applicantEmail = "test@example.com",
-            applicantName = "Test",
-            positionTitle = "Senior Dev",
-            reviewedBy = "admin@test.com"
-        )
+        verify(eventPublisher).publishEvent(argThat<Any> { event ->
+            event is ApplicantStatusChangedEvent
+                && event.applicantEmail == "test@example.com"
+                && event.applicantName == "Test"
+                && event.positionTitle == "Senior Dev"
+                && event.newStatus == ApplicantStatus.INVITED
+                && event.reviewedBy == "admin@test.com"
+        })
     }
 
     @Test
-    fun `execute does not send notification when position not found for INVITED`() = runBlocking<Unit> {
+    fun `execute does not publish event when position not found for INVITED`() = runBlocking<Unit> {
         val applicant = buildApplicant(ApplicantStatus.INVITED)
         whenever(applicantService.updateApplicantStatus(any(), any(), any(), anyOrNull())).thenReturn(applicant)
         whenever(openPositionService.getPosition(positionId)).thenReturn(null)
@@ -127,11 +130,11 @@ class UpdateApplicantStatusUseCaseTest {
 
         useCase.execute(buildCommand("INVITED"))
 
-        verify(notificationOrchestrator, never()).notifyApplicantApproval(any(), any(), any(), any())
+        verify(eventPublisher, never()).publishEvent(argThat<Any> { event -> event is ApplicantStatusChangedEvent })
     }
 
     @Test
-    fun `execute does not throw when approval notification fails`() = runBlocking<Unit> {
+    fun `execute does not throw when event publishing fails for INVITED`() = runBlocking<Unit> {
         val applicant = buildApplicant(ApplicantStatus.INVITED)
         val position = buildPosition("Senior Dev")
         whenever(applicantService.updateApplicantStatus(any(), any(), any(), anyOrNull())).thenReturn(applicant)
@@ -140,16 +143,15 @@ class UpdateApplicantStatusUseCaseTest {
             .thenReturn(listOf(buildAssessment("a-1")))
         whenever(assessmentPlatformService.getAvailableAssessments()).thenReturn(availableAssessments)
         whenever(invitationService.createInvitation(any())).thenAnswer { it.arguments[0] }
-        whenever(notificationOrchestrator.notifyApplicantApproval(any(), any(), any(), any()))
-            .thenThrow(RuntimeException("notification error"))
+        whenever(eventPublisher.publishEvent(any())).thenThrow(RuntimeException("event bus down"))
 
         useCase.execute(buildCommand("INVITED"))
     }
 
-    // --- REJECTED notifications ---
+    // --- REJECTED events ---
 
     @Test
-    fun `execute sends rejection notification when status is REJECTED`() = runBlocking<Unit> {
+    fun `execute publishes rejection event when status is REJECTED`() = runBlocking<Unit> {
         val applicant = buildApplicant(ApplicantStatus.REJECTED)
         val position = buildPosition("Senior Dev")
         whenever(applicantService.updateApplicantStatus(any(), any(), any(), anyOrNull())).thenReturn(applicant)
@@ -157,25 +159,24 @@ class UpdateApplicantStatusUseCaseTest {
 
         useCase.execute(UpdateApplicantStatusCommand("app-1", "REJECTED", reviewer, "Not a fit"))
 
-        verify(notificationOrchestrator).notifyApplicantRejection(
-            applicantEmail = "test@example.com",
-            applicantName = "Test",
-            positionTitle = "Senior Dev",
-            statusNote = "Not a fit",
-            reviewedBy = "admin@test.com"
-        )
+        verify(eventPublisher).publishEvent(argThat<Any> { event ->
+            event is ApplicantStatusChangedEvent
+                && event.applicantEmail == "test@example.com"
+                && event.newStatus == ApplicantStatus.REJECTED
+                && event.statusNote == "Not a fit"
+                && event.reviewedBy == "admin@test.com"
+        })
     }
 
     @Test
-    fun `execute does not send notification when status is PENDING`() = runBlocking<Unit> {
+    fun `execute does not publish event when status is PENDING`() = runBlocking<Unit> {
         val applicant = buildApplicant(ApplicantStatus.PENDING)
         whenever(applicantService.updateApplicantStatus(any(), any(), any(), anyOrNull())).thenReturn(applicant)
         whenever(openPositionService.getPosition(positionId)).thenReturn(buildPosition("Dev"))
 
         useCase.execute(buildCommand("PENDING"))
 
-        verify(notificationOrchestrator, never()).notifyApplicantApproval(any(), any(), any(), any())
-        verify(notificationOrchestrator, never()).notifyApplicantRejection(any(), any(), any(), any(), any())
+        verify(eventPublisher, never()).publishEvent(argThat<Any> { event -> event is ApplicantStatusChangedEvent })
     }
 
     // --- assessment invitations for INVITED ---

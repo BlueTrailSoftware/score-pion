@@ -1,15 +1,15 @@
-﻿package org.example.notifier.application.useCases.inviteUser
+package org.example.notifier.application.useCases.inviteUser
 
 import org.example.notifier.application.service.core.RecruiterInvitationService
-import org.example.notifier.application.service.notification.NotificationOrchestrator
-import org.example.notifier.domain.user.UserRole
+import org.example.notifier.domain.event.UserInvitedEvent
 import org.example.notifier.infrastructure.logging.LoggerPort
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 
 @Component
 class InviteUserUseCase(
     private val recruiterInvitationService: RecruiterInvitationService,
-    private val notificationOrchestrator: NotificationOrchestrator,
+    private val eventPublisher: ApplicationEventPublisher,
     private val logger: LoggerPort
 ) {
 
@@ -22,19 +22,15 @@ class InviteUserUseCase(
         )
 
         try {
-            if (invitation.role == UserRole.ADMIN) {
-                notificationOrchestrator.notifyAdminInvitation(
+            eventPublisher.publishEvent(
+                UserInvitedEvent(
                     recipientEmail = invitation.email,
-                    invitedBy = command.adminName
-                )
-            } else {
-                notificationOrchestrator.notifyRecruiterInvitation(
-                    recipientEmail = invitation.email,
+                    role = invitation.role,
                     adminName = command.adminName
                 )
-            }
+            )
         } catch (e: Exception) {
-            logger.warn("Failed to send invitation email to ${invitation.email}: ${e.message}")
+            logger.warn("Failed to publish invitation event for ${invitation.email}: ${e.message}")
         }
 
         return InviteUserResult(

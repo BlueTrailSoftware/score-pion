@@ -1,10 +1,12 @@
-﻿package org.example.notifier.application.event
+package org.example.notifier.application.event
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.example.notifier.application.service.core.OpenPositionService
+import org.example.notifier.domain.event.RecruiterCreatedEvent
 import org.example.notifier.domain.invitation.RecruiterInvitation
 import org.example.notifier.domain.user.User
-import org.example.notifier.domain.event.RecruiterCreatedEvent
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
@@ -18,7 +20,7 @@ class RecruiterEventListenerTest {
     @BeforeEach
     fun setUp() {
         openPositionService = mock(OpenPositionService::class.java)
-        listener = RecruiterEventListener(openPositionService)
+        listener = RecruiterEventListener(openPositionService, CoroutineScope(Dispatchers.Unconfined))
     }
 
     private fun buildRecruiter() = User(
@@ -34,10 +36,6 @@ class RecruiterEventListenerTest {
         assignedPositions = positions
     )
 
-    // onRecruiterCreated launches a fire-and-forget CoroutineScope(Dispatchers.IO).launch.
-    // Since the coroutine scope is not injectable, we wait for IO dispatcher completion.
-    private fun awaitCoroutine() = Thread.sleep(300)
-
     @Test
     fun `onRecruiterCreated with positions grants access for each position`() = runBlocking<Unit> {
         val event = RecruiterCreatedEvent(
@@ -46,7 +44,6 @@ class RecruiterEventListenerTest {
         )
 
         listener.onRecruiterCreated(event)
-        awaitCoroutine()
 
         verify(openPositionService).grantRecruiterAccess(
             recruiterId = "rec-1", positionId = "pos-1", grantedBy = "admin-1"
@@ -64,7 +61,6 @@ class RecruiterEventListenerTest {
         )
 
         listener.onRecruiterCreated(event)
-        awaitCoroutine()
 
         verifyNoInteractions(openPositionService)
     }
@@ -80,7 +76,6 @@ class RecruiterEventListenerTest {
         )
 
         listener.onRecruiterCreated(event)
-        awaitCoroutine()
 
         // Exception was caught — only first call was attempted, forEach stops after the throw
         verify(openPositionService, times(1)).grantRecruiterAccess(any(), any(), any())

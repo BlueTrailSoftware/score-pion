@@ -1,4 +1,4 @@
-﻿package org.example.notifier.application.useCases.inviteCandidate
+package org.example.notifier.application.useCases.inviteCandidate
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -9,9 +9,10 @@ import org.example.notifier.application.service.core.InvitationService
 import org.example.notifier.application.service.core.OpenPositionService
 import org.example.notifier.application.service.core.UserService
 import org.example.notifier.application.service.integration.AssessmentPlatformService
-import org.example.notifier.application.service.notification.NotificationOrchestrator
+import org.example.notifier.domain.event.CandidateInvitedEvent
 import org.example.notifier.domain.invitation.Invitation
 import org.example.notifier.infrastructure.logging.LoggerPort
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 
 @Component
@@ -21,7 +22,7 @@ class InviteCandidateUseCase(
     private val assessmentPlatformService: AssessmentPlatformService,
     private val invitationService: InvitationService,
     private val userService: UserService,
-    private val notificationOrchestrator: NotificationOrchestrator,
+    private val eventPublisher: ApplicationEventPublisher,
     private val logger: LoggerPort
 ) {
 
@@ -72,11 +73,11 @@ class InviteCandidateUseCase(
         }.awaitAll()
 
         if (results.any { it }) {
-            notifyInvitation(normalizedEmail, candidateName, command.positionId, command.recruiterId, positionAssessments.size)
+            publishInvitationEvent(normalizedEmail, candidateName, command.positionId, command.recruiterId, positionAssessments.size)
         }
     }
 
-    private suspend fun notifyInvitation(
+    private suspend fun publishInvitationEvent(
         candidateEmail: String,
         candidateName: String,
         positionId: String,
@@ -88,26 +89,21 @@ class InviteCandidateUseCase(
             val recruiter = userService.findById(recruiterId)
 
             if (position != null && recruiter != null) {
-                notificationOrchestrator.notifyCandidateInvitation(
-                    candidateEmail = candidateEmail,
-                    candidateName = candidateName,
-                    positionTitle = position.title,
-                    recruiterName = recruiter.name,
-                    assessmentsCount = assessmentsCount
-                )
-                notificationOrchestrator.notifyRecruiterCandidateInvitation(
-                    recruiterEmail = recruiter.email,
-                    recruiterName = recruiter.name,
-                    candidateName = candidateName,
-                    candidateEmail = candidateEmail,
-                    positionTitle = position.title,
-                    assessmentsCount = assessmentsCount
+                eventPublisher.publishEvent(
+                    CandidateInvitedEvent(
+                        candidateEmail = candidateEmail,
+                        candidateName = candidateName,
+                        positionTitle = position.title,
+                        recruiterEmail = recruiter.email,
+                        recruiterName = recruiter.name,
+                        assessmentsCount = assessmentsCount
+                    )
                 )
             } else {
-                logger.warn("Could not send invitation notification: position or recruiter not found")
+                logger.warn("Could not publish invitation event: position or recruiter not found")
             }
         } catch (e: Exception) {
-            logger.error("Failed to send candidate invitation notification: {}", e.message)
+            logger.error("Failed to publish candidate invitation event: {}", e.message)
         }
     }
 }

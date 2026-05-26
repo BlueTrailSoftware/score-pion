@@ -1,4 +1,4 @@
-﻿package org.example.notifier.application.useCases.submitApplication
+package org.example.notifier.application.useCases.submitApplication
 
 import java.time.LocalDateTime
 import java.util.UUID
@@ -9,14 +9,15 @@ import org.example.notifier.application.service.core.InvitationService
 import org.example.notifier.application.service.core.OpenPositionService
 import org.example.notifier.application.service.file.FileService
 import org.example.notifier.application.service.integration.CaptchaService
-import org.example.notifier.application.service.notification.NotificationOrchestrator
-import org.example.notifier.domain.applicant.Applicant
-import org.example.notifier.domain.applicant.ApplicantStatus
-import org.example.notifier.infrastructure.logging.LoggerPort
 import org.example.notifier.application.util.isValidEmail
 import org.example.notifier.application.util.isValidLinkedInUrl
 import org.example.notifier.application.util.isValidPhone
+import org.example.notifier.domain.applicant.Applicant
+import org.example.notifier.domain.applicant.ApplicantStatus
+import org.example.notifier.domain.event.CandidateApplicationEvent
+import org.example.notifier.infrastructure.logging.LoggerPort
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 
 @Component
@@ -26,7 +27,7 @@ class SubmitApplicationUseCase(
     private val invitationService: InvitationService,
     private val openPositionService: OpenPositionService,
     private val fileService: FileService,
-    private val notificationOrchestrator: NotificationOrchestrator,
+    private val eventPublisher: ApplicationEventPublisher,
     private val logger: LoggerPort,
     @Value("\${applicant.data.retention.months}") private val dataRetentionMonths: Long
 ) {
@@ -83,13 +84,15 @@ class SubmitApplicationUseCase(
         logger.info("Application created with ID: ${savedApplicant.id}")
 
         try {
-            notificationOrchestrator.notifyCandidateApplication(
-                candidateEmail = savedApplicant.email,
-                candidateName = savedApplicant.name,
-                positionTitle = position.title
+            eventPublisher.publishEvent(
+                CandidateApplicationEvent(
+                    candidateEmail = savedApplicant.email,
+                    candidateName = savedApplicant.name,
+                    positionTitle = position.title
+                )
             )
         } catch (e: Exception) {
-            logger.error("Failed to send application confirmation email: ${e.message}", e)
+            logger.error("Failed to publish application event: ${e.message}", e)
         }
 
         return savedApplicant.toApplicantItem(position.title)
