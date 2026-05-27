@@ -1,8 +1,8 @@
-﻿package org.example.notifier.application.useCases.inviteUser
+package org.example.notifier.application.useCases.inviteUser
 
 import kotlinx.coroutines.runBlocking
 import org.example.notifier.application.service.core.RecruiterInvitationService
-import org.example.notifier.application.service.notification.NotificationOrchestrator
+import org.example.notifier.domain.event.UserInvitedEvent
 import org.example.notifier.domain.invitation.RecruiterInvitation
 import org.example.notifier.domain.user.UserRole
 import org.example.notifier.infrastructure.logging.LoggerPort
@@ -13,23 +13,25 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.context.ApplicationEventPublisher
 
 class InviteUserUseCaseTest {
 
     private lateinit var recruiterInvitationService: RecruiterInvitationService
-    private lateinit var notificationOrchestrator: NotificationOrchestrator
+    private lateinit var eventPublisher: ApplicationEventPublisher
     private lateinit var logger: LoggerPort
     private lateinit var useCase: InviteUserUseCase
 
     @BeforeEach
     fun setup() {
         recruiterInvitationService = mock(RecruiterInvitationService::class.java)
-        notificationOrchestrator = mock(NotificationOrchestrator::class.java)
+        eventPublisher = mock(ApplicationEventPublisher::class.java)
         logger = mock(LoggerPort::class.java)
-        useCase = InviteUserUseCase(recruiterInvitationService, notificationOrchestrator, logger)
+        useCase = InviteUserUseCase(recruiterInvitationService, eventPublisher, logger)
     }
 
     @Test
@@ -63,10 +65,12 @@ class InviteUserUseCaseTest {
         assertEquals(savedInvitation.assignedPositions, result.assignedPositions)
         assertEquals(savedInvitation.status, result.status)
 
-        verify(notificationOrchestrator).notifyRecruiterInvitation(
-            recipientEmail = savedInvitation.email,
-            adminName = command.adminName
-        )
+        verify(eventPublisher).publishEvent(argThat<UserInvitedEvent> { event ->
+            event is UserInvitedEvent
+                && event.recipientEmail == command.email
+                && event.role == UserRole.RECRUITER
+                && event.adminName == command.adminName
+        })
     }
 
     @Test
@@ -95,10 +99,11 @@ class InviteUserUseCaseTest {
         val result = useCase.execute(command)
 
         assertEquals(savedInvitation.id, result.id)
-        verify(notificationOrchestrator).notifyAdminInvitation(
-            recipientEmail = savedInvitation.email,
-            invitedBy = command.adminName
-        )
+        verify(eventPublisher).publishEvent(argThat<UserInvitedEvent> { event ->
+            event is UserInvitedEvent
+                && event.recipientEmail == "admin@example.com"
+                && event.role == UserRole.ADMIN
+        })
     }
 
     @Test
@@ -115,12 +120,11 @@ class InviteUserUseCaseTest {
 
         assertThrows<IllegalArgumentException> { useCase.execute(command) }
 
-        verify(notificationOrchestrator, never()).notifyRecruiterInvitation(any(), anyOrNull())
-        verify(notificationOrchestrator, never()).notifyAdminInvitation(any(), anyOrNull())
+        verify(eventPublisher, never()).publishEvent(any())
     }
 
     @Test
-    fun `execute should still return result when notification fails`() = runBlocking<Unit> {
+    fun `execute should still return result when event publishing fails`() = runBlocking<Unit> {
         val command = InviteUserCommand(
             email = "recruiter@example.com",
             role = UserRole.RECRUITER,
@@ -136,8 +140,7 @@ class InviteUserUseCaseTest {
 
         whenever(recruiterInvitationService.createInvitation(any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(savedInvitation)
-        whenever(notificationOrchestrator.notifyRecruiterInvitation(any(), anyOrNull()))
-            .thenThrow(RuntimeException("SMTP down"))
+        whenever(eventPublisher.publishEvent(any())).thenThrow(RuntimeException("event bus down"))
 
         val result = useCase.execute(command)
 

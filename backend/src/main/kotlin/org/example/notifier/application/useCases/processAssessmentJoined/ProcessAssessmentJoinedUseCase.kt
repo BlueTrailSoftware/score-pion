@@ -1,14 +1,15 @@
 package org.example.notifier.application.useCases.processAssessmentJoined
 
 import org.example.notifier.application.service.core.InvitationService
-import org.example.notifier.application.service.notification.NotificationOrchestrator
+import org.example.notifier.domain.event.AssessmentStartedNotificationEvent
 import org.example.notifier.infrastructure.logging.LoggerPort
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 
 @Component
 class ProcessAssessmentJoinedUseCase(
     private val invitationService: InvitationService,
-    private val notificationOrchestrator: NotificationOrchestrator,
+    private val eventPublisher: ApplicationEventPublisher,
     private val logger: LoggerPort
 ) {
 
@@ -29,9 +30,11 @@ class ProcessAssessmentJoinedUseCase(
             logger.warn("Could not update invitation status to in_progress: {}", e.message)
         }
 
-        notificationOrchestrator.notifyAssessmentStarted(
-            candidateEmail = command.candidateEmail,
-            assessmentId = command.assessmentId
+        eventPublisher.publishEvent(
+            AssessmentStartedNotificationEvent(
+                candidateEmail = command.candidateEmail,
+                assessmentId = command.assessmentId
+            )
         )
     }
 }

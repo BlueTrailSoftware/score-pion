@@ -5,9 +5,9 @@ import org.example.notifier.application.service.core.OpenPositionService
 import org.example.notifier.application.service.file.FileService
 import org.example.notifier.application.service.integration.AssessmentInfo
 import org.example.notifier.application.service.integration.AssessmentPlatformService
-import org.example.notifier.application.service.notification.NotificationOrchestrator
 import org.example.notifier.application.useCases.createPosition.CreatePositionCommand
 import org.example.notifier.application.useCases.createPosition.CreatePositionUseCase
+import org.example.notifier.domain.event.PositionCreatedNotificationEvent
 import org.example.notifier.domain.position.OpenPosition
 import org.example.notifier.domain.position.OpenPositionAssessment
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -16,16 +16,18 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.context.ApplicationEventPublisher
 
 class CreatePositionUseCaseTest {
 
     private lateinit var openPositionService: OpenPositionService
     private lateinit var assessmentPlatformService: AssessmentPlatformService
-    private lateinit var notificationOrchestrator: NotificationOrchestrator
+    private lateinit var eventPublisher: ApplicationEventPublisher
     private lateinit var fileService: FileService
     private lateinit var useCase: CreatePositionUseCase
 
@@ -48,9 +50,9 @@ class CreatePositionUseCaseTest {
     fun setup() {
         openPositionService = mock(OpenPositionService::class.java)
         assessmentPlatformService = mock(AssessmentPlatformService::class.java)
-        notificationOrchestrator = mock(NotificationOrchestrator::class.java)
+        eventPublisher = mock(ApplicationEventPublisher::class.java)
         fileService = mock(FileService::class.java)
-        useCase = CreatePositionUseCase(openPositionService, assessmentPlatformService, notificationOrchestrator, fileService)
+        useCase = CreatePositionUseCase(openPositionService, assessmentPlatformService, eventPublisher, fileService)
         runBlocking { whenever(openPositionService.getAllPositions()).thenReturn(emptyList()) }
     }
 
@@ -174,7 +176,7 @@ class CreatePositionUseCaseTest {
     }
 
     @Test
-    fun `execute should trigger position created notification`() = runBlocking<Unit> {
+    fun `execute should publish position created event`() = runBlocking<Unit> {
         whenever(assessmentPlatformService.getAvailableAssessments()).thenReturn(emptyList())
         whenever(openPositionService.createPosition(any(), eq(emptyMap()))).thenReturn(position)
         whenever(openPositionService.getPositionAssessments("pos-1")).thenReturn(emptyList())
@@ -191,10 +193,11 @@ class CreatePositionUseCaseTest {
             )
         )
 
-        verify(notificationOrchestrator).notifyPositionCreated(
-            createdBy = "admin@example.com",
-            position = position,
-            assessmentNames = emptyList()
-        )
+        verify(eventPublisher).publishEvent(argThat<PositionCreatedNotificationEvent> { event ->
+            event is PositionCreatedNotificationEvent
+                && event.createdBy == "admin@example.com"
+                && event.position == position
+                && event.assessmentNames.isEmpty()
+        })
     }
 }

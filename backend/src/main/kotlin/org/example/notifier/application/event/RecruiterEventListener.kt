@@ -1,43 +1,31 @@
-﻿package org.example.notifier.application.event
+package org.example.notifier.application.event
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.example.notifier.application.service.core.OpenPositionService
+import org.example.notifier.domain.event.RecruiterCreatedEvent
 import org.example.notifier.domain.invitation.RecruiterInvitation
 import org.example.notifier.domain.user.User
-import org.example.notifier.application.service.core.OpenPositionService
 import org.slf4j.LoggerFactory
-import org.example.notifier.domain.event.RecruiterCreatedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 
 private val logger = LoggerFactory.getLogger(RecruiterEventListener::class.java)
 
-/**
- * Handles events related to recruiter lifecycle
- * This component is responsible for post-creation tasks like position assignment
- */
 @Component
 class RecruiterEventListener(
     private val openPositionService: OpenPositionService,
+    private val applicationScope: CoroutineScope
 ) {
 
-    /**
-     * Handle recruiter creation event by copying positions from invitation
-     * This runs asynchronously after the recruiter is created
-     */
     @EventListener
     fun onRecruiterCreated(event: RecruiterCreatedEvent) {
         logger.info("Handling recruiter created event for {}", event.recruiter.email)
-        // Launch in IO dispatcher for async database operations
-        CoroutineScope(Dispatchers.IO).launch {
+        applicationScope.launch {
             copyInitialPositionsFromInvitation(event.recruiter, event.invitation)
         }
     }
 
-    /**
-     * Copies assigned positions from invitation to newly created recruiter
-     */
     private suspend fun copyInitialPositionsFromInvitation(
         recruiter: User,
         invitation: RecruiterInvitation

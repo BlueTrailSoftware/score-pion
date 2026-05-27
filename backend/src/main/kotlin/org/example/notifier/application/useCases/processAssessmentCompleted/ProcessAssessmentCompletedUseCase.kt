@@ -1,14 +1,15 @@
-﻿package org.example.notifier.application.useCases.processAssessmentCompleted
+package org.example.notifier.application.useCases.processAssessmentCompleted
 
 import org.example.notifier.application.service.core.InvitationService
 import org.example.notifier.application.service.core.OpenPositionService
 import org.example.notifier.application.service.core.UserService
 import org.example.notifier.application.service.integration.AssessmentPlatformService
-import org.example.notifier.application.service.notification.NotificationOrchestrator
-import org.example.notifier.domain.shared.AssessmentReport
+import org.example.notifier.domain.event.AssessmentCompletedNotificationEvent
 import org.example.notifier.domain.invitation.Invitation
+import org.example.notifier.domain.shared.AssessmentReport
 import org.example.notifier.domain.user.User
 import org.example.notifier.infrastructure.logging.LoggerPort
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 
 @Component
@@ -17,7 +18,7 @@ class ProcessAssessmentCompletedUseCase(
     private val invitationService: InvitationService,
     private val openPositionService: OpenPositionService,
     private val userService: UserService,
-    private val notificationOrchestrator: NotificationOrchestrator,
+    private val eventPublisher: ApplicationEventPublisher,
     private val logger: LoggerPort
 ) {
 
@@ -80,7 +81,7 @@ class ProcessAssessmentCompletedUseCase(
                 )
             }
 
-            sendNotificationWithReport(command, report, invitation)
+            publishCompletedEvent(command, report = report, invitation = invitation, isReportReady = true)
         } else {
             logger.warn(
                 "Report not found despite reportReady=true for candidate: {}, assessment: {}",
@@ -96,28 +97,7 @@ class ProcessAssessmentCompletedUseCase(
             "Processing completed assessment without report for candidate: {}",
             command.candidateEmail
         )
-
-        val positionTitle = resolvePositionTitle(invitation)
-        val recruiter = resolveRecruiter(invitation?.recruiterId)
-
-        try {
-            notificationOrchestrator.notifyAssessmentCompletedWithoutReport(
-                candidateEmail = command.candidateEmail,
-                candidateName = invitation?.candidateName,
-                assessmentId = command.assessmentId,
-                recruiterEmail = recruiter?.email,
-                recruiterName = recruiter?.name,
-                positionTitle = positionTitle,
-                timeExpired = command.wasTimeExpired
-            )
-        } catch (e: Exception) {
-            logger.error(
-                "Error sending no-report notification for candidate: {}, assessment: {}",
-                command.candidateEmail,
-                command.assessmentId,
-                e
-            )
-        }
+        publishCompletedEvent(command, report = null, invitation = invitation, isReportReady = false)
     }
 
     private suspend fun fetchCandidateReport(candidateEmail: String, assessmentId: String): AssessmentReport? {
@@ -155,27 +135,32 @@ class ProcessAssessmentCompletedUseCase(
         }
     }
 
-    private suspend fun sendNotificationWithReport(
+    private suspend fun publishCompletedEvent(
         command: ProcessAssessmentCompletedCommand,
-        report: AssessmentReport,
-        invitation: Invitation?
+        report: AssessmentReport?,
+        invitation: Invitation?,
+        isReportReady: Boolean
     ) {
         try {
             val positionTitle = resolvePositionTitle(invitation)
             val recruiter = resolveRecruiter(invitation?.recruiterId)
 
-            notificationOrchestrator.notifyAssessmentCompletedWithReport(
-                candidateEmail = command.candidateEmail,
-                candidateName = invitation?.candidateName,
-                report = report,
-                recruiterEmail = recruiter?.email,
-                recruiterName = recruiter?.name,
-                positionTitle = positionTitle,
-                timeExpired = command.wasTimeExpired
+            eventPublisher.publishEvent(
+                AssessmentCompletedNotificationEvent(
+                    candidateEmail = command.candidateEmail,
+                    candidateName = invitation?.candidateName,
+                    report = report,
+                    isReportReady = isReportReady,
+                    assessmentId = command.assessmentId,
+                    recruiterEmail = recruiter?.email,
+                    recruiterName = recruiter?.name,
+                    positionTitle = positionTitle,
+                    timeExpired = command.wasTimeExpired
+                )
             )
         } catch (e: Exception) {
             logger.error(
-                "Error sending notification for candidate: {}, assessment: {}",
+                "Error publishing assessment completed event for candidate: {}, assessment: {}",
                 command.candidateEmail,
                 command.assessmentId,
                 e

@@ -1,4 +1,4 @@
-﻿package org.example.notifier.application.service
+package org.example.notifier.application.service
 
 import org.example.notifier.infrastructure.client.GoogleChatClient
 import org.example.notifier.domain.shared.AssessmentReport
@@ -104,7 +104,6 @@ class GoogleChatNotificationService(
             logger.info("Position creation notification sent for position: {}", positionTitle)
         } catch (e: Exception) {
             logger.error("Failed to send position creation notification: {}", e.message, e)
-            throw e
         }
     }
 

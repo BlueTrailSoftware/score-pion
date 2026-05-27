@@ -3,9 +3,9 @@ package org.example.notifier.application.useCases
 import kotlinx.coroutines.runBlocking
 import org.example.notifier.application.service.core.OpenPositionService
 import org.example.notifier.application.service.core.UserService
-import org.example.notifier.application.service.notification.NotificationOrchestrator
 import org.example.notifier.application.useCases.syncRecruiterPositions.SyncRecruiterPositionsCommand
 import org.example.notifier.application.useCases.syncRecruiterPositions.SyncRecruiterPositionsUseCase
+import org.example.notifier.domain.event.RecruiterPositionsAssignedEvent
 import org.example.notifier.domain.position.OpenPosition
 import org.example.notifier.domain.user.User
 import org.example.notifier.infrastructure.logging.LoggerPort
@@ -14,15 +14,17 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.never
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDateTime
 
 class SyncRecruiterPositionsUseCaseTest {
 
     private lateinit var openPositionService: OpenPositionService
     private lateinit var userService: UserService
-    private lateinit var notificationOrchestrator: NotificationOrchestrator
+    private lateinit var eventPublisher: ApplicationEventPublisher
     private lateinit var logger: LoggerPort
     private lateinit var useCase: SyncRecruiterPositionsUseCase
 
@@ -30,9 +32,9 @@ class SyncRecruiterPositionsUseCaseTest {
     fun setup() {
         openPositionService = mock(OpenPositionService::class.java)
         userService = mock(UserService::class.java)
-        notificationOrchestrator = mock(NotificationOrchestrator::class.java)
+        eventPublisher = mock(ApplicationEventPublisher::class.java)
         logger = mock(LoggerPort::class.java)
-        useCase = SyncRecruiterPositionsUseCase(openPositionService, userService, notificationOrchestrator, logger)
+        useCase = SyncRecruiterPositionsUseCase(openPositionService, userService, eventPublisher, logger)
     }
 
     private fun position(id: String) = OpenPosition(
@@ -78,7 +80,7 @@ class SyncRecruiterPositionsUseCaseTest {
     }
 
     @Test
-    fun `sends notification with assigned positions after sync`() = runBlocking<Unit> {
+    fun `publishes event with assigned positions after sync`() = runBlocking<Unit> {
         val pos1 = position("pos-1")
         val recruiter = User(id = "rec-1", email = "recruiter@example.com", name = "Alice")
         whenever(openPositionService.getRecruiterPositions("rec-1")).thenReturn(emptyList())
@@ -87,7 +89,12 @@ class SyncRecruiterPositionsUseCaseTest {
 
         useCase.execute(SyncRecruiterPositionsCommand("rec-1", listOf("pos-1"), "admin-1"))
 
-        verify(notificationOrchestrator).notifyPositionAssignment("recruiter@example.com", "Alice", listOf(pos1))
+        verify(eventPublisher).publishEvent(argThat<RecruiterPositionsAssignedEvent> { event ->
+            event is RecruiterPositionsAssignedEvent
+                && event.recruiterEmail == "recruiter@example.com"
+                && event.recruiterName == "Alice"
+                && event.positions == listOf(pos1)
+        })
     }
 
     @Test
@@ -98,7 +105,7 @@ class SyncRecruiterPositionsUseCaseTest {
 
         useCase.execute(SyncRecruiterPositionsCommand("rec-1", listOf("pos-1"), "admin-1"))
 
-        verify(notificationOrchestrator, never()).notifyPositionAssignment(any(), any(), any())
+        verify(eventPublisher, never()).publishEvent(argThat<RecruiterPositionsAssignedEvent > { event -> event is RecruiterPositionsAssignedEvent })
     }
 
     @Test
