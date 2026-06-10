@@ -1,0 +1,86 @@
+name: Bug Report
+description: Report a reproducible bug in Score-Pion
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before opening a new issue, please:
+        - Search [existing issues](../../issues) to avoid duplicates.
+        - Confirm the bug is reproducible on the latest `main`.
+        - Read the relevant docs in `docs/flows/` — the behavior may be intentional.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which part of the application is affected?
+      options:
+        - Backend (API / business logic)
+        - Frontend (UI / Angular)
+        - Infrastructure (Docker, DynamoDB, MinIO)
+        - Authentication (JWT / Google OAuth)
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Java version, Node version, Docker version (if relevant).
+      placeholder: |
+        - OS: Ubuntu 22.04
+        - Java: 17.0.10
+        - Node: 20.x
+        - Docker: 24.x
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Minimal, numbered steps from a clean state.
+      placeholder: |
+        1. Start the full stack with `docker-compose up`
+        2. Log in as a recruiter
+        3. Navigate to ...
+        4. Observe that ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What should happen according to the documented flow?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What happens instead? Include full stack traces or error messages.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Screenshots
+      description: Paste relevant log output or attach screenshots. **Remove any credentials or sensitive values before pasting.**
+      render: shell
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched existing issues and this is not a duplicate.
+          required: true
+        - label: I have reproduced this on the latest `main`.
+          required: true
+        - label: I have not included any credentials or secrets in this report.
+          required: true
