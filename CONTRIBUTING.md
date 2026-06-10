@@ -95,7 +95,7 @@ The team will label the issue `accepted`, `needs discussion`, or `out of scope`.
 ### Prerequisites
 
 - **JDK 17** (for backend)
-- **Node.js 18+** (for frontend)
+- **Node.js 20+** (for frontend)
 - **Docker and Docker Compose**
 - **Git** and a GitHub account
 
@@ -304,6 +304,26 @@ npm run lint
 ```
 
 The CI pipeline will reject PRs that fail linting or have unformatted code.
+
+---
+
+## Automated Security Checks
+
+Every pull request is scanned automatically before review begins:
+
+| Check | Tool | What it catches |
+|---|---|---|
+| Static analysis (Kotlin) | Detekt | Code quality, potential bugs, unsafe patterns |
+| Static analysis (TS/JS) | ESLint | Type safety, Angular anti-patterns |
+| SAST — Kotlin/Java | CodeQL (`security-extended`) | Injection, path traversal, crypto misuse |
+| SAST — TypeScript | CodeQL (`security-extended`) | XSS, prototype pollution, injection |
+| Secret detection | GitHub Secret Scanning | Accidentally committed credentials or API keys |
+| Dependency CVEs | npm audit (`--audit-level=high`) | Known vulnerabilities in frontend packages |
+| Dependency updates | Dependabot | Weekly PRs for outdated dependencies |
+
+**PRs that fail any of these checks will not be merged.** If a check flags a false positive, explain it in the PR description — do not disable or bypass the tool.
+
+To report a security vulnerability in the project itself, see [SECURITY.md](SECURITY.md) — use private reporting, not a public issue.
 
 ---
 
