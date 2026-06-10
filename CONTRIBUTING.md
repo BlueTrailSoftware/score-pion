@@ -317,7 +317,7 @@ Every pull request is scanned automatically before review begins:
 | Static analysis (TS/JS) | ESLint | Type safety, Angular anti-patterns |
 | SAST — Kotlin/Java | CodeQL (`security-extended`) | Injection, path traversal, crypto misuse |
 | SAST — TypeScript | CodeQL (`security-extended`) | XSS, prototype pollution, injection |
-| Secret detection | Gitleaks | Accidentally committed credentials or API keys |
+| Secret detection | GitHub Secret Scanning | Accidentally committed credentials or API keys |
 | Dependency CVEs | npm audit (`--audit-level=high`) | Known vulnerabilities in frontend packages |
 | Dependency updates | Dependabot | Weekly PRs for outdated dependencies |
 
