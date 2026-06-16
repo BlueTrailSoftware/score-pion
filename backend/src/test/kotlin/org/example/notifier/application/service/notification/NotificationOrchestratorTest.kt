@@ -111,6 +111,14 @@ class NotificationOrchestratorTest {
                 from = "test"
             )
         )
+        whenever(emailTemplateFactory.createEmailForGlobalRecipient(any(), any())).thenReturn(
+            EmailTemplate(
+                to = "admin@example.com",
+                subject = "Test",
+                textContent = "Test",
+                from = "test"
+            )
+        )
 
         notificationOrchestrator.notifyAssessmentCompletedWithReport(
             candidateEmail = candidateEmail,
@@ -123,7 +131,8 @@ class NotificationOrchestratorTest {
         )
 
         // Verify that email template factory was called (for global recipients + recruiter)
-        verify(emailTemplateFactory, times(2)).createEmail(any(), any())
+        verify(emailTemplateFactory, times(1)).createEmail(any(), any())
+        verify(emailTemplateFactory, times(1)).createEmailForGlobalRecipient(any(), any())
     }
 
     @Test
@@ -251,7 +260,7 @@ class NotificationOrchestratorTest {
         val recruiterName = "Mike Wilson"
 
         whenever(globalRecipientsRepository.getAllEmails()).thenReturn(listOf("admin@example.com"))
-        whenever(emailTemplateFactory.createEmail(any(), any())).thenReturn(
+        whenever(emailTemplateFactory.createEmailForGlobalRecipient(any(), any())).thenReturn(
             EmailTemplate(
                 to = "admin@example.com",
                 subject = "Test",
@@ -269,7 +278,7 @@ class NotificationOrchestratorTest {
         )
 
         val captor = argumentCaptor<EmailEvent>()
-        verify(emailTemplateFactory).createEmail(any(), captor.capture())
+        verify(emailTemplateFactory).createEmailForGlobalRecipient(any(), captor.capture())
 
         val event = captor.firstValue
         assert(event is EmailEvent.CandidateInvited)
@@ -578,7 +587,7 @@ class NotificationOrchestratorTest {
         val recruiterName = "Carlos Pérez"
 
         whenever(globalRecipientsRepository.getAllEmails()).thenReturn(listOf("admin@example.com"))
-        whenever(emailTemplateFactory.createEmail(any(), any())).thenReturn(
+        whenever(emailTemplateFactory.createEmailForGlobalRecipient(any(), any())).thenReturn(
             EmailTemplate(
                 to = "admin@example.com",
                 subject = "Assessment Started",
@@ -594,7 +603,7 @@ class NotificationOrchestratorTest {
         )
 
         val captor = argumentCaptor<EmailEvent>()
-        verify(emailTemplateFactory).createEmail(any(), captor.capture())
+        verify(emailTemplateFactory).createEmailForGlobalRecipient(any(), captor.capture())
 
         val event = captor.firstValue
         assert(event is EmailEvent.AssessmentStarted)
@@ -608,7 +617,7 @@ class NotificationOrchestratorTest {
         val assessmentId = "assessment-000"
 
         whenever(globalRecipientsRepository.getAllEmails()).thenReturn(listOf("admin@example.com"))
-        whenever(emailTemplateFactory.createEmail(any(), any())).thenReturn(
+        whenever(emailTemplateFactory.createEmailForGlobalRecipient(any(), any())).thenReturn(
             EmailTemplate(
                 to = "admin@example.com",
                 subject = "Assessment Started",
@@ -624,7 +633,7 @@ class NotificationOrchestratorTest {
         )
 
         val captor = argumentCaptor<EmailEvent>()
-        verify(emailTemplateFactory).createEmail(any(), captor.capture())
+        verify(emailTemplateFactory).createEmailForGlobalRecipient(any(), captor.capture())
 
         val event = captor.firstValue as EmailEvent.AssessmentStarted
         assert(event.recruiterName == null)
@@ -638,7 +647,7 @@ class NotificationOrchestratorTest {
         val recruiterName = "Laura García"
 
         whenever(globalRecipientsRepository.getAllEmails()).thenReturn(listOf("admin@example.com"))
-        whenever(emailTemplateFactory.createEmail(any(), any())).thenReturn(
+        whenever(emailTemplateFactory.createEmailForGlobalRecipient(any(), any())).thenReturn(
             EmailTemplate(
                 to = "admin@example.com",
                 subject = "New Application",
@@ -663,7 +672,7 @@ class NotificationOrchestratorTest {
         )
 
         val captor = argumentCaptor<EmailEvent>()
-        verify(emailTemplateFactory).createEmail(any(), captor.capture())
+        verify(emailTemplateFactory).createEmailForGlobalRecipient(any(), captor.capture())
 
         val event = captor.firstValue
         assert(event is EmailEvent.CandidateApplication)
@@ -687,7 +696,7 @@ class NotificationOrchestratorTest {
         )
 
         whenever(globalRecipientsRepository.getAllEmails()).thenReturn(listOf("admin@example.com"))
-        whenever(emailTemplateFactory.createEmail(any(), any())).thenReturn(
+        whenever(emailTemplateFactory.createEmailForGlobalRecipient(any(), any())).thenReturn(
             EmailTemplate(
                 to = "admin@example.com",
                 subject = "Assessment Completed",
@@ -707,7 +716,7 @@ class NotificationOrchestratorTest {
         )
 
         val captor = argumentCaptor<EmailEvent>()
-        verify(emailTemplateFactory).createEmail(any(), captor.capture())
+        verify(emailTemplateFactory).createEmailForGlobalRecipient(any(), captor.capture())
 
         val event = captor.firstValue as EmailEvent.AssessmentCompleted
         assert(event.recruiterName == recruiterName)
@@ -719,7 +728,7 @@ class NotificationOrchestratorTest {
         val recruiterName = "Luis Ramírez"
 
         whenever(globalRecipientsRepository.getAllEmails()).thenReturn(listOf("admin@example.com"))
-        whenever(emailTemplateFactory.createEmail(any(), any())).thenReturn(
+        whenever(emailTemplateFactory.createEmailForGlobalRecipient(any(), any())).thenReturn(
             EmailTemplate(
                 to = "admin@example.com",
                 subject = "Assessment Pending",
@@ -739,7 +748,7 @@ class NotificationOrchestratorTest {
         )
 
         val captor = argumentCaptor<EmailEvent>()
-        verify(emailTemplateFactory).createEmail(any(), captor.capture())
+        verify(emailTemplateFactory).createEmailForGlobalRecipient(any(), captor.capture())
 
         val event = captor.firstValue as EmailEvent.AssessmentPending
         assert(event.recruiterName == recruiterName)
