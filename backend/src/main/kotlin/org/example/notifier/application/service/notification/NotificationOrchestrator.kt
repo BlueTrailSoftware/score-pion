@@ -634,13 +634,23 @@ class NotificationOrchestrator(
             coroutineScope {
                 emails.map { recipientEmail ->
                     async(Dispatchers.IO) {
-                        sendEmail(recipientEmail, event)
+                        sendEmailToGlobalRecipient(recipientEmail, event)
                     }
                 }.awaitAll()
             }
 
         } catch (e: Exception) {
             logger.error("Failed to notify global recipients about {}: {}", event::class.simpleName, e.message, e)
+        }
+    }
+
+    private suspend fun sendEmailToGlobalRecipient(recipientEmail: String, event: EmailEvent) {
+        try {
+            val emailTemplate = emailTemplateFactory.createEmailForGlobalRecipient(recipientEmail, event)
+            emailNotificationService.sendEmail(emailTemplate)
+            logger.info("Global recipient email sent to: {} for event: {}", recipientEmail, event::class.simpleName)
+        } catch (e: Exception) {
+            logger.error("Failed to send global recipient email to {}: {}", recipientEmail, e.message, e)
         }
     }
 
