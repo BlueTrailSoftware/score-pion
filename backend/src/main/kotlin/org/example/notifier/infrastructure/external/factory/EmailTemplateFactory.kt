@@ -2486,6 +2486,22 @@ class EmailTemplateFactory(
         }
     }
 
+    /**
+     * Dispatcher for global recipient emails. For events that already have dedicated
+     * global-recipient templates this delegates to createEmail(). For invitation and
+     * applicant-status events it routes to FYI-style templates so global recipients
+     * do not receive the same personal email (with invite links, etc.) as the direct party.
+     */
+    fun createEmailForGlobalRecipient(to: String, event: EmailEvent): EmailTemplate {
+        return when (event) {
+            is EmailEvent.RecruiterInvited -> createGlobalRecipientRecruiterInvitedEmail(to, event.recruiterEmail, event.adminName)
+            is EmailEvent.AdminInvited -> createGlobalRecipientAdminInvitedEmail(to, event.adminEmail, event.invitedBy)
+            is EmailEvent.ApplicantApproved -> createGlobalRecipientApplicantApprovedEmail(to, event.applicantName, event.applicantEmail, event.positionTitle, event.recruiterName)
+            is EmailEvent.ApplicantRejected -> createGlobalRecipientApplicantRejectedEmail(to, event.applicantName, event.applicantEmail, event.positionTitle, event.recruiterName)
+            else -> createEmail(to, event)
+        }
+    }
+
     private fun createRecruiterInvitationEmailFromEvent(
         to: String,
         event: EmailEvent.RecruiterInvited
@@ -3300,6 +3316,240 @@ class EmailTemplateFactory(
                                 <p>Best regards,<br><strong>Recruitment System</strong></p>
                             </div>
                         </div>
+                    </div>
+                </body>
+                </html>
+            """.trimIndent(),
+            from = defaultFrom
+        )
+    }
+
+    // ========== GLOBAL RECIPIENT FYI TEMPLATES FOR INVITATION AND STATUS EVENTS ==========
+
+    fun createGlobalRecipientRecruiterInvitedEmail(
+        to: String,
+        recruiterEmail: String,
+        adminName: String?
+    ): EmailTemplate {
+        return EmailTemplate(
+            to = to,
+            subject = "Recruiter Invited: $recruiterEmail",
+            textContent = """
+                Recruiter Invited
+
+                A new recruiter has been invited to the platform.
+
+                Recruiter Email: $recruiterEmail
+                ${adminName?.let { "Invited By: $it\n" } ?: ""}
+                ---
+                Score-pion Team
+            """.trimIndent(),
+            htmlContent = """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+                        .header { color: #26a69a; border-bottom: 2px solid #26a69a; padding-bottom: 10px; }
+                        .section { margin: 20px 0; padding: 15px; border-left: 4px solid #26a69a; background-color: #f8f9fa; }
+                        .info-item { padding: 8px 0; }
+                        .footer { color: #666; font-size: 0.9em; margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; }
+                        .icon { margin-right: 8px; }
+                    </style>
+                </head>
+                <body>
+                    <h1 class="header">Recruiter Invited</h1>
+                    <p>A new recruiter has been invited to the platform.</p>
+                    <div class="section">
+                        <div class="info-item">
+                            <span class="icon">📧</span> <strong>Recruiter Email:</strong> $recruiterEmail
+                        </div>
+                        ${adminName?.let { """
+                        <div class="info-item">
+                            <span class="icon">🧑‍💼</span> <strong>Invited By:</strong> $it
+                        </div>""" } ?: ""}
+                    </div>
+                    <div class="footer">
+                        <p>Best regards,<br><strong>Score-pion Team</strong></p>
+                    </div>
+                </body>
+                </html>
+            """.trimIndent(),
+            from = defaultFrom
+        )
+    }
+
+    fun createGlobalRecipientAdminInvitedEmail(
+        to: String,
+        adminEmail: String,
+        invitedBy: String?
+    ): EmailTemplate {
+        return EmailTemplate(
+            to = to,
+            subject = "Admin Invited: $adminEmail",
+            textContent = """
+                Admin Invited
+
+                A new admin has been invited to the platform.
+
+                Admin Email: $adminEmail
+                ${invitedBy?.let { "Invited By: $it\n" } ?: ""}
+                ---
+                Score-pion Team
+            """.trimIndent(),
+            htmlContent = """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+                        .header { color: #26a69a; border-bottom: 2px solid #26a69a; padding-bottom: 10px; }
+                        .section { margin: 20px 0; padding: 15px; border-left: 4px solid #26a69a; background-color: #f8f9fa; }
+                        .info-item { padding: 8px 0; }
+                        .footer { color: #666; font-size: 0.9em; margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; }
+                        .icon { margin-right: 8px; }
+                    </style>
+                </head>
+                <body>
+                    <h1 class="header">Admin Invited</h1>
+                    <p>A new admin has been invited to the platform.</p>
+                    <div class="section">
+                        <div class="info-item">
+                            <span class="icon">📧</span> <strong>Admin Email:</strong> $adminEmail
+                        </div>
+                        ${invitedBy?.let { """
+                        <div class="info-item">
+                            <span class="icon">🧑‍💼</span> <strong>Invited By:</strong> $it
+                        </div>""" } ?: ""}
+                    </div>
+                    <div class="footer">
+                        <p>Best regards,<br><strong>Score-pion Team</strong></p>
+                    </div>
+                </body>
+                </html>
+            """.trimIndent(),
+            from = defaultFrom
+        )
+    }
+
+    fun createGlobalRecipientApplicantApprovedEmail(
+        to: String,
+        applicantName: String?,
+        applicantEmail: String,
+        positionTitle: String,
+        reviewedBy: String?
+    ): EmailTemplate {
+        return EmailTemplate(
+            to = to,
+            subject = "Applicant Approved: ${applicantName ?: applicantEmail} - $positionTitle",
+            textContent = """
+                Applicant Approved
+
+                An applicant has been approved for a position.
+
+                Applicant: ${applicantName ?: applicantEmail}
+                Email: $applicantEmail
+                Position: $positionTitle
+                ${reviewedBy?.let { "Reviewed By: $it\n" } ?: ""}
+                ---
+                Score-pion Team
+            """.trimIndent(),
+            htmlContent = """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+                        .header { color: #26a69a; border-bottom: 2px solid #26a69a; padding-bottom: 10px; }
+                        .section { margin: 20px 0; padding: 15px; border-left: 4px solid #26a69a; background-color: #f8f9fa; }
+                        .info-item { padding: 8px 0; }
+                        .footer { color: #666; font-size: 0.9em; margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; }
+                        .icon { margin-right: 8px; }
+                    </style>
+                </head>
+                <body>
+                    <h1 class="header">Applicant Approved</h1>
+                    <p>An applicant has been approved for a position.</p>
+                    <div class="section">
+                        <div class="info-item">
+                            <span class="icon">👤</span> <strong>Applicant:</strong> ${applicantName ?: applicantEmail}
+                        </div>
+                        <div class="info-item">
+                            <span class="icon">📧</span> <strong>Email:</strong> $applicantEmail
+                        </div>
+                        <div class="info-item">
+                            <span class="icon">💼</span> <strong>Position:</strong> $positionTitle
+                        </div>
+                        ${reviewedBy?.let { """
+                        <div class="info-item">
+                            <span class="icon">🧑‍💼</span> <strong>Reviewed By:</strong> $it
+                        </div>""" } ?: ""}
+                    </div>
+                    <div class="footer">
+                        <p>Best regards,<br><strong>Score-pion Team</strong></p>
+                    </div>
+                </body>
+                </html>
+            """.trimIndent(),
+            from = defaultFrom
+        )
+    }
+
+    fun createGlobalRecipientApplicantRejectedEmail(
+        to: String,
+        applicantName: String?,
+        applicantEmail: String,
+        positionTitle: String,
+        reviewedBy: String?
+    ): EmailTemplate {
+        return EmailTemplate(
+            to = to,
+            subject = "Applicant Rejected: ${applicantName ?: applicantEmail} - $positionTitle",
+            textContent = """
+                Applicant Rejected
+
+                An applicant has been rejected for a position.
+
+                Applicant: ${applicantName ?: applicantEmail}
+                Email: $applicantEmail
+                Position: $positionTitle
+                ${reviewedBy?.let { "Reviewed By: $it\n" } ?: ""}
+                ---
+                Score-pion Team
+            """.trimIndent(),
+            htmlContent = """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+                        .header { color: #e53935; border-bottom: 2px solid #e53935; padding-bottom: 10px; }
+                        .section { margin: 20px 0; padding: 15px; border-left: 4px solid #e53935; background-color: #f8f9fa; }
+                        .info-item { padding: 8px 0; }
+                        .footer { color: #666; font-size: 0.9em; margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; }
+                        .icon { margin-right: 8px; }
+                    </style>
+                </head>
+                <body>
+                    <h1 class="header">Applicant Rejected</h1>
+                    <p>An applicant has been rejected for a position.</p>
+                    <div class="section">
+                        <div class="info-item">
+                            <span class="icon">👤</span> <strong>Applicant:</strong> ${applicantName ?: applicantEmail}
+                        </div>
+                        <div class="info-item">
+                            <span class="icon">📧</span> <strong>Email:</strong> $applicantEmail
+                        </div>
+                        <div class="info-item">
+                            <span class="icon">💼</span> <strong>Position:</strong> $positionTitle
+                        </div>
+                        ${reviewedBy?.let { """
+                        <div class="info-item">
+                            <span class="icon">🧑‍💼</span> <strong>Reviewed By:</strong> $it
+                        </div>""" } ?: ""}
+                    </div>
+                    <div class="footer">
+                        <p>Best regards,<br><strong>Score-pion Team</strong></p>
                     </div>
                 </body>
                 </html>
