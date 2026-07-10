@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './pagination.component.html',
-  styleUrls: ['./pagination.component.scss']
+  styleUrls: ['./pagination.component.scss'],
 })
 export class PaginationComponent implements OnChanges {
   @Input() currentPage: number = 1;
@@ -39,9 +39,7 @@ export class PaginationComponent implements OnChanges {
 
   shouldShowPage(page: number): boolean {
     // Show first, last, current, and neighbors
-    return page === 1 || 
-           page === this.totalPages || 
-           Math.abs(page - this.currentPage) <= 1;
+    return page === 1 || page === this.totalPages || Math.abs(page - this.currentPage) <= 1;
   }
 
   shouldShowEllipsis(page: number): boolean {
@@ -51,7 +49,7 @@ export class PaginationComponent implements OnChanges {
     // Let's stick to the template logic I had earlier which was:
     // if (page === currentPage || page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1))
     // else if (page === currentPage - 2 || page === currentPage + 2) show ...
-    
+
     return page === this.currentPage - 2 || page === this.currentPage + 2;
   }
 }
