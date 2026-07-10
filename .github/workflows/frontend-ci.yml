@@ -36,7 +36,7 @@ jobs:
         run: cp src/environments/environment.example.ts src/environments/environment.ts
 
       - name: Run tests
-        run: npm run test -- --watch=false --code-coverage
+        run: npm run test -- --watch=false --code-coverage --browsers=ChromeHeadless
 
       - name: Set up production environment file
         run: cp src/environments/environment.example.ts src/environments/environment.prod.ts
