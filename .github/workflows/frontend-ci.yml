@@ -32,8 +32,14 @@ jobs:
       - name: Lint code
         run: npm run lint
 
+      - name: Set up test environment file
+        run: cp src/environments/environment.example.ts src/environments/environment.ts
+
       - name: Run tests
         run: npm run test -- --watch=false --code-coverage
+
+      - name: Set up production environment file
+        run: cp src/environments/environment.example.ts src/environments/environment.prod.ts
 
       - name: Build
         run: npm run build
