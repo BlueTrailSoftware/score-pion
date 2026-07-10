@@ -71,5 +71,9 @@
     "stylelint-scss": "^6.12.1",
     "typescript": "~5.8.2",
     "typescript-eslint": "8.46.3"
+  },
+  "overrides": {
+    "ws": "^8.17.1",
+    "yaml": "^2.2.2"
   }
 }
