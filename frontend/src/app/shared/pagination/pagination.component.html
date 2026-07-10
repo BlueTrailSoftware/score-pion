@@ -1,33 +1,60 @@
-<nav aria-label="Page navigation" *ngIf="totalPages > 1">
-    <ul class="pagination justify-content-end mb-0">
-        <!-- Previous Button -->
-        <li class="page-item" [class.disabled]="currentPage === 1 || disabled">
-            <a class="page-link" href="javascript:void(0)" (click)="onPageChange(currentPage - 1)"
-                aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-                <span class="visually-hidden">Previous</span>
-            </a>
-        </li>
+<nav
+  aria-label="Page navigation"
+  *ngIf="totalPages > 1"
+>
+  <ul class="pagination justify-content-end mb-0">
+    <!-- Previous Button -->
+    <li
+      class="page-item"
+      [class.disabled]="currentPage === 1 || disabled"
+    >
+      <a
+        class="page-link"
+        href="javascript:void(0)"
+        (click)="onPageChange(currentPage - 1)"
+        aria-label="Previous"
+      >
+        <span aria-hidden="true">&laquo;</span>
+        <span class="visually-hidden">Previous</span>
+      </a>
+    </li>
 
-        <!-- Page Numbers -->
-        @for (page of pages; track page) {
-        @if (shouldShowPage(page)) {
-        <li class="page-item" [class.active]="page === currentPage" [class.disabled]="disabled">
-            <a class="page-link" href="javascript:void(0)" (click)="onPageChange(page)">{{ page }}</a>
+    <!-- Page Numbers -->
+    @for (page of pages; track page) {
+      @if (shouldShowPage(page)) {
+        <li
+          class="page-item"
+          [class.active]="page === currentPage"
+          [class.disabled]="disabled"
+        >
+          <a
+            class="page-link"
+            href="javascript:void(0)"
+            (click)="onPageChange(page)"
+            >{{ page }}</a
+          >
         </li>
-        } @else if (shouldShowEllipsis(page)) {
+      } @else if (shouldShowEllipsis(page)) {
         <li class="page-item disabled">
-            <span class="page-link">...</span>
+          <span class="page-link">...</span>
         </li>
-        }
-        }
+      }
+    }
 
-        <!-- Next Button -->
-        <li class="page-item" [class.disabled]="currentPage === totalPages || disabled">
-            <a class="page-link" href="javascript:void(0)" (click)="onPageChange(currentPage + 1)" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-                <span class="visually-hidden">Next</span>
-            </a>
-        </li>
-    </ul>
+    <!-- Next Button -->
+    <li
+      class="page-item"
+      [class.disabled]="currentPage === totalPages || disabled"
+    >
+      <a
+        class="page-link"
+        href="javascript:void(0)"
+        (click)="onPageChange(currentPage + 1)"
+        aria-label="Next"
+      >
+        <span aria-hidden="true">&raquo;</span>
+        <span class="visually-hidden">Next</span>
+      </a>
+    </li>
+  </ul>
 </nav>

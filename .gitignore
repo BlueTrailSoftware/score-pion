@@ -40,3 +40,5 @@ frontend/src/environments/environment.prod.ts
 
 # Agent Skills are COMMITTED — they are part of the standard
 # .agents/skills/ is the canonical location for all skills
+
+.history
