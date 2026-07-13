@@ -3,7 +3,7 @@ plugins {
     id("org.springframework.boot") version "3.2.4"
     id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "1.9.22"
-    kotlin("plugin.spring") version "1.9.22"
+    kotlin("plugin.spring") version "2.4.0"
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
     id("org.jetbrains.kotlinx.kover") version "0.8.3"
 }
