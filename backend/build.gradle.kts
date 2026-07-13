@@ -143,8 +143,8 @@ configurations.all {
             "com.squareup.okhttp3:okhttp:5.0.0-alpha.14",
             "com.squareup.okhttp3:okhttp-coroutines:5.0.0-alpha.14",
             "com.squareup.okio:okio:3.9.0",
-            "aws.smithy.kotlin:http-client-engine-okhttp:1.2.2",
-            "aws.smithy.kotlin:runtime-core:1.2.2"
+            "aws.smithy.kotlin:http-client-engine-okhttp:1.7.2",
+            "aws.smithy.kotlin:runtime-core:1.7.2"
         )
 
         eachDependency {
