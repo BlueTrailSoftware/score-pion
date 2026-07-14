@@ -171,6 +171,7 @@
                         min="0"
                         max="20"
                         step="1"
+                        [class.is-invalid]="experienceMin?.invalid"
                       />
                     </div>
                     <div class="flex-fill">
@@ -183,10 +184,15 @@
                         min="0"
                         max="20"
                         step="1"
+                        [class.is-invalid]="experienceMax?.invalid"
                       />
                     </div>
                   </div>
-                  @if (isExperienceRangeInvalid()) {
+                  @if (hasExperienceMinValueError()) {
+                    <div class="text-danger small mt-1">Years of experience cannot be negative</div>
+                  } @else if (hasExperienceMaxValueError()) {
+                    <div class="text-danger small mt-1">Years of experience cannot exceed 20</div>
+                  } @else if (isExperienceRangeInvalid()) {
                     <div class="text-danger small mt-1">Minimum experience cannot exceed maximum</div>
                   }
                 </div>
