@@ -332,10 +332,10 @@ describe('PositionCreateComponent - Work Mode Property Tests', () => {
     fixture.detectChanges();
   });
 
-  // Feature: position-form-enhancements, Property 11: Remote work mode sets location to "Remote" and read-only
+  // Feature: position-form-enhancements, Property 11: Remote work mode does not overwrite location
   // Validates: Requirements 2.4
-  describe('Property 11: Remote work mode sets location to "Remote" and read-only', () => {
-    it('for any form state, when work mode is changed to "Remote", location should be "Remote" and disabled', () => {
+  describe('Property 11: Remote work mode does not overwrite location', () => {
+    it('for any form state, changing work mode to "Remote" leaves the location value and enabled state untouched', () => {
       const locationArb = fc.string({ minLength: 0, maxLength: 100 });
 
       fc.assert(
@@ -345,36 +345,32 @@ describe('PositionCreateComponent - Work Mode Property Tests', () => {
           component.positionForm.patchValue({ location: initialLocation });
 
           // Trigger work mode change to Remote
-          component.onWorkModeChange('Remote');
+          component.positionForm.get('workMode')?.setValue('Remote');
 
           const locationCtrl = component.positionForm.get('location');
-          expect(locationCtrl?.value).toBe('Remote');
-          expect(locationCtrl?.disabled).toBeTrue();
+          expect(locationCtrl?.value).toBe(initialLocation);
+          expect(locationCtrl?.enabled).toBeTrue();
         }),
         { numRuns: 100 },
       );
     });
   });
 
-  // Feature: position-form-enhancements, Property 12: Changing from Remote restores location editability
+  // Feature: position-form-enhancements, Property 12: Location stays editable across any work mode
   // Validates: Requirements 2.5
-  describe('Property 12: Changing from Remote restores location editability', () => {
-    it('for any form state where work mode is "Remote", changing to another mode clears and enables location', () => {
-      const nonRemoteModes = ['Onsite', 'Hybrid'] as const;
-      const modeArb = fc.constantFrom(...nonRemoteModes);
+  describe('Property 12: Location stays editable across any work mode', () => {
+    it('for any sequence of work mode changes, location remains enabled and unaffected', () => {
+      const modeArb = fc.constantFrom('Onsite', 'Hybrid', 'Remote');
 
       fc.assert(
-        fc.property(modeArb, (newMode: string) => {
-          // First set to Remote so location is "Remote" and disabled
-          component.onWorkModeChange('Remote');
-          expect(component.positionForm.get('location')?.value).toBe('Remote');
-          expect(component.positionForm.get('location')?.disabled).toBeTrue();
+        fc.property(modeArb, modeArb, (firstMode: string, secondMode: string) => {
+          component.positionForm.get('location')?.setValue('Some City');
 
-          // Now change to a non-Remote mode
-          component.onWorkModeChange(newMode);
+          component.positionForm.get('workMode')?.setValue(firstMode);
+          component.positionForm.get('workMode')?.setValue(secondMode);
 
           const locationCtrl = component.positionForm.get('location');
-          expect(locationCtrl?.value).toBe('');
+          expect(locationCtrl?.value).toBe('Some City');
           expect(locationCtrl?.enabled).toBeTrue();
         }),
         { numRuns: 100 },

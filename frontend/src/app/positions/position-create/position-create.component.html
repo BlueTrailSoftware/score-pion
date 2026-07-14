@@ -141,7 +141,6 @@
                     id="workMode"
                     formControlName="workMode"
                     [class.is-invalid]="positionForm.get('workMode')?.invalid && positionForm.get('workMode')?.touched"
-                    (change)="onWorkModeChange($any($event.target).value)"
                   >
                     <option value="">Select a work mode</option>
                     @for (mode of WORK_MODES; track mode) {
@@ -211,7 +210,6 @@
                     formControlName="location"
                     maxlength="200"
                     [class.is-invalid]="location?.invalid && location?.touched"
-                    [class.form-control-readonly]="positionForm.get('workMode')?.value === 'Remote'"
                     placeholder="City, state, or country"
                   />
                   @if (location?.invalid && location?.touched) {

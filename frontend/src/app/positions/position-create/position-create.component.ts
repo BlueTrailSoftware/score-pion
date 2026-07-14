@@ -12,7 +12,6 @@ import { FileHelper } from '../../helpers/fileHelper';
 import { CreatePositionRequest } from '../../models/position.model';
 import {
   addSkillToList,
-  applyWorkModeChange,
   isExperienceRangeInvalid,
   JOB_TYPES,
   markFormGroupTouched,
@@ -166,10 +165,6 @@ export class PositionCreateComponent implements OnInit, OnDestroy {
 
   public hasExperienceMaxValueError(): boolean {
     return !!(this.experienceMin?.hasError('max') || this.experienceMax?.hasError('max'));
-  }
-
-  public onWorkModeChange(value: string): void {
-    applyWorkModeChange(this.positionForm, value);
   }
 
   public createPosition(): void {
