@@ -11,11 +11,9 @@ import {
 } from '../../models/position.model';
 import {
   addSkillToList,
-  applyWorkModeChange,
   isExperienceRangeInvalid,
   JOB_TYPES,
   markFormGroupTouched,
-  setLocationControlState,
   WORK_MODES,
 } from '../position-form.utils';
 import { Assessment } from '../../models/assessment.model';
@@ -156,8 +154,6 @@ export class PositionDetailComponent implements OnInit, OnDestroy {
         location: this.position.location || '',
       });
       this.skills = this.position.skills ? [...this.position.skills] : [];
-
-      setLocationControlState(this.positionForm, this.position.workMode || '');
     }
   }
 
@@ -210,10 +206,6 @@ export class PositionDetailComponent implements OnInit, OnDestroy {
 
   public isExperienceRangeInvalid(): boolean {
     return isExperienceRangeInvalid(this.positionForm);
-  }
-
-  public onWorkModeChange(value: string): void {
-    applyWorkModeChange(this.positionForm, value);
   }
 
   public saveChanges(): void {

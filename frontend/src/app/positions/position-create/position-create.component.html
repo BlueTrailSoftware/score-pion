@@ -141,7 +141,6 @@
                     id="workMode"
                     formControlName="workMode"
                     [class.is-invalid]="positionForm.get('workMode')?.invalid && positionForm.get('workMode')?.touched"
-                    (change)="onWorkModeChange($any($event.target).value)"
                   >
                     <option value="">Select a work mode</option>
                     @for (mode of WORK_MODES; track mode) {
@@ -171,6 +170,7 @@
                         min="0"
                         max="20"
                         step="1"
+                        [class.is-invalid]="experienceMin?.invalid"
                       />
                     </div>
                     <div class="flex-fill">
@@ -183,10 +183,15 @@
                         min="0"
                         max="20"
                         step="1"
+                        [class.is-invalid]="experienceMax?.invalid"
                       />
                     </div>
                   </div>
-                  @if (isExperienceRangeInvalid()) {
+                  @if (hasExperienceMinValueError()) {
+                    <div class="text-danger small mt-1">Years of experience cannot be negative</div>
+                  } @else if (hasExperienceMaxValueError()) {
+                    <div class="text-danger small mt-1">Years of experience cannot exceed 20</div>
+                  } @else if (isExperienceRangeInvalid()) {
                     <div class="text-danger small mt-1">Minimum experience cannot exceed maximum</div>
                   }
                 </div>
@@ -205,7 +210,6 @@
                     formControlName="location"
                     maxlength="200"
                     [class.is-invalid]="location?.invalid && location?.touched"
-                    [class.form-control-readonly]="positionForm.get('workMode')?.value === 'Remote'"
                     placeholder="City, state, or country"
                   />
                   @if (location?.invalid && location?.touched) {
@@ -412,7 +416,7 @@
                   type="button"
                   class="btn btn-gradient-primary"
                   (click)="createPosition()"
-                  [disabled]="positionForm.invalid || isExperienceRangeInvalid() || saving"
+                  [disabled]="saving"
                 >
                   @if (saving) {
                     <span

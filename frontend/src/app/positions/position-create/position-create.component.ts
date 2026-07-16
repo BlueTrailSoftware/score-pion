@@ -12,7 +12,6 @@ import { FileHelper } from '../../helpers/fileHelper';
 import { CreatePositionRequest } from '../../models/position.model';
 import {
   addSkillToList,
-  applyWorkModeChange,
   isExperienceRangeInvalid,
   JOB_TYPES,
   markFormGroupTouched,
@@ -160,8 +159,12 @@ export class PositionCreateComponent implements OnInit, OnDestroy {
     return isExperienceRangeInvalid(this.positionForm);
   }
 
-  public onWorkModeChange(value: string): void {
-    applyWorkModeChange(this.positionForm, value);
+  public hasExperienceMinValueError(): boolean {
+    return !!(this.experienceMin?.hasError('min') || this.experienceMax?.hasError('min'));
+  }
+
+  public hasExperienceMaxValueError(): boolean {
+    return !!(this.experienceMin?.hasError('max') || this.experienceMax?.hasError('max'));
   }
 
   public createPosition(): void {
@@ -236,6 +239,12 @@ export class PositionCreateComponent implements OnInit, OnDestroy {
   }
   public get location() {
     return this.positionForm.get('location');
+  }
+  public get experienceMin() {
+    return this.positionForm.get('experienceMin');
+  }
+  public get experienceMax() {
+    return this.positionForm.get('experienceMax');
   }
 
   public onFileSelected(event: Event): void {

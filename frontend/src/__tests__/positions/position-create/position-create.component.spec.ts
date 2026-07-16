@@ -472,30 +472,29 @@ describe('PositionCreateComponent', () => {
   });
 
   describe('Remote work mode and location interaction', () => {
-    it('should set location to "Remote" and disable it when work mode is Remote', () => {
-      component.onWorkModeChange('Remote');
-      expect(component.positionForm.get('location')?.value).toBe('Remote');
-      expect(component.positionForm.get('location')?.disabled).toBeTrue();
-    });
-
-    it('should clear location and re-enable it when changing from Remote to another mode', () => {
-      component.onWorkModeChange('Remote');
-      expect(component.positionForm.get('location')?.value).toBe('Remote');
-      expect(component.positionForm.get('location')?.disabled).toBeTrue();
-
-      component.onWorkModeChange('Onsite');
+    it('should not overwrite an empty location when work mode changes to Remote', () => {
+      component.positionForm.get('workMode')?.setValue('Remote');
       expect(component.positionForm.get('location')?.value).toBe('');
       expect(component.positionForm.get('location')?.enabled).toBeTrue();
     });
 
-    it('should clear location and re-enable it when changing from Remote to Hybrid', () => {
-      component.onWorkModeChange('Remote');
-      component.onWorkModeChange('Hybrid');
-      expect(component.positionForm.get('location')?.value).toBe('');
+    it('should preserve a user-entered location when work mode changes to Remote', () => {
+      component.positionForm.get('location')?.setValue('New York, NY');
+      component.positionForm.get('workMode')?.setValue('Remote');
+      expect(component.positionForm.get('location')?.value).toBe('New York, NY');
       expect(component.positionForm.get('location')?.enabled).toBeTrue();
     });
 
-    it('should include location as "Remote" in payload when work mode is Remote', fakeAsync(() => {
+    it('should keep location editable when switching between work modes', () => {
+      component.positionForm.get('workMode')?.setValue('Remote');
+      component.positionForm.get('workMode')?.setValue('Onsite');
+      expect(component.positionForm.get('location')?.enabled).toBeTrue();
+
+      component.positionForm.get('workMode')?.setValue('Hybrid');
+      expect(component.positionForm.get('location')?.enabled).toBeTrue();
+    });
+
+    it('should include the user-entered location in payload when work mode is Remote', fakeAsync(() => {
       component.positionForm.setValue({
         title: 'Frontend Dev',
         description: 'A detailed description for the position',
@@ -506,7 +505,6 @@ describe('PositionCreateComponent', () => {
         experienceMax: null,
         location: 'New York, NY',
       });
-      component.onWorkModeChange('Remote');
       positionServiceSpy.createPosition.and.returnValue(of({ status: 'success', message: 'Created' }));
       spyOn(router, 'navigate');
 
@@ -514,7 +512,7 @@ describe('PositionCreateComponent', () => {
       tick();
 
       const payload = positionServiceSpy.createPosition.calls.mostRecent().args[0] as CreatePositionRequest;
-      expect(payload.location).toBe('Remote');
+      expect(payload.location).toBe('New York, NY');
       expect(payload.workMode).toBe('Remote');
     }));
 

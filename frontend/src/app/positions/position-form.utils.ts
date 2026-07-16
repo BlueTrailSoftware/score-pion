@@ -9,25 +9,6 @@ export function isExperienceRangeInvalid(form: FormGroup): boolean {
   return min != null && max != null && min > max;
 }
 
-export function setLocationControlState(form: FormGroup, workMode: string): void {
-  const locationControl = form.get('location');
-  if (workMode === 'Remote') {
-    locationControl?.disable();
-  } else {
-    locationControl?.enable();
-  }
-}
-
-export function applyWorkModeChange(form: FormGroup, value: string): void {
-  const locationControl = form.get('location');
-  if (value === 'Remote') {
-    locationControl?.setValue('Remote');
-  } else {
-    locationControl?.setValue('');
-  }
-  setLocationControlState(form, value);
-}
-
 export function addSkillToList(skills: string[], input: string): string | null {
   const trimmed = input.trim();
   if (!trimmed || skills.some(s => s.toLowerCase() === trimmed.toLowerCase())) return null;
