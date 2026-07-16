@@ -416,7 +416,7 @@
                   type="button"
                   class="btn btn-gradient-primary"
                   (click)="createPosition()"
-                  [disabled]="positionForm.invalid || isExperienceRangeInvalid() || saving"
+                  [disabled]="saving"
                 >
                   @if (saving) {
                     <span
