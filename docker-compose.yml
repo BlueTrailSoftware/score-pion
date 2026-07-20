@@ -16,6 +16,7 @@ services:
       dockerfile: backend/Dockerfile
     ports:
       - "7070:7070"
+    restart: unless-stopped
     env_file: backend/.env
     environment:
       # Docker network overrides — these replace the values in backend/.env
