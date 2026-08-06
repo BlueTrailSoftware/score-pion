@@ -208,6 +208,14 @@ export class PositionDetailComponent implements OnInit, OnDestroy {
     return isExperienceRangeInvalid(this.positionForm);
   }
 
+  public hasExperienceMinValueError(): boolean {
+    return !!(this.experienceMin?.hasError('min') || this.experienceMax?.hasError('min'));
+  }
+
+  public hasExperienceMaxValueError(): boolean {
+    return !!(this.experienceMin?.hasError('max') || this.experienceMax?.hasError('max'));
+  }
+
   public saveChanges(): void {
     if (this.positionForm.invalid || !this.position || this.isExperienceRangeInvalid()) {
       markFormGroupTouched(this.positionForm);
@@ -408,6 +416,13 @@ export class PositionDetailComponent implements OnInit, OnDestroy {
   }
   public get locationControl() {
     return this.positionForm.get('location');
+  }
+
+  public get experienceMin() {
+    return this.positionForm.get('experienceMin');
+  }
+  public get experienceMax() {
+    return this.positionForm.get('experienceMax');
   }
 
   public downloadFile(): void {

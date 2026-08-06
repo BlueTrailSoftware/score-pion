@@ -140,12 +140,41 @@ describe('PositionDetailComponent', () => {
     });
   });
 
+  describe('experience validation', () => {
+    it('hasExperienceMinValueError should be true when min is negative', () => {
+      component.positionForm.patchValue({ experienceMin: -1, experienceMax: null });
+      expect(component.hasExperienceMinValueError()).toBeTrue();
+    });
+
+    it('hasExperienceMaxValueError should be true when max exceeds 20', () => {
+      component.positionForm.patchValue({ experienceMin: null, experienceMax: 21 });
+      expect(component.hasExperienceMaxValueError()).toBeTrue();
+    });
+
+    it('hasExperienceMinValueError and hasExperienceMaxValueError should be false for valid values', () => {
+      component.positionForm.patchValue({ experienceMin: 2, experienceMax: 5 });
+      expect(component.hasExperienceMinValueError()).toBeFalse();
+      expect(component.hasExperienceMaxValueError()).toBeFalse();
+    });
+
+    it('isExperienceRangeInvalid should be true when min exceeds max', () => {
+      component.positionForm.patchValue({ experienceMin: 10, experienceMax: 5 });
+      expect(component.isExperienceRangeInvalid()).toBeTrue();
+    });
+
+    it('isExperienceRangeInvalid should be false when min is less than max', () => {
+      component.positionForm.patchValue({ experienceMin: 3, experienceMax: 7 });
+      expect(component.isExperienceRangeInvalid()).toBeFalse();
+    });
+  });
+
   describe('saveChanges', () => {
-    it('should not save when form is invalid', () => {
+    it('should not save and should mark form as touched when form is invalid', () => {
       component.isEditing = true;
       component.positionForm.patchValue({ title: '' });
       component.saveChanges();
       expect(positionServiceSpy.updatePosition).not.toHaveBeenCalled();
+      expect(component.title?.touched).toBeTrue();
     });
 
     it('should call updatePosition and reload on success', fakeAsync(() => {
