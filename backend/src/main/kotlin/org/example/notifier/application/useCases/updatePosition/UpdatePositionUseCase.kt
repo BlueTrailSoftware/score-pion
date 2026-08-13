@@ -32,9 +32,18 @@ class UpdatePositionUseCase(
         val currentPosition = openPositionService.getPosition(command.positionId)
             ?: throw IllegalArgumentException("Position not found with id: ${command.positionId}")
 
+        val normalizedTitle = command.title.trim()
+        require(normalizedTitle.isNotBlank()) {
+            "Position title must not be blank"
+        }
+
         val allPositions = openPositionService.getAllPositions()
-        require(allPositions.none { it.id != command.positionId && it.title.equals(command.title.trim(), ignoreCase = true) }) {
-            "A position with the name '${command.title}' already exists"
+        require(
+            allPositions.none {
+                it.id != command.positionId && it.title.trim().equals(normalizedTitle, ignoreCase = true)
+            }
+        ) {
+            "A position with the name '$normalizedTitle' already exists"
         }
 
         val availableAssessments = assessmentPlatformService.getAvailableAssessments()
@@ -52,7 +61,7 @@ class UpdatePositionUseCase(
 
         val position = openPositionService.updatePosition(
             id = command.positionId,
-            title = command.title,
+            title = normalizedTitle,
             description = command.description,
             external = command.external,
             assessmentIds = command.assessmentIds,

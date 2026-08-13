@@ -176,6 +176,75 @@ class CreatePositionUseCaseTest {
     }
 
     @Test
+    fun `execute should reject duplicate title when the stored title has surrounding whitespace`() = runBlocking<Unit> {
+        val existing = position.copy(id = "pos-existing", title = "  Backend Engineer  ")
+        whenever(openPositionService.getAllPositions()).thenReturn(listOf(existing))
+        whenever(assessmentPlatformService.getAvailableAssessments()).thenReturn(emptyList())
+        whenever(openPositionService.createPosition(any(), any())).thenReturn(position)
+        whenever(openPositionService.getPositionAssessments("pos-1")).thenReturn(emptyList())
+
+        val exception = assertThrows(IllegalArgumentException::class.java) {
+            runBlocking {
+                useCase.execute(
+                    CreatePositionCommand(
+                        title = "Backend Engineer",
+                        description = "Another backend role",
+                        external = false,
+                        assessmentIds = emptyList(),
+                        createdByEmail = "admin@example.com",
+                        workMode = "Remote",
+                        location = "Berlin"
+                    )
+                )
+            }
+        }
+        assertEquals("A position with the name 'Backend Engineer' already exists", exception.message)
+    }
+
+    @Test
+    fun `execute should persist the title trimmed`() = runBlocking<Unit> {
+        whenever(assessmentPlatformService.getAvailableAssessments()).thenReturn(emptyList())
+        whenever(openPositionService.createPosition(any(), eq(emptyMap()))).thenReturn(position)
+        whenever(openPositionService.getPositionAssessments("pos-1")).thenReturn(emptyList())
+
+        useCase.execute(
+            CreatePositionCommand(
+                title = "  Backend Engineer  ",
+                description = "Backend role",
+                external = false,
+                assessmentIds = emptyList(),
+                createdByEmail = "admin@example.com",
+                workMode = "Remote",
+                location = "Berlin"
+            )
+        )
+
+        val positionCaptor = argumentCaptor<OpenPosition>()
+        verify(openPositionService).createPosition(positionCaptor.capture(), any())
+        assertEquals("Backend Engineer", positionCaptor.firstValue.title)
+    }
+
+    @Test
+    fun `execute should reject a title that is only whitespace`() = runBlocking<Unit> {
+        val exception = assertThrows(IllegalArgumentException::class.java) {
+            runBlocking {
+                useCase.execute(
+                    CreatePositionCommand(
+                        title = "   ",
+                        description = "Backend role",
+                        external = false,
+                        assessmentIds = emptyList(),
+                        createdByEmail = "admin@example.com",
+                        workMode = "Remote",
+                        location = "Berlin"
+                    )
+                )
+            }
+        }
+        assertEquals("Position title must not be blank", exception.message)
+    }
+
+    @Test
     fun `execute should publish position created event`() = runBlocking<Unit> {
         whenever(assessmentPlatformService.getAvailableAssessments()).thenReturn(emptyList())
         whenever(openPositionService.createPosition(any(), eq(emptyMap()))).thenReturn(position)
