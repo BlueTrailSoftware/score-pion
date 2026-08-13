@@ -347,4 +347,159 @@ class UpdatePositionUseCaseTest {
             )
         }
     }
+
+    @Test
+    fun `execute should reject update when another title differs only by whitespace`() = runBlocking<Unit> {
+        val conflicting = OpenPosition(
+            id = "pos-2",
+            title = "  Updated Title  ",
+            description = "Other role",
+            createdBy = "admin@example.com"
+        )
+        whenever(openPositionService.getPosition("pos-1")).thenReturn(existingPosition)
+        whenever(openPositionService.getAllPositions()).thenReturn(listOf(existingPosition, conflicting))
+        whenever(assessmentPlatformService.getAvailableAssessments()).thenReturn(emptyList())
+        whenever(
+            fileService.handleFileUpdate(
+                currentFileUrl = null,
+                newFilePart = null,
+                deleteFile = false,
+                entityType = "positions",
+                entityId = "pos-1"
+            )
+        ).thenReturn(FileService.FileUpdateResult(null, false))
+        whenever(
+            openPositionService.updatePosition(
+                id = "pos-1",
+                title = "Updated Title",
+                description = "New desc",
+                external = false,
+                assessmentIds = emptyList(),
+                assessmentNames = emptyMap(),
+                fileUrl = null,
+                isFileDeleted = false
+            )
+        ).thenReturn(updatedPosition)
+        whenever(openPositionService.getPositionAssessments("pos-1")).thenReturn(emptyList())
+
+        assertThrows<IllegalArgumentException> {
+            useCase.execute(
+                UpdatePositionCommand(
+                    positionId = "pos-1",
+                    title = "Updated Title",
+                    description = "New desc",
+                    external = false,
+                    assessmentIds = emptyList()
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `execute should persist the title trimmed`() = runBlocking<Unit> {
+        whenever(openPositionService.getPosition("pos-1")).thenReturn(existingPosition)
+        whenever(assessmentPlatformService.getAvailableAssessments()).thenReturn(emptyList())
+        whenever(
+            fileService.handleFileUpdate(
+                currentFileUrl = null,
+                newFilePart = null,
+                deleteFile = false,
+                entityType = "positions",
+                entityId = "pos-1"
+            )
+        ).thenReturn(FileService.FileUpdateResult(null, false))
+        whenever(
+            openPositionService.updatePosition(
+                id = "pos-1",
+                title = "Updated Title",
+                description = "Updated description",
+                external = true,
+                assessmentIds = emptyList(),
+                assessmentNames = emptyMap(),
+                fileUrl = null,
+                isFileDeleted = false
+            )
+        ).thenReturn(updatedPosition)
+        whenever(openPositionService.getPositionAssessments("pos-1")).thenReturn(emptyList())
+
+        useCase.execute(
+            UpdatePositionCommand(
+                positionId = "pos-1",
+                title = "  Updated Title  ",
+                description = "Updated description",
+                external = true,
+                assessmentIds = emptyList()
+            )
+        )
+
+        verify(openPositionService).updatePosition(
+            id = "pos-1",
+            title = "Updated Title",
+            description = "Updated description",
+            external = true,
+            assessmentIds = emptyList(),
+            assessmentNames = emptyMap(),
+            fileUrl = null,
+            isFileDeleted = false
+        )
+    }
+
+    @Test
+    fun `execute should reject a title that is only whitespace`() = runBlocking<Unit> {
+        whenever(openPositionService.getPosition("pos-1")).thenReturn(existingPosition)
+
+        assertThrows<IllegalArgumentException> {
+            useCase.execute(
+                UpdatePositionCommand(
+                    positionId = "pos-1",
+                    title = "   ",
+                    description = "New desc",
+                    external = false,
+                    assessmentIds = emptyList()
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `execute should still allow saving a position without changing its title`() = runBlocking<Unit> {
+        val position = existingPosition.copy(title = "Updated Title")
+        whenever(openPositionService.getPosition("pos-1")).thenReturn(position)
+        whenever(openPositionService.getAllPositions()).thenReturn(listOf(position))
+        whenever(assessmentPlatformService.getAvailableAssessments()).thenReturn(emptyList())
+        whenever(
+            fileService.handleFileUpdate(
+                currentFileUrl = null,
+                newFilePart = null,
+                deleteFile = false,
+                entityType = "positions",
+                entityId = "pos-1"
+            )
+        ).thenReturn(FileService.FileUpdateResult(null, false))
+        whenever(
+            openPositionService.updatePosition(
+                id = "pos-1",
+                title = "Updated Title",
+                description = "Updated description",
+                external = true,
+                assessmentIds = emptyList(),
+                assessmentNames = emptyMap(),
+                fileUrl = null,
+                isFileDeleted = false
+            )
+        ).thenReturn(updatedPosition)
+        whenever(openPositionService.getPositionAssessments("pos-1")).thenReturn(emptyList())
+
+        val result = useCase.execute(
+            UpdatePositionCommand(
+                positionId = "pos-1",
+                title = "Updated Title",
+                description = "Updated description",
+                external = true,
+                assessmentIds = emptyList()
+            )
+        )
+
+        assertEquals("Updated Title", result.title)
+    }
 }

@@ -33,9 +33,14 @@ class CreatePositionUseCase(
             skills = command.skills
         )
 
+        val normalizedTitle = command.title.trim()
+        require(normalizedTitle.isNotBlank()) {
+            "Position title must not be blank"
+        }
+
         val allPositions = openPositionService.getAllPositions()
-        require(allPositions.none { it.title.equals(command.title.trim(), ignoreCase = true) }) {
-            "A position with the name '${command.title}' already exists"
+        require(allPositions.none { it.title.trim().equals(normalizedTitle, ignoreCase = true) }) {
+            "A position with the name '$normalizedTitle' already exists"
         }
 
         val availableAssessments = assessmentPlatformService.getAvailableAssessments()
@@ -44,7 +49,7 @@ class CreatePositionUseCase(
             .associate { it.id to (it.title ?: UNKNOWN_ASSESSMENT_NAME) }
 
         val positionDraft = OpenPosition(
-            title = command.title,
+            title = normalizedTitle,
             description = command.description,
             external = command.external,
             createdBy = command.createdByEmail,
